@@ -1,86 +1,91 @@
-(async function(){
-  console.log('Loading final_development.json …');
-  const resp = await fetch('final_development.json', { cache:'no-cache' });
-  const data = await resp.json();
-  console.log('Loaded records:', data.length);
+// scripts/app.js
+async function initMap() {
+  const response = await fetch("final_development.json");
+  const data = await response.json();
 
-  // Set up map
-  const map = L.map('map').setView([33.5, -86.8], 6);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '&copy; OpenStreetMap'
+  // Initialize map
+  const map = L.map("map").setView([33.5, -86.8], 6);
+
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom: 18,
+    attribution: "© OpenStreetMap contributors"
   }).addTo(map);
 
-  // Build unique owners
-  const owners = [...new Set(data.map(d => d.Owner).filter(Boolean))];
-  const entities = [...new Set(data.map(d => d.LegalEntity).filter(Boolean))];
-
-  // Assign colors
-  const palette = [
-    '#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd',
-    '#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf'
-  ];
-  const colorByOwner = {};
-  owners.forEach((o, i) => {
-    colorByOwner[o] = (o.toLowerCase().includes('hall'))
-      ? '#ff0000' // Force Hall bright red
-      : palette[i % palette.length];
-  });
+  // Populate filters
+  populateFilters(data);
 
   // Draw markers
-  let markers = [];
-  function renderMarkers(ownerFilter, entityFilter) {
-    markers.forEach(m => map.removeLayer(m));
-    markers = [];
+  updateMarkers(data, map);
 
-    data.forEach(d => {
-      if (!d.Latitude || !d.Longitude) return;
-      if (ownerFilter && d.Owner !== ownerFilter) return;
-      if (entityFilter && d.LegalEntity !== entityFilter) return;
+  // Hook up events
+  document.getElementById("ownerFilter").addEventListener("change", () => {
+    updateMarkers(data, map);
+  });
+  document.getElementById("legalFilter").addEventListener("change", () => {
+    updateMarkers(data, map);
+  });
+  document.getElementById("resetFilters").addEventListener("click", () => {
+    document.getElementById("ownerFilter").value = "";
+    document.getElementById("legalFilter").value = "";
+    updateMarkers(data, map);
+  });
+}
 
-      const color = colorByOwner[d.Owner] || '#555';
-      const marker = L.circleMarker([+d.Latitude, +d.Longitude], {
-        radius: 6,
-        fillColor: color,
-        color: '#333',
-        weight: 1,
-        fillOpacity: 0.9
-      }).bindPopup(`
-        <b>${d.Property || '(No name)'}</b><br/>
-        ${d.Address || ''}<br/>
-        Manager: ${d.Manager || ''}<br/>
-        Owner: ${d.Owner || ''}<br/>
-        Legal Entity: ${d.LegalEntity || ''}
-      `);
-      marker.addTo(map);
-      markers.push(marker);
-    });
+function populateFilters(data) {
+  const ownerSel = document.getElementById("ownerFilter");
+  const legalSel = document.getElementById("legalFilter");
+
+  ownerSel.innerHTML = "<option value=''>All</option>";
+  legalSel.innerHTML = "<option value=''>All</option>";
+
+  const owners = [...new Set(data.map(d => d.Owner).filter(Boolean))].sort();
+  const legals = [...new Set(data.map(d => d.LegalEntity).filter(Boolean))].sort();
+
+  owners.forEach(o => {
+    const opt = document.createElement("option");
+    opt.value = o;
+    opt.textContent = o;
+    ownerSel.appendChild(opt);
+  });
+
+  legals.forEach(l => {
+    const opt = document.createElement("option");
+    opt.value = l;
+    opt.textContent = l;
+    legalSel.appendChild(opt);
+  });
+}
+
+function updateMarkers(data, map) {
+  if (window._layerGroup) {
+    map.removeLayer(window._layerGroup);
   }
 
-  // Init toolbar
-  const toolbar = document.getElementById('toolbar');
-  toolbar.innerHTML = `
-    Ownership: <select id="ownerFilter"><option value="">All</option>
-      ${owners.map(o => `<option value="${o}">${o}</option>`).join('')}
-    </select>
-    Legal Entity: <select id="entityFilter"><option value="">All</option>
-      ${entities.map(e => `<option value="${e}">${e}</option>`).join('')}
-    </select>
-    <button id="resetBtn">Reset Filters</button>
-  `;
+  const ownerFilter = document.getElementById("ownerFilter").value;
+  const legalFilter = document.getElementById("legalFilter").value;
 
-  document.getElementById('ownerFilter').addEventListener('change', e => {
-    renderMarkers(e.target.value, document.getElementById('entityFilter').value);
-  });
-  document.getElementById('entityFilter').addEventListener('change', e => {
-    renderMarkers(document.getElementById('ownerFilter').value, e.target.value);
-  });
-  document.getElementById('resetBtn').addEventListener('click', () => {
-    document.getElementById('ownerFilter').value = '';
-    document.getElementById('entityFilter').value = '';
-    renderMarkers();
+  const filtered = data.filter(d => {
+    return (!ownerFilter || d.Owner === ownerFilter) &&
+           (!legalFilter || d.LegalEntity === legalFilter);
   });
 
-  // First draw
-  renderMarkers();
-})();
+  const markers = filtered.map(d => {
+    if (!d.Latitude || !d.Longitude) return null;
+    const marker = L.circleMarker([d.Latitude, d.Longitude], {
+      radius: 6,
+      color: d.Owner === "Hall" ? "red" : "blue",
+      fillOpacity: 0.7
+    });
+    marker.bindPopup(`
+      <b>${d.Property}</b><br>
+      Owner: ${d.Owner || "N/A"}<br>
+      Legal: ${d.LegalEntity || "N/A"}<br>
+      City: ${d.City || ""}, ${d.State || ""}
+    `);
+    return marker;
+  }).filter(Boolean);
+
+  window._layerGroup = L.layerGroup(markers).addTo(map);
+}
+
+document.addEventListener("DOMContentLoaded", initMap);
