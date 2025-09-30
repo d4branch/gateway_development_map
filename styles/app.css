@@ -9,5 +9,5 @@ body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial,
 .chip { display:inline-flex; gap:6px; align-items:center; border:1px solid #e5e7eb; border-radius:9999px; padding:4px 8px; font-size:12px; cursor:pointer; }
 .chip input{ accent-color:#0ea5e9; }
 
-.map { height: calc(100vh - 110px); }
+.map { height: calc(100vh - 110px); }   /* <-- this makes the map visible */
 .leaflet-popup-content{ min-width:260px; }
