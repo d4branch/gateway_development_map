@@ -5,22 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Development Portfolio Map</title>
 
-  <!-- Add these two -->
-  <link rel="stylesheet" href="styles/app.css" />
+  <!-- REQUIRED: page + Leaflet styles -->
+  <link rel="stylesheet" href="styles/app.css?v=1" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
   <header class="gaHeader">
     <h1>Development Portfolio Map</h1>
-    <div class="sub">
-      Exec view • Ownership & Legal Entity filters • via Gateway IT, A. Branch
-    </div>
+    <div class="sub">Exec view • Ownership & Legal Entity filters • via Gateway IT, A. Branch</div>
   </header>
 
   <section id="toolbar" class="toolbar"></section>
   <div id="map" class="map"></div>
 
+  <!-- Leaflet JS + your app -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="scripts/app.js"></script>
+  <script src="scripts/app.js?v=1"></script>
 </body>
 </html>
