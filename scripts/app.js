@@ -25,15 +25,25 @@
   }).addTo(map);
   const layer = L.layerGroup().addTo(map);
 
-  // 4) Owners + colors
-  const getOwner = r => (r.Owner ?? r.OWNER ?? r.Ownership ?? "").toString().trim();
-  const owners = Array.from(new Set(rows.map(getOwner).filter(Boolean))).sort();
-  const palette = ['#2563eb','#16a34a','#d97706','#7c3aed','#dc2626','#0891b2',
-                   '#f59e0b','#059669','#e11d48','#0ea5e9','#9333ea','#ef4444',
-                   '#14b8a6','#22c55e','#3b82f6','#a855f7','#fb7185'];
-  const ownerColor = {}; let i = 0;
-  owners.forEach(o => ownerColor[o] = palette[i++ % palette.length]);
-  if (owners.includes("Gateway")) ownerColor["Gateway"] = "#ff007a"; // highlight Gateway
+// ------- Owners + colors (robust) -------
+function getOwner(r) {
+  // Prefer common names first
+  if (r.Owner)       return String(r.Owner).trim();
+  if (r.OWNER)       return String(r.OWNER).trim();
+  if (r.Ownership)   return String(r.Ownership).trim();
+  if (r["Ownership Name"]) return String(r["Ownership Name"]).trim();
+
+  // Fallback: find ANY key that contains "owner"
+  const k = Object.keys(r).find(x => /owner/i.test(x));
+  return k ? String(r[k]).trim() : "";
+}
+
+const owners = Array.from(
+  new Set(
+    rows.map(getOwner).filter(Boolean)
+  )
+).sort();
+
 
   // 5) Toolbar UI
   const tb = document.getElementById("toolbar");
