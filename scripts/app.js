@@ -1,6 +1,6 @@
-// scripts/app.js — robust ownership filter + dynamic toolbar + console diagnostics
+// scripts/app.js — Ownership filter + color-by-owner + dynamic toolbar
 (async function () {
-  // --- Load data ---
+  // ---- Load data ----
   let data = [];
   try {
     const resp = await fetch("final_development.json", { cache: "no-cache" });
@@ -13,10 +13,7 @@
     return;
   }
 
-  console.log("Loaded records:", data.length);
-  console.log("Sample keys:", Object.keys(data[0] || {}));
-
-  // --- Guardrails: only render sane coords (SE US bounds) ---
+  // ---- Bounds guard (SE U.S.) ----
   const inBounds = (lat, lon) => lat >= 24 && lat <= 38 && lon >= -96 && lon <= -74;
 
   const rows = data.filter(r => {
@@ -24,67 +21,42 @@
     return Number.isFinite(lat) && Number.isFinite(lon) && inBounds(lat, lon);
   });
 
-  console.log("Renderable rows after bounds check:", rows.length);
-
-  // --- Map setup ---
+  // ---- Map setup ----
   const map = L.map("map").setView([33.5, -86.8], 6);
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
     attribution: "&copy; OpenStreetMap"
   }).addTo(map);
 
-  // --- Resolve Owner field in a case-insensitive way ---
+  // ---- Owner utilities ----
   function getOwner(r) {
-    return (r.Owner ?? r.OWNER ?? r.owner ?? r.Ownership ?? r.OWNERSHIP ?? r.ownership ?? "").toString().trim();
+    // Prefer exact "Owner" but be forgiving in case capitalization changes later
+    return (r.Owner ?? r.OWNER ?? r.owner ?? "").toString().trim();
   }
 
-  // Build unique owners
   const owners = Array.from(new Set(rows.map(getOwner).filter(v => v !== ""))).sort();
-  console.log("Owners detected:", owners);
 
-  // --- Color palette (Hall = brightest) ---
+  // ---- Color palette (Hall = brightest) ----
   const palette = ['#2563eb','#16a34a','#d97706','#7c3aed','#dc2626','#0891b2',
                    '#f59e0b','#059669','#e11d48','#0ea5e9','#9333ea','#ef4444',
                    '#14b8a6','#22c55e','#3b82f6'];
   const ownerColor = {};
   let pi = 0;
   owners.forEach(o => ownerColor[o] = palette[pi++ % palette.length]);
-  if (owners.includes("Hall")) ownerColor["Hall"] = "#ff007a";
+  if (owners.includes("Hall")) ownerColor["Hall"] = "#ff007a"; // make Hall pop
 
-  // --- Toolbar (dynamic) ---
+  // ---- Build toolbar dynamically ----
   const tb = document.getElementById("toolbar");
   tb.innerHTML = `
     <strong>Ownership:</strong>
-    <select id="ownerFilter"><option value="">All</option>
+    <select id="ownerFilter">
+      <option value="">All</option>
       ${owners.map(o => `<option value="${o}">${o}</option>`).join("")}
     </select>
     <button id="resetBtn">Reset Filters</button>
   `;
 
   const layer = L.layerGroup().addTo(map);
-
-  function popupHtml(r){
-    const owner = getOwner(r);
-    return `
-      <div>
-        <h3 style="margin:0 0 6px; font-size:16px;">${r.Property || ""}</h3>
-        <div style="font-size:12px; opacity:.8;">${[r.Address,r.City,r.State,r.Zip].filter(Boolean).join(", ")}</div>
-        <hr />
-        <table style="font-size:12px; line-height:1.4;">
-          <tr><td><b>Units</b></td><td>${r.Units ?? ""}</td></tr>
-          <tr><td><b>Type</b></td><td>${r.Type ?? ""}</td></tr>
-          <tr><td><b>Manager</b></td><td>${r.Manager ?? ""}</td></tr>
-          <tr><td><b>APM</b></td><td>${r.AssistantMgr ?? ""}</td></tr>
-          <tr><td><b>Compliance</b></td><td>${r.ComplianceSpec ?? ""}</td></tr>
-          <tr><td><b>RPM</b></td><td>${r.RPM ?? ""}</td></tr>
-          <tr><td><b>RVP</b></td><td>${r.RVP ?? ""}</td></tr>
-          <tr><td><b>Owner</b></td><td>${owner}</td></tr>
-          <tr><td><b>Email</b></td><td>${r.ManagerEmail ?? ""}</td></tr>
-          <tr><td><b>Office</b></td><td>${r.Office ?? ""}</td></tr>
-          <tr><td><b>Fax</b></td><td>${r.Fax ?? ""}</td></tr>
-        </table>
-      </div>`;
-  }
 
   function markerStyle(owner) {
     const base = {
@@ -95,27 +67,46 @@
       fillOpacity: 0.85,
       opacity: 0.9
     };
-    if (owner === "Hall") {
+    if (owner === "Hall") { // highlight Hall
       base.radius = 8; base.weight = 1.5; base.fillOpacity = 0.95; base.color = '#111827';
     }
     return base;
+  }
+
+  function popupHtml(r, owner){
+    return `
+      <div>
+        <h3 style="margin:0 0 6px; font-size:16px;">${r.Property || ""}</h3>
+        <div style="font-size:12px; opacity:.8;">${[r.Address,r.City,r.State,r.Zip].filter(Boolean).join(", ")}</div>
+        <hr />
+        <table style="font-size:12px; line-height:1.4;">
+          <tr><td><b>Owner</b></td><td>${owner || ""}</td></tr>
+          <tr><td><b>Units</b></td><td>${r.Units ?? ""}</td></tr>
+          <tr><td><b>Type</b></td><td>${r.Type ?? ""}</td></tr>
+          <tr><td><b>Manager</b></td><td>${r.Manager ?? ""}</td></tr>
+          <tr><td><b>APM</b></td><td>${r.AssistantMgr ?? ""}</td></tr>
+          <tr><td><b>Compliance</b></td><td>${r.ComplianceSpec ?? ""}</td></tr>
+          <tr><td><b>RPM</b></td><td>${r.RPM ?? ""}</td></tr>
+          <tr><td><b>RVP</b></td><td>${r.RVP ?? ""}</td></tr>
+          <tr><td><b>Email</b></td><td>${r.ManagerEmail ?? ""}</td></tr>
+          <tr><td><b>Office</b></td><td>${r.Office ?? ""}</td></tr>
+          <tr><td><b>Fax</b></td><td>${r.Fax ?? ""}</td></tr>
+        </table>
+      </div>`;
   }
 
   function render() {
     const ownerFilter = document.getElementById("ownerFilter").value;
     layer.clearLayers();
 
-    let count = 0;
     rows.forEach(r => {
       const owner = getOwner(r);
       if (ownerFilter && owner !== ownerFilter) return;
 
       const lat = Number(r.Latitude), lon = Number(r.Longitude);
-      const m = L.circleMarker([lat, lon], markerStyle(owner)).bindPopup(popupHtml(r));
+      const m = L.circleMarker([lat, lon], markerStyle(owner)).bindPopup(popupHtml(r, owner));
       layer.addLayer(m);
-      count++;
     });
-    console.log("Rendered markers:", count, "Filter:", ownerFilter || "(none)");
   }
 
   document.getElementById("ownerFilter").addEventListener("change", render);
