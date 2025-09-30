@@ -1,4 +1,4 @@
-// scripts/app.js  — builds UI dynamically and renders markers
+// scripts/app.js — robust ownership filter + dynamic toolbar + console diagnostics
 (async function () {
   // --- Load data ---
   let data = [];
@@ -13,12 +13,18 @@
     return;
   }
 
-  // --- Basic guardrails (keeps UI safe even if a few bad coords sneak in) ---
+  console.log("Loaded records:", data.length);
+  console.log("Sample keys:", Object.keys(data[0] || {}));
+
+  // --- Guardrails: only render sane coords (SE US bounds) ---
   const inBounds = (lat, lon) => lat >= 24 && lat <= 38 && lon >= -96 && lon <= -74;
+
   const rows = data.filter(r => {
     const lat = Number(r.Latitude), lon = Number(r.Longitude);
     return Number.isFinite(lat) && Number.isFinite(lon) && inBounds(lat, lon);
   });
+
+  console.log("Renderable rows after bounds check:", rows.length);
 
   // --- Map setup ---
   const map = L.map("map").setView([33.5, -86.8], 6);
@@ -27,13 +33,16 @@
     attribution: "&copy; OpenStreetMap"
   }).addTo(map);
 
-  // --- Build Ownership list (use d.Owner; LegalEntity optional) ---
-const owners = Array.from(new Set(
-  rows.map(d => d.Owner ?? d.OWNER ?? d.owner ?? "").filter(v => v.trim() !== "")
-)).sort();
+  // --- Resolve Owner field in a case-insensitive way ---
+  function getOwner(r) {
+    return (r.Owner ?? r.OWNER ?? r.owner ?? r.Ownership ?? r.OWNERSHIP ?? r.ownership ?? "").toString().trim();
+  }
 
+  // Build unique owners
+  const owners = Array.from(new Set(rows.map(getOwner).filter(v => v !== ""))).sort();
+  console.log("Owners detected:", owners);
 
-  // --- Colors per owner (Hall = brightest) ---
+  // --- Color palette (Hall = brightest) ---
   const palette = ['#2563eb','#16a34a','#d97706','#7c3aed','#dc2626','#0891b2',
                    '#f59e0b','#059669','#e11d48','#0ea5e9','#9333ea','#ef4444',
                    '#14b8a6','#22c55e','#3b82f6'];
@@ -42,7 +51,7 @@ const owners = Array.from(new Set(
   owners.forEach(o => ownerColor[o] = palette[pi++ % palette.length]);
   if (owners.includes("Hall")) ownerColor["Hall"] = "#ff007a";
 
-  // --- Toolbar (created dynamically) ---
+  // --- Toolbar (dynamic) ---
   const tb = document.getElementById("toolbar");
   tb.innerHTML = `
     <strong>Ownership:</strong>
@@ -55,6 +64,7 @@ const owners = Array.from(new Set(
   const layer = L.layerGroup().addTo(map);
 
   function popupHtml(r){
+    const owner = getOwner(r);
     return `
       <div>
         <h3 style="margin:0 0 6px; font-size:16px;">${r.Property || ""}</h3>
@@ -68,7 +78,7 @@ const owners = Array.from(new Set(
           <tr><td><b>Compliance</b></td><td>${r.ComplianceSpec ?? ""}</td></tr>
           <tr><td><b>RPM</b></td><td>${r.RPM ?? ""}</td></tr>
           <tr><td><b>RVP</b></td><td>${r.RVP ?? ""}</td></tr>
-          <tr><td><b>Owner</b></td><td>${r.Owner ?? ""}</td></tr>
+          <tr><td><b>Owner</b></td><td>${owner}</td></tr>
           <tr><td><b>Email</b></td><td>${r.ManagerEmail ?? ""}</td></tr>
           <tr><td><b>Office</b></td><td>${r.Office ?? ""}</td></tr>
           <tr><td><b>Fax</b></td><td>${r.Fax ?? ""}</td></tr>
@@ -85,22 +95,27 @@ const owners = Array.from(new Set(
       fillOpacity: 0.85,
       opacity: 0.9
     };
-    if ((owner || "").trim() === "Hall") {
+    if (owner === "Hall") {
       base.radius = 8; base.weight = 1.5; base.fillOpacity = 0.95; base.color = '#111827';
     }
     return base;
   }
 
   function render() {
-    layer.clearLayers();
     const ownerFilter = document.getElementById("ownerFilter").value;
+    layer.clearLayers();
+
+    let count = 0;
     rows.forEach(r => {
-      if (ownerFilter && (r.Owner || "").trim() !== ownerFilter) return;
+      const owner = getOwner(r);
+      if (ownerFilter && owner !== ownerFilter) return;
+
       const lat = Number(r.Latitude), lon = Number(r.Longitude);
-      const m = L.circleMarker([lat, lon], markerStyle((r.Owner || "").trim()))
-        .bindPopup(popupHtml(r));
+      const m = L.circleMarker([lat, lon], markerStyle(owner)).bindPopup(popupHtml(r));
       layer.addLayer(m);
+      count++;
     });
+    console.log("Rendered markers:", count, "Filter:", ownerFilter || "(none)");
   }
 
   document.getElementById("ownerFilter").addEventListener("change", render);
