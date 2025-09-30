@@ -28,7 +28,10 @@
   }).addTo(map);
 
   // --- Build Ownership list (use d.Owner; LegalEntity optional) ---
-  const owners = Array.from(new Set(rows.map(d => (d.Owner || "").trim()).filter(Boolean))).sort();
+const owners = Array.from(new Set(
+  rows.map(d => d.Owner ?? d.OWNER ?? d.owner ?? "").filter(v => v.trim() !== "")
+)).sort();
+
 
   // --- Colors per owner (Hall = brightest) ---
   const palette = ['#2563eb','#16a34a','#d97706','#7c3aed','#dc2626','#0891b2',
