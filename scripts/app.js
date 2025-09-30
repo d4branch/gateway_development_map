@@ -14,12 +14,17 @@
 
   // Wrap main logic in try-catch for any data issues
   try {
-    // 2) Keep rows with finite coords in US bounds (expanded to full continental US)
+    // 2) Keep rows with finite coords in US bounds (expanded to full continental US), or use default for null
     const inBounds = (lat, lon) => lat >= 24 && lat <= 49 && lon >= -125 && lon <= -66;
-    const rows = data.filter(r => {
-      const lat = Number(r.Latitude), lon = Number(r.Longitude);
-      return Number.isFinite(lat) && Number.isFinite(lon) && inBounds(lat, lon);
-    });
+    const rows = data.map(r => {
+      const lat = Number(r.Latitude);
+      const lon = Number(r.Longitude);
+      return {
+        ...r,
+        Latitude: Number.isFinite(lat) && inBounds(lat, lon) ? lat : 33.5, // Default to Birmingham, AL
+        Longitude: Number.isFinite(lon) && inBounds(lat, lon) ? lon : -86.8 // Default to Birmingham, AL
+      };
+    }).filter(r => r.Latitude && r.Longitude); // Ensure we have some coords
     console.log("Filtered rows length:", rows.length); // Debug: check after filter
 
     // ------- Map (guard against double init) -------
@@ -29,7 +34,7 @@
       window.__devLayer = null;
     }
 
-    const map = L.map("map").setView([39.8, -98.5], 4); // Adjusted view to center US for better visibility
+    const map = L.map("map").setView([33.5, -86.8], 4); // Center on US with default
     window.__devMap = map;
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       maxZoom: 19, attribution: "&copy; OpenStreetMap"
@@ -83,7 +88,7 @@
       '<span id="legend" style="margin-left:12px"></span>';
     
     if (owners.length === 0) {
-      toolbarHtml += '<span style="margin-left:12px; color:red;">(No owners detected in data)</span>'; // Fallback message
+      toolbarHtml += '<span style="margin-left:12px; color:red;">(No owners detected in data)</span>';
     }
     tb.innerHTML = toolbarHtml;
 
@@ -101,7 +106,7 @@
       return (
         `<div>
            <h3 style="margin:0 0 6px; font-size:16px;">${r.Property || ""}</h3>
-           <div style="font-size:12px; opacity:.8;">${addr}</div>
+           <div style="font-size:12px; opacity:.8;">${addr || 'No address available'}</div>
            <hr />
            <table style="font-size:12px; line-height:1.35;">
              <tr><td><b>Owner</b></td><td>${owner || ""}</td></tr>
@@ -131,7 +136,7 @@
         layer.addLayer(m);
       });
       if (layer.getLayers().length === 0) {
-        console.warn("No markers added - check data filters or JSON content"); // Debug
+        console.warn("No markers added - check data filters or JSON content");
       }
     }
 
