@@ -102,15 +102,23 @@
       let lat = parseCoord(r[latKey], true);
       let lon = parseCoord(r[lonKey], false);
       [lat, lon] = swapIfNeeded(lat, lon);
-      if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
-      if (!inNA(lat, lon)) return;
+      if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+        console.log(`${label}: invalid coords for row`, r);
+        return;
+      }
+      if (!inNA(lat, lon)) {
+        console.log(`${label}: out of NA bounds`, { lat, lon });
+        return;
+      }
 
       const style = {
         radius: 6, weight: 1,
         color: stroke, fillColor: fill,
         fillOpacity: 0.95, opacity: 0.95
       };
-      L.circleMarker([lat, lon], style).addTo(layer);
+      L.circleMarker([lat, lon], style)
+        .bindPopup(`${r["Property Name"] || r["Property"] || "Unknown"}`)
+        .addTo(layer);
       count++;
     });
     console.log(`${label}: plotted ${count} markers`);
@@ -127,7 +135,11 @@
 
     // Fit to combined bounds if we drew anything
     const group = L.featureGroup([rvpLayer, hallLayer]);
-    try { map.fitBounds(group.getBounds().pad(0.1)); } catch {}
+    if (group.getLayers().length > 0) {
+      map.fitBounds(group.getBounds().pad(0.1));
+    } else {
+      console.warn("No valid points to fit bounds");
+    }
 
     // quick visual: bring Hall on top
     hallLayer.bringToFront();
