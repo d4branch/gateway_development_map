@@ -1,22 +1,18 @@
 <!doctype html>
 <html>
 <head>
-  <style>
-  html, body { height:100%; margin:0; }
-  /* give the map visible space */
-  #map { height: 90vh; min-height: 400px; }
-  /* optional header/toolbar styling */
-  .toolbar { background:#39c0c3; color:#0b172a; padding:8px 12px; }
-</style>
-
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Development Portfolio Map</title>
+
+  <!-- Leaflet css -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <!-- Simple built-in styles so the map always shows -->
   <style>
-    body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+    html, body { height:100%; margin:0; }
     header { background:#39c0c3; color:#0b172a; padding:10px 14px; }
-    #map { height: 90vh; } /* ← guarantees visible map */
+    #map { height: 90vh; min-height: 420px; }
   </style>
 </head>
 <body>
@@ -24,9 +20,14 @@
     <h1 style="margin:0; font-size:18px;">Development Portfolio Map</h1>
     <div style="opacity:.7; font-size:12px;">via Gateway IT, A. Branch</div>
   </header>
+
   <div id="map"></div>
 
+  <!-- libs -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="scripts/app.js?v=smoke1"></script>
+  <script src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js"></script>
+
+  <!-- your app -->
+  <script src="scripts/app.js?v=csv2colors"></script>
 </body>
 </html>
