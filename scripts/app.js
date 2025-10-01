@@ -1,13 +1,11 @@
-// scripts/app.js — RVP (gray) + Hall (red) with a checkbox toggle
+// scripts/app.js — Hall (bright red) with toggle, focusing on Hall.csv only
 (function () {
   // ---------- Config ----------
-  // Put the exact CSV filenames/paths here (case-sensitive on GitHub Pages)
-  const RVP_CSV  = "Properties%20by%20RVP%20(1).csv"; // URL-encoded space/paren
   const HALL_CSV = "Hall.csv";
 
   // ---------- Map ----------
   if (window.__map) { try { window.__map.remove(); } catch {} }
-  const map = L.map("map").setView([33.5, -86.8], 6);
+  const map = L.map("map").setView([33.5, -86.8], 6); // Default to SE US
   window.__map = map;
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -15,9 +13,8 @@
     attribution: "&copy; OpenStreetMap"
   }).addTo(map);
 
-  // Separate layers
-  const rvpLayer  = L.layerGroup().addTo(map); // always on
-  const hallLayer = L.layerGroup();            // toggled by checkbox
+  // Hall layer (toggled by checkbox)
+  const hallLayer = L.layerGroup();
 
   // Toolbar counts helper
   const countsEl = document.getElementById("counts") || (() => {
@@ -34,9 +31,9 @@
     return new Promise((resolve, reject) => {
       Papa.parse(url + "?v=" + Date.now(), {
         download: true,
-        header: true,          // IMPORTANT: get array of objects
+        header: true,
         skipEmptyLines: true,
-        dynamicTyping: false,  // we'll parse numbers ourselves
+        dynamicTyping: false,
         complete: (res) => {
           console.log(`${label}: parsed`, { rows: res.data?.length ?? 0, errors: res.errors });
           resolve(res.data || []);
@@ -50,14 +47,29 @@
   }
 
   // ---------- Helpers ----------
-  const toNum = (v) => {
-    if (v == null) return NaN;
-    const m = String(v).trim().match(/-?\d+(\.\d+)?/);
-    return m ? Number(m[0]) : NaN;
+  const toNum = (v, isLat = true) => {
+    if (v == null || v === '') return NaN;
+    let s = String(v).trim().toUpperCase();
+    // Remove degrees and commas
+    s = s.replace(/[°,]/g, '');
+    const m = s.match(/([+-]?\d+(?:\.\d+)?)\s*([NSEW])?/);
+    if (!m) return NaN;
+    let num = Number(m[1]);
+    const dir = (m[2] || '').toUpperCase();
+    if (dir) {
+      if (isLat) {
+        if (dir === 'S') num = -num;
+        else if (dir !== 'N') return NaN; // Invalid for latitude
+      } else {
+        if (dir === 'W') num = -num;
+        else if (dir !== 'E') return NaN; // Invalid for longitude
+      }
+    }
+    return num;
   };
-  const inFootprint = (lat, lon) => lat > 18 && lat < 50 && lon > -125 && lon < -60;
 
-  // Try several common column names
+  const inFootprint = (lat, lon) => lat >= 15 && lat <= 55 && lon >= -130 && lon <= -50; // Wider NA bounds
+
   function findLatLonKeys(sampleRow, label) {
     const keys = Object.keys(sampleRow || {});
     console.log(`${label}: header keys ->`, keys);
@@ -83,11 +95,16 @@
 
     let count = 0;
     rows.forEach(r => {
-      const lat = toNum(r[latKey]);
-      const lon = toNum(r[lonKey]);
-      if (!Number.isFinite(lat) || !Number.isFinite(lon) || !inFootprint(lat, lon)) return;
+      const lat = toNum(r[latKey], true);
+      const lon = toNum(r[lonKey], false);
+      if (!Number.isFinite(lat) || !Number.isFinite(lon) || !inFootprint(lat, lon)) {
+        console.log(`${label}: skipped row`, { rawLat: r[latKey], rawLon: r[lonKey], parsed: { lat, lon } });
+        return;
+      }
 
-      L.circleMarker([lat, lon], style).addTo(layer);
+      L.circleMarker([lat, lon], style)
+        .bindPopup(r["Property Name"] || "Unknown")
+        .addTo(layer);
       count++;
     });
 
@@ -98,22 +115,20 @@
   // ---------- Load & render ----------
   (async () => {
     try {
-      const [rvpRows, hallRows] = await Promise.all([
-        loadCsv(RVP_CSV,  "RVP"),
-        loadCsv(HALL_CSV, "HALL")
-      ]);
-
-      const rvpCount  = plotRows(rvpRows,  "RVP",  rvpLayer,  {
-        radius: 5, weight: 1.25, color: "#334155", fillColor: "#64748b", fillOpacity: 0.95, opacity: 0.95
-      });
+      const hallRows = await loadCsv(HALL_CSV, "HALL");
 
       const hallCount = plotRows(hallRows, "HALL", hallLayer, {
-        radius: 7, weight: 1.5, color: "#7f1d1d", fillColor: "#ff2d55", fillOpacity: 0.95, opacity: 0.95
+        radius: 10, // Larger for visibility
+        weight: 2,
+        color: "#7f1d1d", // Dark red outline
+        fillColor: "#ff2d55", // Bright red fill
+        fillOpacity: 1.0,
+        opacity: 1.0
       });
 
       // Update counts in UI
       countsEl.style.color = "";
-      countsEl.textContent = `(RVP: ${rvpCount}, Hall: ${hallCount})`;
+      countsEl.textContent = `(Hall: ${hallCount})`;
 
       // Checkbox toggle
       const toggle = document.getElementById("toggleHall");
@@ -127,21 +142,26 @@
       }
       if (toggle) {
         toggle.addEventListener("change", syncHall);
-        syncHall(); // set initial state
+        syncHall(); // Set initial state
       }
 
-      // Fit bounds to everything that exists
-      const group = L.featureGroup([rvpLayer, hallLayer]);
-      try { map.fitBounds(group.getBounds().pad(0.1)); } catch {}
+      // Fit bounds to Hall markers
+      const group = L.featureGroup([hallLayer]);
+      if (group.getLayers().length > 0) {
+        map.fitBounds(group.getBounds().pad(0.15));
+        console.log("Map fitted to Hall markers");
+      } else {
+        console.warn("No valid Hall points to fit bounds—using default view");
+        map.setView([33.0, -85.0], 6); // Fallback to Alabama/Georgia area
+      }
 
       if (hallCount === 0) {
         console.warn("HALL plotted 0 rows. Check Hall.csv filename/path (case-sensitive) and its lat/lon column names.");
       }
     } catch (e) {
-      console.error("Error loading CSVs:", e);
+      console.error("Error loading Hall.csv:", e);
       countsEl.style.color = "#b91c1c";
-      countsEl.textContent = "Error loading CSVs (see console)";
+      countsEl.textContent = "Error loading Hall.csv (see console)";
     }
   })();
 })();
-
