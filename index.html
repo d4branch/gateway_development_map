@@ -4,15 +4,13 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Development Portfolio Map</title>
-
-  <!-- Leaflet css -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
-  <!-- Simple built-in styles so the map always shows -->
   <style>
     html, body { height:100%; margin:0; }
     header { background:#39c0c3; color:#0b172a; padding:10px 14px; }
-    #map { height: 90vh; min-height: 420px; }
+    #toolbar { padding:6px 14px; border-bottom:1px solid #e5e7eb; font-size:14px; }
+    #map { height: calc(100vh - 96px); min-height: 420px; } /* header+toolbar ~96px */
+    label { user-select:none; }
   </style>
 </head>
 <body>
@@ -21,14 +19,18 @@
     <div style="opacity:.7; font-size:12px;">via Gateway IT, A. Branch</div>
   </header>
 
+  <div id="toolbar">
+    <label><input id="toggleHall" type="checkbox" checked> Show Hall properties</label>
+    <span id="counts" style="margin-left:14px; opacity:.7;"></span>
+  </div>
+
   <div id="map"></div>
 
   <!-- libs -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js"></script>
 
-
-  <!-- your app -->
-  <script src="scripts/app.js?v=csv-red3"></script>
+  <!-- your app (ONE include only) -->
+  <script src="scripts/app.js?v=toggle-hall-1"></script>
 </body>
 </html>
