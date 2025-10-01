@@ -1,3 +1,4 @@
+
 // scripts/app.js — Hall (bright red) with toggle, focusing on Hall.csv only
 (function () {
   // ---------- Config ----------
