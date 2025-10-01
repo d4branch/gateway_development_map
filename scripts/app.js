@@ -15,25 +15,12 @@
   const hallLayer = L.layerGroup().addTo(map);
 
   // ---------- utilities ----------
-  function parseCoord(v, isLat = true) {
+  function parseCoord(v) {
     if (v == null) return NaN;
-    let s = String(v).trim().toUpperCase();
-    // remove degrees, commas if any
-    s = s.replace(/[°,]/g, '');
-    // match number (with optional sign/decimal) + optional direction after optional spaces
-    const m = s.match(/([+-]?\d+(?:\.\d+)?)\s*([NSEW])?/);
-    if (!m) return NaN;
-    let num = Number(m[1]);
-    const dir = (m[2] || '').toUpperCase();
-    if (isLat) {
-      if (dir === 'S') num = -num;
-      else if (dir === 'N') {} // positive
-      else if (dir && dir !== '') return NaN; // invalid dir for lat
-    } else {
-      if (dir === 'W') num = -num;
-      else if (dir === 'E') {} // positive
-      else if (dir && dir !== '') return NaN; // invalid dir for lon
-    }
+    let s = String(v).trim();
+    // Remove directional markers and non-numeric characters, keep sign and decimal
+    s = s.replace(/[NSEW°,\s]/g, '');
+    const num = Number(s) || NaN;
     return num;
   }
   function swapIfNeeded(lat, lon) {
@@ -42,26 +29,20 @@
     return [lat, lon];
   }
   function inNA(lat, lon) {
-    // gentle sanity bounds (NA-ish). Loosen if needed.
-    return lat > 18 && lat < 50 && lon > -125 && lon < -60;
+    // Wider bounds for North America
+    return lat >= 15 && lat <= 55 && lon >= -130 && lon <= -50;
   }
 
   async function loadCsv(url) {
     const res = await fetch(url + "?v=" + Date.now(), { cache: "no-cache" });
     if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`);
     const text = await res.text();
-    // Use Papa for reliable CSV parsing (handles commas in fields)
     const parsed = Papa.parse(text, { header: true, skipEmptyLines: true });
     return parsed.data;
   }
 
   function findLatKey(keys) {
-    // Try common latitude keys
-    const candidates = [
-      /^(lat|latitude)$/i,
-      /(latitude)/i,
-      /^y$/i
-    ];
+    const candidates = [/^(lat|latitude)$/i, /(latitude)/i, /^y$/i];
     for (const rx of candidates) {
       const k = keys.find(key => rx.test(key.trim()));
       if (k) return k;
@@ -69,11 +50,7 @@
     return null;
   }
   function findLonKey(keys) {
-    const candidates = [
-      /^(lon|long|lng|longitude)$/i,
-      /(longitude)/i,
-      /^x$/i
-    ];
+    const candidates = [/^(lon|long|lng|longitude)$/i, /(longitude)/i, /^x$/i];
     for (const rx of candidates) {
       const k = keys.find(key => rx.test(key.trim()));
       if (k) return k;
@@ -99,22 +76,18 @@
 
     let count = 0;
     rows.forEach(r => {
-      let lat = parseCoord(r[latKey], true);
-      let lon = parseCoord(r[lonKey], false);
+      let lat = parseCoord(r[latKey]);
+      let lon = parseCoord(r[lonKey]);
       [lat, lon] = swapIfNeeded(lat, lon);
-      if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
-        console.log(`${label}: invalid coords for row`, r);
-        return;
-      }
-      if (!inNA(lat, lon)) {
-        console.log(`${label}: out of NA bounds`, { lat, lon });
-        return;
-      }
+      console.log(`${label}: parsed coords`, { lat, lon, rawLat: r[latKey], rawLon: r[lonKey] });
+      if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
+      if (!inNA(lat, lon)) return;
 
       const style = {
-        radius: 6, weight: 1,
+        radius: 8, // Increased radius for visibility
+        weight: 2,
         color: stroke, fillColor: fill,
-        fillOpacity: 0.95, opacity: 0.95
+        fillOpacity: 1.0, opacity: 1.0 // Ensure full opacity
       };
       L.circleMarker([lat, lon], style)
         .bindPopup(`${r["Property Name"] || r["Property"] || "Unknown"}`)
@@ -136,12 +109,13 @@
     // Fit to combined bounds if we drew anything
     const group = L.featureGroup([rvpLayer, hallLayer]);
     if (group.getLayers().length > 0) {
-      map.fitBounds(group.getBounds().pad(0.1));
+      map.fitBounds(group.getBounds().pad(0.2)); // Increased padding
     } else {
       console.warn("No valid points to fit bounds");
+      map.setView([35.0, -85.0], 5); // Default view if no points
     }
 
-    // quick visual: bring Hall on top
+    // Bring Hall on top
     hallLayer.bringToFront();
 
     console.log(`Done. RVP=${rvpCount}, HALL=${hallCount}`);
