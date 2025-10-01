@@ -1,141 +1,147 @@
-// scripts/app.js — RVP layer + Hall layer with toggle + diagnostics
-(async function () {
-  const RVP_CSV  = "Properties%20by%20RVP%20(1).csv"; // URL-encoded ok
-  const HALL_CSV = "Hall.csv";                         // case-sensitive on Pages
+// scripts/app.js — RVP (gray) + Hall (red) with a checkbox toggle
+(function () {
+  // ---------- Config ----------
+  // Put the exact CSV filenames/paths here (case-sensitive on GitHub Pages)
+  const RVP_CSV  = "Properties%20by%20RVP%20(1).csv"; // URL-encoded space/paren
+  const HALL_CSV = "Hall.csv";
 
-  // --- UI helpers -----------------------------------------------------------
-  function ensureCountsSpan() {
-    let span = document.getElementById("counts");
-    if (!span) {
-      const tb = document.getElementById("toolbar");
-      span = document.createElement("span");
-      span.id = "counts";
-      span.style.marginLeft = "14px";
-      span.style.opacity = "0.75";
-      tb.appendChild(span);
-    }
-    return span;
-  }
-  const countsSpan = ensureCountsSpan();
-
-  // --- Map ------------------------------------------------------------------
+  // ---------- Map ----------
   if (window.__map) { try { window.__map.remove(); } catch {} }
   const map = L.map("map").setView([33.5, -86.8], 6);
   window.__map = map;
+
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    maxZoom: 19, attribution: "&copy; OpenStreetMap"
+    maxZoom: 19,
+    attribution: "&copy; OpenStreetMap"
   }).addTo(map);
 
-  const rvpLayer  = L.layerGroup().addTo(map);
-  const hallLayer = L.layerGroup().addTo(map);
+  // Separate layers
+  const rvpLayer  = L.layerGroup().addTo(map); // always on
+  const hallLayer = L.layerGroup();            // toggled by checkbox
 
-  // --- CSV loader -----------------------------------------------------------
-  async function loadCsv(url, label) {
-    const res = await fetch(url + "?v=" + Date.now(), { cache: "no-cache" });
-    console.log(`${label}: fetch ${url} -> ${res.status} ${res.statusText}`);
-    if (!res.ok) {
-      console.error(`${label}: failed to fetch ${url}`);
-      return [];
-    }
-    const text = await res.text();
-    const parsed = Papa.parse(text, { header: true, skipEmptyLines: true });
-    return parsed.data || [];
+  // Toolbar counts helper
+  const countsEl = document.getElementById("counts") || (() => {
+    const el = document.createElement("span");
+    el.id = "counts";
+    el.style.marginLeft = "14px";
+    el.style.opacity = "0.75";
+    document.getElementById("toolbar")?.appendChild(el);
+    return el;
+  })();
+
+  // ---------- CSV -> objects (Papa) ----------
+  function loadCsv(url, label) {
+    return new Promise((resolve, reject) => {
+      Papa.parse(url + "?v=" + Date.now(), {
+        download: true,
+        header: true,          // IMPORTANT: get array of objects
+        skipEmptyLines: true,
+        dynamicTyping: false,  // we'll parse numbers ourselves
+        complete: (res) => {
+          console.log(`${label}: parsed`, { rows: res.data?.length ?? 0, errors: res.errors });
+          resolve(res.data || []);
+        },
+        error: (err) => {
+          console.error(`${label}: parse error`, err);
+          reject(err);
+        }
+      });
+    });
   }
 
-  // --- parsing helpers ------------------------------------------------------
-  const toNum = v => {
+  // ---------- Helpers ----------
+  const toNum = (v) => {
     if (v == null) return NaN;
-    const m = String(v).trim().replace(/[°,\s]/g, "").match(/-?\d+(\.\d+)?/);
+    const m = String(v).trim().match(/-?\d+(\.\d+)?/);
     return m ? Number(m[0]) : NaN;
   };
-  const inNA = (lat, lon) => lat > 18 && lat < 50 && lon > -125 && lon < -60;
+  const inFootprint = (lat, lon) => lat > 18 && lat < 50 && lon > -125 && lon < -60;
 
-  function pickKey(keys, regexes) {
-    for (const rx of regexes) {
-      const k = keys.find(key => rx.test(key));
-      if (k) return k;
-    }
-    return null;
-  }
-
+  // Try several common column names
   function findLatLonKeys(sampleRow, label) {
     const keys = Object.keys(sampleRow || {});
     console.log(`${label}: header keys ->`, keys);
-    const latKey = pickKey(keys, [
-      /^(lat|latitude)$/i, /latitude/i, /^y$/i
-    ]);
-    const lonKey = pickKey(keys, [
-      /^(lon|long|lng|longitude)$/i, /longitude/i, /^x$/i
-    ]);
+
+    const tryKeys = (cands) => cands.find(k => keys.some(h => h.toLowerCase() === k.toLowerCase()))
+                         || keys.find(h => cands.some(k => h.toLowerCase().includes(k.toLowerCase())));
+
+    const latKey = tryKeys(["latitude", "lat", "y"]);
+    const lonKey = tryKeys(["longitude", "long", "lng", "lon", "x"]);
+
     console.log(`${label}: using latKey="${latKey}", lonKey="${lonKey}"`);
     return { latKey, lonKey };
   }
 
-  function draw(rows, label, layer, style) {
+  function plotRows(rows, label, layer, style) {
     if (!rows?.length) return 0;
+
     const { latKey, lonKey } = findLatLonKeys(rows[0], label);
     if (!latKey || !lonKey) {
       console.warn(`${label}: could not find latitude/longitude columns`);
       return 0;
     }
+
     let count = 0;
     rows.forEach(r => {
       const lat = toNum(r[latKey]);
       const lon = toNum(r[lonKey]);
-      if (!Number.isFinite(lat) || !Number.isFinite(lon) || !inNA(lat, lon)) return;
+      if (!Number.isFinite(lat) || !Number.isFinite(lon) || !inFootprint(lat, lon)) return;
+
       L.circleMarker([lat, lon], style).addTo(layer);
       count++;
     });
+
     console.log(`${label}: plotted ${count}`);
     return count;
   }
 
-  try {
-    // Load both datasets
-    const [rvpRows, hallRows] = await Promise.all([
-      loadCsv(RVP_CSV,  "RVP"),
-      loadCsv(HALL_CSV, "HALL")
-    ]);
+  // ---------- Load & render ----------
+  (async () => {
+    try {
+      const [rvpRows, hallRows] = await Promise.all([
+        loadCsv(RVP_CSV,  "RVP"),
+        loadCsv(HALL_CSV, "HALL")
+      ]);
 
-    // Draw RVP (always on)
-    const rvpCount = draw(rvpRows, "RVP", rvpLayer, {
-      radius: 5, weight: 1.25, color: "#334155", fillColor: "#64748b", fillOpacity: 0.95, opacity: 0.95
-    });
+      const rvpCount  = plotRows(rvpRows,  "RVP",  rvpLayer,  {
+        radius: 5, weight: 1.25, color: "#334155", fillColor: "#64748b", fillOpacity: 0.95, opacity: 0.95
+      });
 
-    // Draw Hall (toggleable, larger)
-    const hallCount = draw(hallRows, "HALL", hallLayer, {
-      radius: 7, weight: 1.5, color: "#7f1d1d", fillColor: "#ff2d55", fillOpacity: 0.95, opacity: 0.95
-    });
-    hallLayer.bringToFront();
+      const hallCount = plotRows(hallRows, "HALL", hallLayer, {
+        radius: 7, weight: 1.5, color: "#7f1d1d", fillColor: "#ff2d55", fillOpacity: 0.95, opacity: 0.95
+      });
 
-    // Fit bounds if anything exists
-    const group = L.featureGroup([rvpLayer, hallLayer]);
-    try { map.fitBounds(group.getBounds().pad(0.1)); } catch {}
+      // Update counts in UI
+      countsEl.style.color = "";
+      countsEl.textContent = `(RVP: ${rvpCount}, Hall: ${hallCount})`;
 
-    // Wire checkbox
-    const box = document.getElementById("toggleHall");
-    const warn = (msg) => { countsSpan.style.color = "#b45309"; countsSpan.textContent = msg; };
-    countsSpan.style.color = "";
-    countsSpan.textContent = `(RVP: ${rvpCount}, Hall: ${hallCount})`;
-
-    function syncHall() {
-      if (box.checked) {
-        map.addLayer(hallLayer);
-        hallLayer.bringToFront();
-      } else {
-        map.removeLayer(hallLayer);
+      // Checkbox toggle
+      const toggle = document.getElementById("toggleHall");
+      function syncHall() {
+        if (toggle?.checked) {
+          hallLayer.addTo(map);
+          hallLayer.bringToFront();
+        } else {
+          map.removeLayer(hallLayer);
+        }
       }
-    }
-    box.addEventListener("change", syncHall);
-    syncHall();
+      if (toggle) {
+        toggle.addEventListener("change", syncHall);
+        syncHall(); // set initial state
+      }
 
-    if (hallCount === 0) {
-      warn("Hall: 0 plotted — check Hall.csv path/name and lat/long headers.");
-      console.warn("If Hall is 0: confirm case-sensitive filename 'Hall.csv' in the repo root and open it directly in the browser to verify it’s served.");
+      // Fit bounds to everything that exists
+      const group = L.featureGroup([rvpLayer, hallLayer]);
+      try { map.fitBounds(group.getBounds().pad(0.1)); } catch {}
+
+      if (hallCount === 0) {
+        console.warn("HALL plotted 0 rows. Check Hall.csv filename/path (case-sensitive) and its lat/lon column names.");
+      }
+    } catch (e) {
+      console.error("Error loading CSVs:", e);
+      countsEl.style.color = "#b91c1c";
+      countsEl.textContent = "Error loading CSVs (see console)";
     }
-  } catch (e) {
-    console.error("CSV plot failed:", e);
-    countsSpan.style.color = "#b91c1c";
-    countsSpan.textContent = "Error loading CSVs (see console).";
-  }
+  })();
 })();
+
