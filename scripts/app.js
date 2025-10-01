@@ -1,109 +1,103 @@
-// scripts/app.js — ownership filter + legend, stable
+// scripts/app.js — plot two CSVs: RVP (gray) + Hall (bright red)
 (async function () {
-  // --- map (guard against double init in case of hot reloads) ---
-  if (window.__devMap) { try { window.__devMap.remove(); } catch (_) {} }
-  const map = L.map("map").setView([33.5, -86.8], 6);
-  window.__devMap = map;
+  // 0) filenames (adjust path if you put them in /data)
+  // NOTE: spaces must be URL-encoded (%20). Parens are fine.
+  const RVP_CSV  = "Properties%20by%20RVP%20(1).csv";
+  const HALL_CSV = "Hall.csv";
 
+  // 1) Map
+  if (window.__map) { try { window.__map.remove(); } catch {} }
+  const map = L.map("map").setView([33.5, -86.8], 6);
+  window.__map = map;
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19, attribution: "&copy; OpenStreetMap"
   }).addTo(map);
-  const layer = L.layerGroup().addTo(map);
+  const rvpLayer  = L.layerGroup().addTo(map);
+  const hallLayer = L.layerGroup().addTo(map);
 
-  // --- load data ---
-  let data = [];
-  try {
-    const r = await fetch("final_development.json?v=" + Date.now(), { cache: "no-cache" });
-    if (!r.ok) throw new Error("HTTP " + r.status);
-    data = await r.json();
-  } catch (e) {
-    console.error("Could not load final_development.json", e);
-    return;
+  // 2) helpers
+  const isFiniteNum = n => Number.isFinite(n);
+  const guessLatKey = keys => keys.find(k => /(^|\s|_)(lat|latitude)(\s|_|$)/i.test(k));
+  const guessLonKey = keys => keys.find(k => /(^|\s|_)(lon|long|longitude)(\s|_|$)/i.test(k));
+  const guessNameKey= keys => keys.find(k => /(property\s*name|property|title)/i.test(k)) || "Property";
+
+  function toNum(v) {
+    if (v == null) return NaN;
+    const s = String(v).trim().replace(/[°,\s]/g, "");
+    const m = s.match(/-?\d+(\.\d+)?/);
+    return m ? Number(m[0]) : NaN;
+  }
+  function swapIfNeeded(lat, lon) {
+    if (Math.abs(lat) > 90 && Math.abs(lon) <= 90) return [lon, lat];
+    return [lat, lon];
+  }
+  function boundsOK(lat, lon) {
+    // mild sanity bounds for North America; loosen if needed
+    return (lat > 18 && lat < 50 && lon > -125 && lon < -60);
   }
 
-  // --- filter to SE footprint and valid coords ---
-  const inBounds = (lat, lon) => lat >= 24 && lat <= 38 && lon >= -96 && lon <= -74;
-  const rows = data.filter(r => {
-    const lat = Number(r.Latitude), lon = Number(r.Longitude);
-    return Number.isFinite(lat) && Number.isFinite(lon) && inBounds(lat, lon);
-  });
-
-  // --- robust owner detection ---
-  function getOwner(r) {
-    if (r.Owner) return String(r.Owner).trim();
-    if (r.OWNER) return String(r.OWNER).trim();
-    if (r.Ownership) return String(r.Ownership).trim();
-    if (r["Ownership Name"]) return String(r["Ownership Name"]).trim();
-    const k = Object.keys(r).find(x => /owner/i.test(x));
-    return k ? String(r[k]).trim() : "";
+  async function loadCsv(url) {
+    const res = await fetch(url + "?v=" + Date.now(), { cache: "no-cache" });
+    if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`);
+    const text = await res.text();
+    const parsed = Papa.parse(text, { header: true, skipEmptyLines: true });
+    return parsed.data;
   }
 
-  const owners = Array.from(new Set(rows.map(getOwner).filter(Boolean))).sort();
+  function drawPoints(rows, layer, colorFill, colorStroke) {
+    if (!rows || !rows.length) return;
+    const keys = Object.keys(rows[0] || {});
+    const latKey = guessLatKey(keys);
+    const lonKey = guessLonKey(keys);
+    const nameKey = guessNameKey(keys);
 
-  // --- colors ---
-  const palette = [
-    '#2563eb','#16a34a','#d97706','#7c3aed','#dc2626','#0891b2',
-    '#f59e0b','#059669','#e11d48','#0ea5e9','#9333ea','#ef4444',
-    '#14b8a6','#22c55e','#3b82f6','#a855f7','#fb7185'
-  ];
-  const ownerColor = {};
-  owners.forEach((o, i) => ownerColor[o] = palette[i % palette.length]);
-  if (owners.includes("Gateway")) ownerColor["Gateway"] = "#ff007a"; // highlight Gateway
-
-  function markerStyle(owner) {
-    const s = {
-      radius: 6, weight: 1, color: '#334155',
-      fillColor: ownerColor[owner] || '#64748b',
-      fillOpacity: 0.9, opacity: 0.9
-    };
-    if (owner === "Gateway") { s.radius = 8; s.weight = 1.5; s.color = '#111827'; }
-    return s;
-  }
-
-  // --- toolbar (dropdown + legend) ---
-  const tb = document.getElementById("toolbar");
-  tb.innerHTML =
-    '<strong>Ownership:</strong> ' +
-    '<select id="ownerFilter"><option value="">All</option>' +
-    owners.map(o => `<option value="${o}">${o}</option>`).join("") +
-    '</select> <button id="resetBtn">Reset Filters</button> ' +
-    '<span id="legend" style="margin-left:12px"></span>';
-
-  const legend = document.getElementById("legend");
-  legend.innerHTML = owners.slice(0, 10).map(o =>
-    `<span style="display:inline-flex;align-items:center;margin-right:10px;font-size:12px;">
-       <span style="width:10px;height:10px;border-radius:50%;background:${ownerColor[o]};
-                    display:inline-block;margin-right:6px;border:1px solid #334155"></span>${o}
-     </span>`
-  ).join("") + (owners.length > 10 ? `<span style="font-size:12px;">+${owners.length-10} more</span>` : "");
-
-  // --- popup + render ---
-  function popupHtml(r, owner){
-    const addr = [r.Address, r.City, r.State, r.Zip].filter(Boolean).join(", ");
-    return `
-      <div>
-        <h3 style="margin:0 0 6px; font-size:16px;">${r.Property || ""}</h3>
-        <div style="font-size:12px; opacity:.8;">${addr}</div>
-      </div>`;
-  }
-
-  function render() {
-    const ownerFilter = document.getElementById("ownerFilter").value;
-    layer.clearLayers();
     rows.forEach(r => {
-      const owner = getOwner(r);
-      if (ownerFilter && owner !== ownerFilter) return;
-      L.circleMarker([Number(r.Latitude), Number(r.Longitude)], markerStyle(owner))
-        .bindPopup(popupHtml(r, owner))
+      let lat = toNum(r[latKey]);
+      let lon = toNum(r[lonKey]);
+      [lat, lon] = swapIfNeeded(lat, lon);
+      if (!isFiniteNum(lat) || !isFiniteNum(lon) || !boundsOK(lat, lon)) return;
+
+      const name = r[nameKey] || "";
+      const city = r.City || r.CITY || "";
+      const st   = r.State || r.ST || "";
+      const addr = [r.Address || "", city, st, r.Zip || r.ZIP || ""].filter(Boolean).join(", ");
+
+      const style = {
+        radius: 6,
+        weight: 1,
+        color: colorStroke,
+        fillColor: colorFill,
+        fillOpacity: 0.95,
+        opacity: 0.95
+      };
+      L.circleMarker([lat, lon], style)
+        .bindPopup(
+          `<div>
+             <h3 style="margin:0 0 6px; font-size:16px;">${name}</h3>
+             <div style="font-size:12px; opacity:.85;">${addr}</div>
+           </div>`
+        )
         .addTo(layer);
     });
   }
 
-  document.getElementById("ownerFilter").addEventListener("change", render);
-  document.getElementById("resetBtn").addEventListener("click", () => {
-    document.getElementById("ownerFilter").value = "";
-    render();
-  });
+  try {
+    // 3) Load both CSVs (in parallel)
+    const [rvp, hall] = await Promise.all([
+      loadCsv(RVP_CSV),
+      loadCsv(HALL_CSV)
+    ]);
 
-  render();
+    // 4) Draw: RVP (gray), Hall (bright red)
+    drawPoints(rvp,  rvpLayer,  "#64748b", "#334155"); // cool gray
+    drawPoints(hall, hallLayer, "#ff2d55", "#7f1d1d"); // bright red
+
+    // 5) Fit bounds if we added points
+    const group = L.featureGroup([rvpLayer, hallLayer]);
+    try { map.fitBounds(group.getBounds().pad(0.1)); } catch {}
+
+    console.log(`RVP plotted: ${rvp?.length ?? 0}, Hall plotted: ${hall?.length ?? 0}`);
+  } catch (e) {
+    console.error("CSV load/draw failed:", e);
+  }
 })();
