@@ -1,36 +1,57 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Development Portfolio Map</title>
+
+  <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
   <style>
-    html, body { height:100%; margin:0; }
-    header { background:#39c0c3; color:#0b172a; padding:10px 14px; }
-    #toolbar { padding:6px 14px; border-bottom:1px solid #e5e7eb; font-size:14px; }
-    #map { height: calc(100vh - 96px); min-height: 420px; } /* header+toolbar ~96px */
-    label { user-select:none; }
+    /* simple built-in styles so the map always shows */
+    html, body { height: 100%; margin: 0; }
+    header {
+      background: #39c0c3;
+      color: #0b172a;
+      padding: 10px 14px;
+      line-height: 1.2;
+    }
+    header h1 { margin: 0; font-size: 18px; }
+    header .sub { opacity: .75; font-size: 12px; }
+
+    #toolbar {
+      padding: 8px 14px;
+      border-bottom: 1px solid #e5e7eb;
+      font-size: 14px;
+      background: #fff;
+    }
+    #map {
+      height: calc(100vh - 96px); /* header + toolbar ≈ 96px */
+      min-height: 420px;
+    }
+    label { user-select: none; }
   </style>
 </head>
 <body>
+
   <header>
-    <h1 style="margin:0; font-size:18px;">Development Portfolio Map</h1>
-    <div style="opacity:.7; font-size:12px;">via Gateway IT, A. Branch</div>
+    <h1>Development Portfolio Map</h1>
+    <div class="sub">via Gateway IT, A. Branch</div>
   </header>
 
   <div id="toolbar">
     <label><input id="toggleHall" type="checkbox" checked> Show Hall properties</label>
-    <span id="counts" style="margin-left:14px; opacity:.7;"></span>
+    <span id="counts" style="margin-left:14px; opacity:.75;"></span>
   </div>
 
   <div id="map"></div>
 
-  <!-- libs -->
+  <!-- Libs -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js"></script>
 
-  <!-- your app (ONE include only) -->
-  <script src="scripts/app.js?v=toggle-hall-2"></script>
+  <!-- Your app (ONE include only; bump the v= when you update app.js) -->
+  <script src="scripts/app.js?v=toggle-hall-3"></script>
 </body>
 </html>
