@@ -1,10 +1,10 @@
 name: Update map data from SharePoint with Geocoding
 
 on:
-  workflow_dispatch: {}            # manual runs
+  workflow_dispatch: {}
   schedule:
-    - cron: "0 7 * * *"           # ~2:00 AM Central during CDT (UTC-5)
-    - cron: "0 8 * * *"           # ~2:00 AM Central during CST (UTC-6)
+    - cron: "0 7 * * *"
+    - cron: "0 8 * * *"
 
 permissions:
   contents: write
@@ -34,23 +34,37 @@ jobs:
             grant_type    = "client_credentials"
           }
           $tok = Invoke-RestMethod -Method Post -Uri "https://login.microsoftonline.com/$($env:GRAPH_TENANT_ID)/oauth2/v2.0/token" -Body $body
+          if (-not $tok.access_token) { throw "No Graph token returned." }
           $H = @{ Authorization = "Bearer $($tok.access_token)" }
 
-          # ---- Resolve site + list ----
-          $siteUri = "https://graph.microsoft.com/v1.0/sites/$($env:SP_SITE_HOSTNAME):$($env:SP_SITE_PATH)"
+          # ---- Resolve site (fix: must be hostname:/{path}) ----
+          $host = $env:SP_SITE_HOSTNAME.TrimEnd('/')
+          $path = $env:SP_SITE_PATH.TrimStart('/')
+          $siteUri = "https://graph.microsoft.com/v1.0/sites/$host:/$path"
           Write-Host "Debug: Site URI: $siteUri"
           $site = Invoke-RestMethod -Headers $H -Uri $siteUri
+          if (-not $site.id) { throw "Could not resolve site from $siteUri" }
           $siteId = $site.id
           Write-Host "Debug: Site ID: $siteId"
+          Write-Host "Debug: Site WebUrl: $($site.webUrl)"
 
+          # ---- Resolve list (robust local match, no $filter brittleness) ----
           $listName = "Properties_by_RVP"
-          $listsUri = "https://graph.microsoft.com/v1.0/sites/$siteId/lists?`$filter=displayName eq '$listName'&`$select=id,displayName"
-          Write-Host "Debug: Lists URI: $listsUri"
-          $lists = Invoke-RestMethod -Headers $H -Uri $listsUri
-          Write-Host "Debug: Lists response: $($lists | ConvertTo-Json -Depth 2)"
-          if(-not $lists.value){ throw "List '$listName' not found at $($env:SP_SITE_HOSTNAME)$($env:SP_SITE_PATH)" }
-          $listId = $lists.value[0].id
-          Write-Host "Debug: List ID: $listId"
+          $lists = Invoke-RestMethod -Headers $H -Uri "https://graph.microsoft.com/v1.0/sites/$siteId/lists?`$select=id,displayName&`$top=999"
+          if (-not $lists.value) { throw "Graph returned zero lists for site $($site.webUrl)." }
+
+          # exact -> case-insensitive -> underscore/space variant
+          $list = $lists.value | Where-Object { $_.displayName -eq $listName }
+          if (-not $list) { $list = $lists.value | Where-Object { $_.displayName.ToLower() -eq $listName.ToLower() } }
+          if (-not $list) {
+            $alt = $listName -replace '_',' '
+            $list = $lists.value | Where-Object { $_.displayName.ToLower() -eq $alt.ToLower() }
+          }
+          if (-not $list) {
+            throw "List '$listName' not found. Available: $($lists.value.displayName -join ', ')"
+          }
+          $listId = $list.id
+          Write-Host "Debug: Using list: $($list.displayName)  ($listId)"
 
           # ---- Pull all items (expand fields) ----
           $items = @()
