@@ -112,5 +112,3 @@ jobs:
             detected_sharepoint_fields.txt
           commit_user_name: ${{ secrets.COMMIT_USER_NAME || 'Gateway Map Bot' }}
           commit_user_email: ${{ secrets.COMMIT_USER_EMAIL || 'bot@example.com' }}
-          commit_user_name: ${{ secrets.COMMIT_USER_NAME || 'Gateway Map Bot' }}
-          commit_user_email: ${{ secrets.COMMIT_USER_EMAIL || 'bot@example.com' }}
