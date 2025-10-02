@@ -37,11 +37,19 @@ jobs:
           if (-not $tok.access_token) { throw "No Graph token returned." }
           $H = @{ Authorization = "Bearer $($tok.access_token)" }
 
-          # ---- Resolve site (fix: must be hostname:/{path}) ----
-          $host = $env:SP_SITE_HOSTNAME.TrimEnd('/')
-          $path = $env:SP_SITE_PATH.TrimStart('/')
-          $siteUri = "https://graph.microsoft.com/v1.0/sites/$host:/$path"
+          # (Optional) dump token claims once for sanity
+          # $p = ($tok.access_token.Split('.')[1] + '==').Replace('-','+').Replace('_','/')
+          # $claims = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($p))
+          # Write-Host "Debug: TOKEN CLAIMS => $claims"
+
+          # ---- Resolve site (must be hostname:/{path}) ----
+          $spHost = $env:SP_SITE_HOSTNAME.TrimEnd('/')
+          $spPath = $env:SP_SITE_PATH.TrimStart('/')
+          Write-Host ("Debug: HOST.len={0} PATH.len={1}" -f $spHost.Length, $spPath.Length)
+
+          $siteUri = "https://graph.microsoft.com/v1.0/sites/$spHost:/$spPath"
           Write-Host "Debug: Site URI: $siteUri"
+
           $site = Invoke-RestMethod -Headers $H -Uri $siteUri
           if (-not $site.id) { throw "Could not resolve site from $siteUri" }
           $siteId = $site.id
