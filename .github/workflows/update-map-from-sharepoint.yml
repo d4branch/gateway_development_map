@@ -1,0 +1,131 @@
+name: Update map data from SharePoint with Geocoding
+
+on:
+  workflow_dispatch: {}            # manual runs
+  schedule:
+    - cron: "0 7 * * *"           # ~2:00 AM Central during CDT (UTC-5)
+    - cron: "0 8 * * *"           # ~2:00 AM Central during CST (UTC-6)
+
+permissions:
+  contents: write
+
+jobs:
+  update-json:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Pull SharePoint list, geocode, and build JSON
+        shell: pwsh
+        env:
+          GRAPH_TENANT_ID: ${{ secrets.GRAPH_TENANT_ID }}
+          GRAPH_CLIENT_ID: ${{ secrets.GRAPH_CLIENT_ID }}
+          GRAPH_CLIENT_SECRET: ${{ secrets.GRAPH_CLIENT_SECRET }}
+          SP_SITE_HOSTNAME: ${{ secrets.SP_SITE_HOSTNAME }}
+          SP_SITE_PATH: ${{ secrets.SP_SITE_PATH }}
+        run: |
+          # ---- Get Graph token (client credentials) ----
+          $body = @{
+            client_id     = $env:GRAPH_CLIENT_ID
+            scope         = "https://graph.microsoft.com/.default"
+            client_secret = $env:GRAPH_CLIENT_SECRET
+            grant_type    = "client_credentials"
+          }
+          $tok = Invoke-RestMethod -Method Post -Uri "https://login.microsoftonline.com/$($env:GRAPH_TENANT_ID)/oauth2/v2.0/token" -Body $body
+          $H = @{ Authorization = "Bearer $($tok.access_token)" }
+
+          # ---- Resolve site + list ----
+          $siteUri = "https://graph.microsoft.com/v1.0/sites/$($env:SP_SITE_HOSTNAME):$($env:SP_SITE_PATH)"
+          $site = Invoke-RestMethod -Headers $H -Uri $siteUri
+          $siteId = $site.id
+
+          $listName = "Properties_by_RVP"
+          $lists = Invoke-RestMethod -Headers $H -Uri "https://graph.microsoft.com/v1.0/sites/$siteId/lists?`$filter=displayName eq '$listName'&`$select=id,displayName"
+          if(-not $lists.value){ throw "List '$listName' not found at $($env:SP_SITE_HOSTNAME)$($env:SP_SITE_PATH)" }
+          $listId = $lists.value[0].id
+
+          # ---- Pull all items (expand fields) ----
+          $items = @()
+          $url = "https://graph.microsoft.com/v1.0/sites/$siteId/lists/$listId/items?`$expand=fields&`$top=999"
+          while($url){
+            $r = Invoke-RestMethod -Headers $H -Uri $url
+            $items += $r.value
+            $url = $r.'@odata.nextLink'
+          }
+
+          # ---- First run helper: dump detected internal field names for mapping sanity ----
+          if($items.Count -gt 0){
+            ($items[0].fields | Get-Member -MemberType NoteProperty | Select -ExpandProperty Name) `
+              | Sort-Object | Out-File -Encoding utf8 -FilePath "$PWD/detected_sharepoint_fields.txt"
+          }
+
+          # ---- Geocode addresses using Nominatim ----
+          function Get-Coordinates($address, $city, $state, $zip) {
+            $fullAddress = "$address, $city, $state $zip"
+            $encodedAddress = [System.Web.HttpUtility]::UrlEncode($fullAddress)
+            $url = "https://nominatim.openstreetmap.org/search?q=$encodedAddress&format=json&limit=1"
+            try {
+              $response = Invoke-RestMethod -Uri $url -Headers @{ "User-Agent" = "GatewayMapBot/1.0" }
+              if ($response -and $response.Count -gt 0) {
+                return @{
+                  lat = [double]$response[0].lat
+                  lng = [double]$response[0].lon
+                }
+              }
+            } catch {
+              Write-Warning "Geocoding failed for $fullAddress : $_"
+            }
+            return @{ lat = 0.0; lng = 0.0 }
+          }
+
+          # ---- Map SharePoint fields -> map schema ----
+          function Map-Row($f) {
+            $coords = Get-Coordinates -address $f.field_6 -city $f.field_7 -state $f.field_8 -zip $f.field_9
+            [pscustomobject]@{
+              name           = $f.Title            # Property
+              type           = $f.TYPE             # Type
+              units          = $f.field_2          # Units
+              manager        = $f.field_3          # Manager
+              assistant_mgr  = $f.field_4          # Assistant Mgr
+              compliance     = $f.field_5          # Compliance Specialist
+              address        = $f.field_6          # Street
+              city           = $f.field_7
+              state          = $f.field_8
+              zip            = $f.field_9
+              office_phone   = $f.field_10         # Office
+              fax            = $f.field_11
+              manager_email  = $f.field_12
+              rpm            = $f.field_13         # RPM
+              rvp            = $f.field_14         # RVP
+              owner          = $f.Owner            # Owner (new)
+              legal_entity   = $f.LegalEntity      # Legal Entity (new)
+              lat            = $coords.lat
+              lng            = $coords.lng
+            }
+          }
+
+          $out = foreach($it in $items){ Map-Row $it.fields }
+
+          # ---- Backup previous JSON if exists ----
+          $jsonFile = "final_properties_with_coords_and_rvp.json"
+          if (Test-Path $jsonFile) {
+            $stamp = Get-Date -Format "yyyyMMdd-HHmmss"
+            Copy-Item $jsonFile "backup_final_properties_$stamp.json"
+          }
+
+          # ---- Write JSON expected by the frontend ----
+          $out | ConvertTo-Json -Depth 4 | Set-Content -Encoding utf8 -Path $jsonFile
+          Write-Host "Wrote $jsonFile with $($out.Count) rows."
+
+      - name: Commit JSON (and first-time field list)
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Auto-update: final_properties_with_coords_and_rvp.json from SharePoint with geocoding"
+          file_pattern: |
+            final_properties_with_coords_and_rvp.json
+            backup_final_properties_*.json
+            detected_sharepoint_fields.txt
+          commit_user_name: ${{ secrets.COMMIT_USER_NAME || 'Gateway Map Bot' }}
+          commit_user_email: ${{ secrets.COMMIT_USER_EMAIL || 'bot@example.com' }}
