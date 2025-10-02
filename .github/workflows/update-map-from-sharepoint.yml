@@ -25,6 +25,8 @@ jobs:
           GRAPH_CLIENT_SECRET: ${{ secrets.GRAPH_CLIENT_SECRET }}
           SP_SITE_HOSTNAME: ${{ secrets.SP_SITE_HOSTNAME }}
           SP_SITE_PATH: ${{ secrets.SP_SITE_PATH }}
+          # Optional: set this to the composite site id "hostname,siteCollectionId,siteId" to bypass path resolution
+          SP_SITE_ID: ${{ secrets.SP_SITE_ID }}
         run: |
           # ---- Get Graph token (client credentials) ----
           $body = @{
@@ -37,50 +39,75 @@ jobs:
           if (-not $tok.access_token) { throw "No Graph token returned." }
           $H = @{ Authorization = "Bearer $($tok.access_token)" }
 
-          # ---- Resolve site (robust & YAML-safe) ----
-          $spHost = ($env:SP_SITE_HOSTNAME ?? "").Trim()
-          $rawPath = ($env:SP_SITE_PATH ?? "").Trim()
-          if (-not $spHost) { throw "SP_SITE_HOSTNAME is empty. Expected like 'gatewaymgmt.sharepoint.com'." }
-          if (-not $rawPath) { throw "SP_SITE_PATH is empty. Expected like 'sites/Intranet'." }
-          if ($spHost -match '^https?://') { $spHost = $spHost -replace '^https?://','' }
-          $spHost = $spHost.TrimEnd('/')
-
-          Write-Host ("Debug: HOST.len={0} PATH.len={1}" -f $spHost.Length, $rawPath.Length)
-
-          $rawPath = $rawPath.TrimStart('/')
-          $candidates = @()
-          if ($rawPath -match '^(sites|teams)/') {
-            $candidates += $rawPath
+          # ---- Resolve site (SP_SITE_ID wins; else robust host/path) ----
+          if ($env:SP_SITE_ID -and $env:SP_SITE_ID.Trim()) {
+            $siteId = $env:SP_SITE_ID.Trim()
+            Write-Host ("Debug: Using provided SP_SITE_ID: {0}" -f $siteId)
           } else {
-            $candidates += $rawPath
-            $candidates += ("sites/{0}" -f $rawPath)
-            $candidates += ("teams/{0}" -f $rawPath)
-          }
+            $spHost = ($env:SP_SITE_HOSTNAME ?? "").Trim()
+            $rawPath = ($env:SP_SITE_PATH ?? "").Trim()
+            if (-not $spHost) { throw "SP_SITE_HOSTNAME is empty. Expect 'gatewaymgmt.sharepoint.com'." }
+            if (-not $rawPath) { throw "SP_SITE_PATH is empty. Expect 'sites/Intranet'." }
+            if ($spHost -match '^https?://') { $spHost = $spHost -replace '^https?://','' }
+            $spHost = $spHost.TrimEnd('/')
 
-          $site = $null
-          foreach ($p in ($candidates | Select-Object -Unique)) {
-            $siteUri = "https://graph.microsoft.com/v1.0/sites/${spHost}:/${p}"
-            Write-Host ("Debug: Try {0}" -f $siteUri)
-            try {
-              $site = Invoke-RestMethod -Headers $H -Uri $siteUri -Method GET -ErrorAction Stop
-              if ($site -and $site.id) { $spPath = $p; break }
-            } catch { }
-          }
+            Write-Host ("Debug: HOST.len={0} PATH.len={1}" -f $spHost.Length, $rawPath.Length)
 
-          if (-not $site -or -not $site.id) {
-            $tried = ($candidates -join ', ')
-            throw ("Could not resolve site. Host='{0}' PathCandidates=[{1}] Ensure host like 'gatewaymgmt.sharepoint.com' and path like 'sites/Intranet'." -f $spHost, $tried)
-          }
+            $rawPath = $rawPath.TrimStart('/')
+            $candidates = @()
+            if ($rawPath -match '^(sites|teams)/') {
+              $candidates += $rawPath
+            } else {
+              $candidates += $rawPath
+              $candidates += ("sites/{0}" -f $rawPath)
+              $candidates += ("teams/{0}" -f $rawPath)
+            }
 
-          $siteId = $site.id
-          Write-Host ("Debug: Resolved SiteId: {0}" -f $siteId)
-          Write-Host ("Debug: Site WebUrl: {0}" -f $site.webUrl)
+            $site = $null
+            foreach ($p in ($candidates | Select-Object -Unique)) {
+              $siteUri = "https://graph.microsoft.com/v1.0/sites/${spHost}:/${p}"
+              Write-Host ("Debug: Try {0}" -f $siteUri)
+              try {
+                $tmp = Invoke-RestMethod -Headers $H -Uri $siteUri -Method GET -ErrorAction Stop
+                if ($tmp -and $tmp.id) { $site = $tmp; $spPath = $p; break }
+              } catch { }
+            }
+
+            if (-not $site) {
+              # Fallback: Graph search by last segment (e.g., 'Intranet'), prefer same host and exact path match
+              $needle = ($rawPath.Split('/') | Select-Object -Last 1)
+              Write-Host ("Debug: Fallback search for '{0}'" -f $needle)
+              try {
+                $search = Invoke-RestMethod -Headers $H -Uri ("https://graph.microsoft.com/v1.0/sites?`$search={0}" -f $needle) -Method GET
+                $cands = @()
+                if ($search.value) {
+                  $cands = $search.value | Where-Object { $_.webUrl -like ("https://{0}/*" -f $spHost) }
+                  # Rank: exact webUrl match > contains '/sites/<needle>' > longest URL
+                  $targetUrl = "https://{0}/{1}" -f $spHost, $rawPath
+                  $site = $cands | Sort-Object `
+                    @{Expression={ $_.webUrl -eq $targetUrl }; Descending=$true},
+                    @{Expression={ $_.webUrl -match ('/{0}(/|$)' -f [regex]::Escape($rawPath)) }; Descending=$true},
+                    @{Expression={ $_.webUrl.Length }; Descending=$true} |
+                    Select-Object -First 1
+                }
+              } catch { }
+            }
+
+            if (-not $site -or -not $site.id) {
+              $tried = ($candidates -join ', ')
+              throw ("Could not resolve site. Host='{0}' PathCandidates=[{1}] Ensure host like 'gatewaymgmt.sharepoint.com' and path like 'sites/Intranet'. You can also set SP_SITE_ID to bypass." -f $spHost, $tried)
+            }
+
+            $siteId = $site.id
+            Write-Host ("Debug: Resolved SiteId: {0}" -f $siteId)
+            Write-Host ("Debug: Site WebUrl: {0}" -f $site.webUrl)
+          }
 
           # ---- Resolve list (enumerate then match; no $filter brittleness) ----
           $listName = "Properties_by_RVP"
           $listsUrl = "https://graph.microsoft.com/v1.0/sites/$siteId/lists?`$select=id,displayName&`$top=999"
           $lists = Invoke-RestMethod -Headers $H -Uri $listsUrl -Method GET
-          if (-not $lists.value) { throw ("Graph returned zero lists for site {0}." -f $site.webUrl) }
+          if (-not $lists.value) { throw ("Graph returned zero lists for site id {0}." -f $siteId) }
 
           $list = $lists.value | Where-Object { $_.displayName -eq $listName }
           if (-not $list) { $list = $lists.value | Where-Object { $_.displayName.ToLower() -eq $listName.ToLower() } }
