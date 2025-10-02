@@ -93,14 +93,26 @@
             maxZoom: 19
         }).addTo(map);
 
+        let allProperties = []; // Global to hold data for filtering
+
         // Load data and add markers
         async function loadMapData() {
             try {
-                const response = await fetch('https://raw.githubusercontent.com/YOUR_NEW_REPO/main/final_properties_with_coords_and_rvp.json?cb=' + Date.now());
-                const properties = await response.json();
+                const response = await fetch('https://raw.githubusercontent.com/d4branch/gateway-development-map/main/final_properties_with_coords_and_rvp.json?cb=' + Date.now());
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                allProperties = await response.json();
 
                 // Function to add markers
                 function addMarkers(data) {
+                    // Clear existing markers first
+                    map.eachLayer(layer => {
+                        if (layer instanceof L.CircleMarker) {
+                            map.removeLayer(layer);
+                        }
+                    });
+
                     data.forEach((property) => {
                         if (!property.lat || !property.lng || property.lat === 0 || property.lng === 0) return;
 
@@ -129,8 +141,8 @@
                     });
                 }
 
-                // Initial load of markers
-                addMarkers(properties);
+                // Initial load of all markers
+                addMarkers(allProperties);
 
                 // Filter function
                 function updateMarkers() {
@@ -140,15 +152,8 @@
                     const owner = document.getElementById('owner-filter').value;
                     const legalEntity = document.getElementById('legal-entity-filter').value;
 
-                    // Clear existing markers
-                    map.eachLayer(layer => {
-                        if (layer instanceof L.CircleMarker) {
-                            map.removeLayer(layer);
-                        }
-                    });
-
-                    // Filter and add new markers
-                    const filtered = properties.filter(p => (
+                    // Filter the data
+                    const filtered = allProperties.filter(p => (
                         (!rvp || p.rvp === rvp) &&
                         (!state || p.state === state) &&
                         (!type || p.type === type) &&
@@ -166,8 +171,10 @@
                 document.getElementById('owner-filter').addEventListener('change', updateMarkers);
                 document.getElementById('legal-entity-filter').addEventListener('change', updateMarkers);
 
-                // Initial filter application
+                // Initial filter application (should show all)
                 updateMarkers();
+
+                console.log(`Loaded ${allProperties.length} properties.`);
             } catch (error) {
                 console.error('Failed to load properties:', error);
                 alert('Error loading property data. Check the console for details.');
