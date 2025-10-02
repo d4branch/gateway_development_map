@@ -52,32 +52,62 @@ jobs:
           Write-Host "Debug: Site ID: $siteId"
           Write-Host "Debug: Site WebUrl: $($site.webUrl)"
 
-          # ---- Resolve list (robust local match, no $filter brittleness) ----
-          $listName = "Properties_by_RVP"
-          $lists = Invoke-RestMethod -Headers $H -Uri "https://graph.microsoft.com/v1.0/sites/$siteId/lists?`$select=id,displayName&`$top=999"
-          if (-not $lists.value) { throw "Graph returned zero lists for site $($site.webUrl)." }
+          # ---- Resolve site (robust) ----
+function Try-GetSiteByHostPath($host, $path, $hdr) {
+  $uri = "https://graph.microsoft.com/v1.0/sites/${host}:/${path}"
+  Write-Host "Debug: Try $uri"
+  try {
+    return Invoke-RestMethod -Headers $hdr -Uri $uri -Method GET -ErrorAction Stop
+  } catch {
+    return $null
+  }
+}
 
-          # exact -> case-insensitive -> underscore/space variant
-          $list = $lists.value | Where-Object { $_.displayName -eq $listName }
-          if (-not $list) { $list = $lists.value | Where-Object { $_.displayName.ToLower() -eq $listName.ToLower() } }
-          if (-not $list) {
-            $alt = $listName -replace '_',' '
-            $list = $lists.value | Where-Object { $_.displayName.ToLower() -eq $alt.ToLower() }
-          }
-          if (-not $list) {
-            throw "List '$listName' not found. Available: $($lists.value.displayName -join ', ')"
-          }
-          $listId = $list.id
-          Write-Host "Debug: Using list: $($list.displayName)  ($listId)"
+# Normalize inputs
+$spHost = $env:SP_SITE_HOSTNAME.Trim()
+$spPath = $env:SP_SITE_PATH.Trim()
 
-          # ---- Pull all items (expand fields) ----
-          $items = @()
-          $url = "https://graph.microsoft.com/v1.0/sites/$siteId/lists/$listId/items?`$expand=fields&`$top=999"
-          while($url){
-            $r = Invoke-RestMethod -Headers $H -Uri $url
-            $items += $r.value
-            $url = $r.'@odata.nextLink'
-          }
+# Strip scheme if pasted
+if ($spHost -match '^https?://') {
+  $spHost = $spHost -replace '^https?://',''
+}
+$spHost = $spHost.TrimEnd('/')
+
+# Candidate paths to try
+$candidates = @()
+if ($spPath.StartsWith('sites/', 'OrdinalIgnoreCase') -or $spPath.StartsWith('teams/', 'OrdinalIgnoreCase')) {
+  $candidates += $spPath.TrimStart('/')
+} else {
+  $candidates += $spPath.TrimStart('/')
+  $candidates += "sites/$($spPath.TrimStart('/'))"
+  $candidates += "teams/$($spPath.TrimStart('/'))"
+}
+
+$site = $null
+foreach ($p in $candidates | Select-Object -Unique) {
+  $site = Try-GetSiteByHostPath -host $spHost -path $p -hdr $H
+  if ($site) { $spPath = $p; break }
+}
+
+# Fallback: search by last segment (site name), then pick matching hostname
+if (-not $site) {
+  $needle = ($spPath.Split('/') | Select-Object -Last 1)
+  Write-Host "Debug: Falling back to search for '$needle'"
+  $search = Invoke-RestMethod -Headers $H -Uri ("https://graph.microsoft.com/v1.0/sites?`$search={0}" -f $needle) -Method GET
+  if ($search.value) {
+    $site = $search.value | Where-Object { $_.webUrl -like ("https://{0}/*" -f $spHost) } | Select-Object -First 1
+  }
+}
+
+if (-not $site -or -not $site.id) {
+  $tried = ($candidates -join ', ')
+  throw "Could not resolve site. Host='$spHost' Path candidates=[$tried]. Ensure host looks like 'tenant.sharepoint.com' and path like 'sites/YourSiteName'."
+}
+
+$siteId = $site.id
+Write-Host "Debug: Resolved SiteId: $siteId"
+Write-Host "Debug: Site WebUrl: $($site.webUrl)"
+
 
           # ---- First run helper: dump detected internal field names for mapping sanity ----
           if($items.Count -gt 0){
