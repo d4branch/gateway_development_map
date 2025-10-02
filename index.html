@@ -81,7 +81,7 @@
         // Load data and add markers
         async function loadMapData() {
             try {
-                const response = await fetch('https://raw.githubusercontent.com/d4branch/gateway-development-map/main/final_properties_with_coords_and_rvp.json?cb=' + Date.now());
+                const response = await fetch('https://raw.githubusercontent.com/d4branch/gateway_development_map/main/final_properties_with_coords_and_rvp.json?cb=' + Date.now());
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
