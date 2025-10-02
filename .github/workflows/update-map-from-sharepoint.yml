@@ -37,45 +37,40 @@ jobs:
           if (-not $tok.access_token) { throw "No Graph token returned." }
           $H = @{ Authorization = "Bearer $($tok.access_token)" }
 
- # ---- Resolve site (robust & YAML-safe) ----
-$spHost = ($env:SP_SITE_HOSTNAME ?? "").Trim()
-$rawPath = ($env:SP_SITE_PATH ?? "").Trim()
+          # ---- Resolve site (robust & YAML-safe) ----
+          $spHost = ($env:SP_SITE_HOSTNAME ?? "").Trim()
+          $rawPath = ($env:SP_SITE_PATH ?? "").Trim()
+          if (-not $spHost) { throw "SP_SITE_HOSTNAME is empty. Expected like 'gatewaymgmt.sharepoint.com'." }
+          if (-not $rawPath) { throw "SP_SITE_PATH is empty. Expected like 'sites/Intranet'." }
+          if ($spHost -match '^https?://') { $spHost = $spHost -replace '^https?://','' }
+          $spHost = $spHost.TrimEnd('/')
 
-if (-not $spHost) { throw "SP_SITE_HOSTNAME is empty. Expected like 'gatewaymgmt.sharepoint.com'." }
-if (-not $rawPath) { throw "SP_SITE_PATH is empty. Expected like 'sites/Intranet'." }
+          Write-Host ("Debug: HOST.len={0} PATH.len={1}" -f $spHost.Length, $rawPath.Length)
 
-# strip scheme & trailing slash on host
-if ($spHost -match '^https?://') { $spHost = $spHost -replace '^https?://','' }
-$spHost = $spHost.TrimEnd('/')
+          $rawPath = $rawPath.TrimStart('/')
+          $candidates = @()
+          if ($rawPath -match '^(sites|teams)/') {
+            $candidates += $rawPath
+          } else {
+            $candidates += $rawPath
+            $candidates += ("sites/{0}" -f $rawPath)
+            $candidates += ("teams/{0}" -f $rawPath)
+          }
 
-# print masked-safe hints (lengths)
-Write-Host ("Debug: HOST.len={0} PATH.len={1}" -f $spHost.Length, $rawPath.Length)
+          $site = $null
+          foreach ($p in ($candidates | Select-Object -Unique)) {
+            $siteUri = "https://graph.microsoft.com/v1.0/sites/${spHost}:/${p}"
+            Write-Host ("Debug: Try {0}" -f $siteUri)
+            try {
+              $site = Invoke-RestMethod -Headers $H -Uri $siteUri -Method GET -ErrorAction Stop
+              if ($site -and $site.id) { $spPath = $p; break }
+            } catch { }
+          }
 
-$rawPath = $rawPath.TrimStart('/')
-$candidates = @()
-if ($rawPath -match '^(sites|teams)/') {
-  $candidates += $rawPath
-} else {
-  $candidates += $rawPath
-  $candidates += ("sites/{0}" -f $rawPath)
-  $candidates += ("teams/{0}" -f $rawPath)
-}
-
-$site = $null
-foreach ($p in ($candidates | Select-Object -Unique)) {
-  $siteUri = "https://graph.microsoft.com/v1.0/sites/${spHost}:/${p}"
-  Write-Host ("Debug: Try {0}" -f $siteUri)
-  try {
-    $site = Invoke-RestMethod -Headers $H -Uri $siteUri -Method GET -ErrorAction Stop
-    if ($site -and $site.id) { $spPath = $p; break }
-  } catch { }
-}
-
-if (-not $site -or -not $site.id) {
-  $tried = ($candidates -join ', ')
-  throw ("Could not resolve site. Host='{0}' PathCandidates=[{1}] Ensure host like 'gatewaymgmt.sharepoint.com' and path like 'sites/Intranet'." -f $spHost, $tried)
-}
-
+          if (-not $site -or -not $site.id) {
+            $tried = ($candidates -join ', ')
+            throw ("Could not resolve site. Host='{0}' PathCandidates=[{1}] Ensure host like 'gatewaymgmt.sharepoint.com' and path like 'sites/Intranet'." -f $spHost, $tried)
+          }
 
           $siteId = $site.id
           Write-Host ("Debug: Resolved SiteId: {0}" -f $siteId)
@@ -173,7 +168,7 @@ if (-not $site -or -not $site.id) {
       - name: Commit JSON (and first-time field list)
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: Auto-update: final_properties_with_coords_and_rvp.json from SharePoint with geocoding
+          commit_message: 'Auto-update: final_properties_with_coords_and_rvp.json from SharePoint with geocoding'
           file_pattern: |
             final_properties_with_coords_and_rvp.json
             backup_final_properties_*.json
