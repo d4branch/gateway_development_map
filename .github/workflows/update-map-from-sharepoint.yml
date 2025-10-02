@@ -1,10 +1,10 @@
-name: Update map data from SharePoint with Geocoding
+name: Update map data from SharePoint
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch: {}            # manual runs
   schedule:
-    - cron: "0 7 * * *"
-    - cron: "0 8 * * *"
+    - cron: "0 7 * * *"           # ~2:00 AM Central during CDT (UTC-5)
+    - cron: "0 8 * * *"           # ~2:00 AM Central during CST (UTC-6)
 
 permissions:
   contents: write
@@ -17,7 +17,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Pull SharePoint list, geocode, and build JSON
+      - name: Pull SharePoint list and build JSON
         shell: pwsh
         env:
           GRAPH_TENANT_ID: ${{ secrets.GRAPH_TENANT_ID }}
@@ -25,8 +25,6 @@ jobs:
           GRAPH_CLIENT_SECRET: ${{ secrets.GRAPH_CLIENT_SECRET }}
           SP_SITE_HOSTNAME: ${{ secrets.SP_SITE_HOSTNAME }}
           SP_SITE_PATH: ${{ secrets.SP_SITE_PATH }}
-          # Optional: set this to the composite site id "hostname,siteCollectionId,siteId" to bypass path resolution
-          SP_SITE_ID: ${{ secrets.SP_SITE_ID }}
         run: |
           # ---- Get Graph token (client credentials) ----
           $body = @{
@@ -35,170 +33,84 @@ jobs:
             client_secret = $env:GRAPH_CLIENT_SECRET
             grant_type    = "client_credentials"
           }
-          $tok = Invoke-RestMethod -Method Post -Uri ("https://login.microsoftonline.com/{0}/oauth2/v2.0/token" -f $env:GRAPH_TENANT_ID) -Body $body
-          if (-not $tok.access_token) { throw "No Graph token returned." }
+          $tok = Invoke-RestMethod -Method Post -Uri "https://login.microsoftonline.com/$($env:GRAPH_TENANT_ID)/oauth2/v2.0/token" -Body $body
           $H = @{ Authorization = "Bearer $($tok.access_token)" }
 
-          # ---- Resolve site (SP_SITE_ID wins; else robust host/path) ----
-          if ($env:SP_SITE_ID -and $env:SP_SITE_ID.Trim()) {
-            $siteId = $env:SP_SITE_ID.Trim()
-            Write-Host ("Debug: Using provided SP_SITE_ID: {0}" -f $siteId)
-          } else {
-            $spHost = ($env:SP_SITE_HOSTNAME ?? "").Trim()
-            $rawPath = ($env:SP_SITE_PATH ?? "").Trim()
-            if (-not $spHost) { throw "SP_SITE_HOSTNAME is empty. Expect 'gatewaymgmt.sharepoint.com'." }
-            if (-not $rawPath) { throw "SP_SITE_PATH is empty. Expect 'sites/Intranet'." }
-            if ($spHost -match '^https?://') { $spHost = $spHost -replace '^https?://','' }
-            $spHost = $spHost.TrimEnd('/')
+          # ---- Resolve site + list ----
+          $siteUri = "https://graph.microsoft.com/v1.0/sites/$($env:SP_SITE_HOSTNAME):$($env:SP_SITE_PATH)"
+          $site = Invoke-RestMethod -Headers $H -Uri $siteUri
+          $siteId = $site.id
 
-            Write-Host ("Debug: HOST.len={0} PATH.len={1}" -f $spHost.Length, $rawPath.Length)
-
-            $rawPath = $rawPath.TrimStart('/')
-            $candidates = @()
-            if ($rawPath -match '^(sites|teams)/') {
-              $candidates += $rawPath
-            } else {
-              $candidates += $rawPath
-              $candidates += ("sites/{0}" -f $rawPath)
-              $candidates += ("teams/{0}" -f $rawPath)
-            }
-
-            $site = $null
-            foreach ($p in ($candidates | Select-Object -Unique)) {
-              $siteUri = "https://graph.microsoft.com/v1.0/sites/${spHost}:/${p}"
-              Write-Host ("Debug: Try {0}" -f $siteUri)
-              try {
-                $tmp = Invoke-RestMethod -Headers $H -Uri $siteUri -Method GET -ErrorAction Stop
-                if ($tmp -and $tmp.id) { $site = $tmp; $spPath = $p; break }
-              } catch { }
-            }
-
-            if (-not $site) {
-              # Fallback: Graph search by last segment (e.g., 'Intranet'), prefer same host and exact path match
-              $needle = ($rawPath.Split('/') | Select-Object -Last 1)
-              Write-Host ("Debug: Fallback search for '{0}'" -f $needle)
-              try {
-                $search = Invoke-RestMethod -Headers $H -Uri ("https://graph.microsoft.com/v1.0/sites?`$search={0}" -f $needle) -Method GET
-                $cands = @()
-                if ($search.value) {
-                  $cands = $search.value | Where-Object { $_.webUrl -like ("https://{0}/*" -f $spHost) }
-                  # Rank: exact webUrl match > contains '/sites/<needle>' > longest URL
-                  $targetUrl = "https://{0}/{1}" -f $spHost, $rawPath
-                  $site = $cands | Sort-Object `
-                    @{Expression={ $_.webUrl -eq $targetUrl }; Descending=$true},
-                    @{Expression={ $_.webUrl -match ('/{0}(/|$)' -f [regex]::Escape($rawPath)) }; Descending=$true},
-                    @{Expression={ $_.webUrl.Length }; Descending=$true} |
-                    Select-Object -First 1
-                }
-              } catch { }
-            }
-
-            if (-not $site -or -not $site.id) {
-              $tried = ($candidates -join ', ')
-              throw ("Could not resolve site. Host='{0}' PathCandidates=[{1}] Ensure host like 'gatewaymgmt.sharepoint.com' and path like 'sites/Intranet'. You can also set SP_SITE_ID to bypass." -f $spHost, $tried)
-            }
-
-            $siteId = $site.id
-            Write-Host ("Debug: Resolved SiteId: {0}" -f $siteId)
-            Write-Host ("Debug: Site WebUrl: {0}" -f $site.webUrl)
-          }
-
-          # ---- Resolve list (enumerate then match; no $filter brittleness) ----
           $listName = "Properties_by_RVP"
-          $listsUrl = "https://graph.microsoft.com/v1.0/sites/$siteId/lists?`$select=id,displayName&`$top=999"
-          $lists = Invoke-RestMethod -Headers $H -Uri $listsUrl -Method GET
-          if (-not $lists.value) { throw ("Graph returned zero lists for site id {0}." -f $siteId) }
-
-          $list = $lists.value | Where-Object { $_.displayName -eq $listName }
-          if (-not $list) { $list = $lists.value | Where-Object { $_.displayName.ToLower() -eq $listName.ToLower() } }
-          if (-not $list) {
-            $alt = ($listName -replace '_',' ')
-            $list = $lists.value | Where-Object { $_.displayName.ToLower() -eq $alt.ToLower() }
-          }
-          if (-not $list) {
-            throw ("List '{0}' not found. Available: {1}" -f $listName, ($lists.value.displayName -join ', '))
-          }
-
-          $listId = $list.id
-          Write-Host ("Debug: Using list: {0} ({1})" -f $list.displayName, $listId)
+          $lists = Invoke-RestMethod -Headers $H -Uri "https://graph.microsoft.com/v1.0/sites/$siteId/lists?`$filter=displayName eq '$listName'&`$select=id,displayName"
+          if(-not $lists.value){ throw "List '$listName' not found at $($env:SP_SITE_HOSTNAME)$($env:SP_SITE_PATH)" }
+          $listId = $lists.value[0].id
 
           # ---- Pull all items (expand fields) ----
           $items = @()
           $url = "https://graph.microsoft.com/v1.0/sites/$siteId/lists/$listId/items?`$expand=fields&`$top=999"
-          while ($url) {
-            $r = Invoke-RestMethod -Headers $H -Uri $url -Method GET
+          while($url){
+            $r = Invoke-RestMethod -Headers $H -Uri $url
             $items += $r.value
             $url = $r.'@odata.nextLink'
           }
 
-          # ---- First run helper: dump detected internal field names ----
-          if ($items.Count -gt 0) {
-            ($items[0].fields | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty Name) |
-              Sort-Object | Out-File -Encoding utf8 -FilePath "$PWD/detected_sharepoint_fields.txt"
+          # ---- First run helper: dump detected internal field names for mapping sanity ----
+          if($items.Count -gt 0){
+            ($items[0].fields | Get-Member -MemberType NoteProperty | Select -ExpandProperty Name) `
+              | Sort-Object | Out-File -Encoding utf8 -FilePath "$PWD/detected_sharepoint_fields.txt"
           }
 
-          # ---- Geocode addresses using Nominatim ----
-          function Get-Coordinates($address, $city, $state, $zip) {
-            $fullAddress = ("{0}, {1}, {2} {3}" -f $address, $city, $state, $zip)
-            $encodedAddress = [System.Web.HttpUtility]::UrlEncode($fullAddress)
-            $gurl = "https://nominatim.openstreetmap.org/search?q=$encodedAddress&format=json&limit=1"
-            try {
-              $response = Invoke-RestMethod -Uri $gurl -Headers @{ "User-Agent" = "GatewayMapBot/1.0" } -Method GET
-              if ($response -and $response.Count -gt 0) {
-                return @{ lat = [double]$response[0].lat; lng = [double]$response[0].lon }
-              }
-            } catch {
-              Write-Warning ("Geocoding failed for {0} : {1}" -f $fullAddress, $_)
-            }
-            return @{ lat = 0.0; lng = 0.0 }
-          }
-
-          # ---- Map SharePoint fields -> map schema ----
-          function Map-Row($f) {
-            $coords = Get-Coordinates -address $f.field_6 -city $f.field_7 -state $f.field_8 -zip $f.field_9
+          # ---- Map SharePoint fields -> map schema your app.js expects ----
+          function Map-Row($f){
             [pscustomobject]@{
-              name           = $f.Title
-              type           = $f.TYPE
-              units          = $f.field_2
-              manager        = $f.field_3
-              assistant_mgr  = $f.field_4
-              compliance     = $f.field_5
-              address        = $f.field_6
+              name           = $f.Title            # Property
+              type           = $f.TYPE             # Type
+              units          = $f.field_2          # Units
+              manager        = $f.field_3          # Manager
+              assistant_mgr  = $f.field_4          # Assistant Mgr
+              compliance     = $f.field_5          # Compliance Specialist
+              address        = $f.field_6          # Street
               city           = $f.field_7
               state          = $f.field_8
               zip            = $f.field_9
-              office_phone   = $f.field_10
+              office_phone   = $f.field_10         # Office
               fax            = $f.field_11
               manager_email  = $f.field_12
-              rpm            = $f.field_13
-              rvp            = $f.field_14
-              owner          = $f.Owner
-              legal_entity   = $f.LegalEntity
-              lat            = $coords.lat
-              lng            = $coords.lng
+              rpm            = $f.field_13         # RPM
+              rvp            = $f.field_14         # RVP
+              lat            = [double]$f.Latitude
+              lng            = [double]$f.Longitude
             }
           }
 
-          $out = foreach ($it in $items) { Map-Row $it.fields }
+          $out = foreach($it in $items){ Map-Row $it.fields }
 
           # ---- Backup previous JSON if exists ----
           $jsonFile = "final_properties_with_coords_and_rvp.json"
           if (Test-Path $jsonFile) {
             $stamp = Get-Date -Format "yyyyMMdd-HHmmss"
-            Copy-Item $jsonFile ("backup_final_properties_{0}.json" -f $stamp)
+            Copy-Item $jsonFile "backup_final_properties_$stamp.json"
           }
 
           # ---- Write JSON expected by the frontend ----
           $out | ConvertTo-Json -Depth 4 | Set-Content -Encoding utf8 -Path $jsonFile
-          Write-Host ("Wrote {0} with {1} rows." -f $jsonFile, $out.Count)
+          Write-Host "Wrote $jsonFile with $($out.Count) rows."
+
+      - name: Configure Git for commits
+        run: |
+          git config --local user.email "bot@example.com"
+          git config --local user.name "Gateway Map Bot"
 
       - name: Commit JSON (and first-time field list)
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: 'Auto-update: final_properties_with_coords_and_rvp.json from SharePoint with geocoding'
+          commit_message: "Auto-update: final_properties_with_coords_and_rvp.json from SharePoint with geocoding"
           file_pattern: |
             final_properties_with_coords_and_rvp.json
             backup_final_properties_*.json
             detected_sharepoint_fields.txt
-          commit_user_name: ${{ secrets.COMMIT_USER_NAME }}
-          commit_user_email: ${{ secrets.COMMIT_USER_EMAIL }}
+          commit_user_name: ${{ secrets.COMMIT_USER_NAME || 'Gateway Map Bot' }}
+          commit_user_email: ${{ secrets.COMMIT_USER_EMAIL || 'bot@example.com' }}
+          commit_user_name: ${{ secrets.COMMIT_USER_NAME || 'Gateway Map Bot' }}
+          commit_user_email: ${{ secrets.COMMIT_USER_EMAIL || 'bot@example.com' }}
