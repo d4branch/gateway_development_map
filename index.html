@@ -1,57 +1,177 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Development Portfolio Map</title>
-
-  <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
-  <style>
-    /* simple built-in styles so the map always shows */
-    html, body { height: 100%; margin: 0; }
-    header {
-      background: #39c0c3;
-      color: #0b172a;
-      padding: 10px 14px;
-      line-height: 1.2;
-    }
-    header h1 { margin: 0; font-size: 18px; }
-    header .sub { opacity: .75; font-size: 12px; }
-
-    #toolbar {
-      padding: 8px 14px;
-      border-bottom: 1px solid #e5e7eb;
-      font-size: 14px;
-      background: #fff;
-    }
-    #map {
-      height: calc(100vh - 96px); /* header + toolbar ≈ 96px */
-      min-height: 420px;
-    }
-    label { user-select: none; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gateway Property Map v2</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { margin: 0; padding: 0; font-family: Arial, sans-serif; }
+        #map { height: 100vh; width: calc(100vw - 300px); float: right; }
+        #sidebar { width: 300px; height: 100vh; padding: 20px; background: #f4f4f4; float: left; overflow-y: auto; }
+        select { width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 4px; }
+        h2 { font-size: 1.5rem; font-weight: bold; margin-bottom: 15px; }
+    </style>
 </head>
 <body>
+    <div id="sidebar">
+        <h2>Property Filters</h2>
+        <label for="rvp-filter">Regional Manager</label>
+        <select id="rvp-filter">
+            <option value="">All</option>
+            <option>Anna Walters</option>
+            <option>Arglidian McElheney</option>
+            <option>Brandi Harris</option>
+            <option>Brenda Jackson</option>
+            <option>Chantelle Boone</option>
+            <option>Diana Stoflet</option>
+            <option>Jeyza Cartagena</option>
+            <option>Jonthan Marrero</option>
+            <option>Kat Butts</option>
+            <option>Kimberly Tunstall</option>
+            <option>Melissa Morefield-Valley</option>
+            <option>Natashia Richardson</option>
+            <option>Patricia Chauvin</option>
+            <option>Sharon Waldo</option>
+            <option>Shirley Greer</option>
+            <option>T'arra Brown</option>
+            <option>Tere Dykes</option>
+            <option>Tina Ard</option>
+        </select>
+        <label for="state-filter">State</label>
+        <select id="state-filter">
+            <option value="">All</option>
+            <option>AL</option>
+            <option>FL</option>
+            <option>GA</option>
+            <option>KS</option>
+            <option>LA</option>
+            <option>NC</option>
+            <option>OK</option>
+            <option>SC</option>
+            <option>TN</option>
+            <option>VA</option>
+        </select>
+        <label for="type-filter">Property Type</label>
+        <select id="type-filter">
+            <option value="">All</option>
+            <option>55</option>
+            <option>62</option>
+            <option>C</option>
+            <option>F</option>
+            <option>RD-62</option>
+            <option>S</option>
+        </select>
+        <label for="owner-filter">Owner</label>
+        <select id="owner-filter">
+            <option value="">All</option>
+            <option>TBD</option>
+        </select>
+        <label for="legal-entity-filter">Legal Entity</label>
+        <select id="legal-entity-filter">
+            <option value="">All</option>
+            <option>TBD</option>
+        </select>
+    </div>
+    <div id="map"></div>
+    <script>
+        // Initialize Leaflet map with OpenStreetMap tiles
+        const map = L.map('map', {
+            center: [32.8, -86.6], // Centered on Alabama
+            zoom: 6,
+            maxBounds: [
+                [24.396308, -125.0],
+                [49.384358, -66.93457]
+            ],
+            maxBoundsViscosity: 1.0
+        });
 
-  <header>
-    <h1>Development Portfolio Map</h1>
-    <div class="sub">via Gateway IT, A. Branch</div>
-  </header>
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19
+        }).addTo(map);
 
-  <div id="toolbar">
-    <label><input id="toggleHall" type="checkbox" checked> Show Hall properties</label>
-    <span id="counts" style="margin-left:14px; opacity:.75;"></span>
-  </div>
+        map.on('load', async () => {
+            try {
+                const response = await fetch('https://raw.githubusercontent.com/YOUR_NEW_REPO/main/final_properties_with_coords_and_rvp.json?cb=' + Date.now());
+                const properties = await response.json();
 
-  <div id="map"></div>
+                // Function to add markers
+                function addMarkers(data) {
+                    data.forEach((property) => {
+                        if (!property.lat || !property.lng || property.lat === 0 || property.lng === 0) return;
 
-  <!-- Libs -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js"></script>
+                        const marker = L.circleMarker([property.lat, property.lng], {
+                            radius: 8,
+                            fillColor: "#007BFF",
+                            color: "#000",
+                            weight: 1,
+                            opacity: 1,
+                            fillOpacity: 0.8
+                        });
 
-  <!-- Your app (ONE include only; bump the v= when you update app.js) -->
-  <script src="scripts/app.js?v=toggle-hall-3"></script>
+                        const popupContent = `
+                            <b>${property.name}</b><br>
+                            ${property.address}<br>
+                            ${property.city}, ${property.state} ${property.zip}<br><br>
+                            Phone: ${property.office_phone}<br>
+                            Email: ${property.manager_email}<br><br>
+                            Regional: ${property.rvp}<br>
+                            Compliance: ${property.compliance}<br>
+                            Owner: ${property.owner}<br>
+                            Legal Entity: ${property.legal_entity}
+                        `;
+                        marker.bindPopup(popupContent);
+                        marker.addTo(map);
+                    });
+                }
+
+                // Initial load of markers
+                addMarkers(properties);
+
+                // Filter function
+                function updateMarkers() {
+                    const rvp = document.getElementById('rvp-filter').value;
+                    const state = document.getElementById('state-filter').value;
+                    const type = document.getElementById('type-filter').value;
+                    const owner = document.getElementById('owner-filter').value;
+                    const legalEntity = document.getElementById('legal-entity-filter').value;
+
+                    // Clear existing markers
+                    map.eachLayer(layer => {
+                        if (layer instanceof L.CircleMarker) {
+                            map.removeLayer(layer);
+                        }
+                    });
+
+                    // Filter and add new markers
+                    const filtered = properties.filter(p => (
+                        (!rvp || p.rvp === rvp) &&
+                        (!state || p.state === state) &&
+                        (!type || p.type === type) &&
+                        (!owner || p.owner === owner) &&
+                        (!legalEntity || p.legal_entity === legalEntity)
+                    ));
+
+                    addMarkers(filtered);
+                }
+
+                // Add filter event listeners
+                document.getElementById('rvp-filter').addEventListener('change', updateMarkers);
+                document.getElementById('state-filter').addEventListener('change', updateMarkers);
+                document.getElementById('type-filter').addEventListener('change', updateMarkers);
+                document.getElementById('owner-filter').addEventListener('change', updateMarkers);
+                document.getElementById('legal-entity-filter').addEventListener('change', updateMarkers);
+
+                // Initial filter application
+                updateMarkers();
+            } catch (error) {
+                console.error('Failed to load properties:', error);
+                alert('Error loading property data. Check the console for details.');
+            }
+        }).on('load', () => { console.log('Map loaded successfully'); }); // Trigger load event manually
+    </script>
 </body>
 </html>
