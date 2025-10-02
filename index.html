@@ -93,7 +93,8 @@
             maxZoom: 19
         }).addTo(map);
 
-        map.on('load', async () => {
+        // Load data and add markers
+        async function loadMapData() {
             try {
                 const response = await fetch('https://raw.githubusercontent.com/YOUR_NEW_REPO/main/final_properties_with_coords_and_rvp.json?cb=' + Date.now());
                 const properties = await response.json();
@@ -171,7 +172,10 @@
                 console.error('Failed to load properties:', error);
                 alert('Error loading property data. Check the console for details.');
             }
-        }).on('load', () => { console.log('Map loaded successfully'); }); // Trigger load event manually
+        }
+
+        // Run the data loading when the page loads
+        window.onload = loadMapData;
     </script>
 </body>
 </html>
