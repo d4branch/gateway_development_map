@@ -38,13 +38,19 @@ jobs:
 
           # ---- Resolve site + list ----
           $siteUri = "https://graph.microsoft.com/v1.0/sites/$($env:SP_SITE_HOSTNAME):$($env:SP_SITE_PATH)"
+          Write-Host "Debug: Site URI: $siteUri"
           $site = Invoke-RestMethod -Headers $H -Uri $siteUri
           $siteId = $site.id
+          Write-Host "Debug: Site ID: $siteId"
 
           $listName = "Properties_by_RVP"
-          $lists = Invoke-RestMethod -Headers $H -Uri "https://graph.microsoft.com/v1.0/sites/$siteId/lists?`$filter=displayName eq '$listName'&`$select=id,displayName"
+          $listsUri = "https://graph.microsoft.com/v1.0/sites/$siteId/lists?`$filter=displayName eq '$listName'&`$select=id,displayName"
+          Write-Host "Debug: Lists URI: $listsUri"
+          $lists = Invoke-RestMethod -Headers $H -Uri $listsUri
+          Write-Host "Debug: Lists response: $($lists | ConvertTo-Json -Depth 2)"
           if(-not $lists.value){ throw "List '$listName' not found at $($env:SP_SITE_HOSTNAME)$($env:SP_SITE_PATH)" }
           $listId = $lists.value[0].id
+          Write-Host "Debug: List ID: $listId"
 
           # ---- Pull all items (expand fields) ----
           $items = @()
