@@ -133,51 +133,8 @@ jobs:
               Sort-Object | Out-File -Encoding utf8 -FilePath "$PWD/detected_sharepoint_fields.txt"
           }
 
-          # ---- Load geocache if exists ----
-          $geocacheFile = "geocache.json"
-          $geocache = @{}
-          if (Test-Path $geocacheFile) {
-            $geocache = Get-Content $geocacheFile -Raw | ConvertFrom-Json -AsHashtable
-          }
-
-          # ---- Geocode addresses using Nominatim ----
-          function Get-Coordinates($address, $city, $state, $zip, $existingLat, $existingLng) {
-            if ($existingLat -ne 0.0 -and $existingLng -ne 0.0) {
-              Write-Host ("Using existing coords for {0}: ({1}, {2})" -f $address, $existingLat, $existingLng)
-              return @{ lat = [double]$existingLat; lng = [double]$existingLng }
-            }
-
-            $fullAddress = ("{0}, {1}, {2} {3}" -f $address, $city, $state, $zip)
-            $fullAddress = $fullAddress -replace 'Hwy', 'Highway' -replace '\s+', ' ' # Clean address
-            $addrKey = $fullAddress -replace '[^a-zA-Z0-9]', '' # Simple cache key
-            if ($geocache.ContainsKey($addrKey)) {
-              Write-Host ("Cache hit for {0}: ({1}, {2})" -f $fullAddress, $geocache[$addrKey].lat, $geocache[$addrKey].lng)
-              return @{ lat = $geocache[$addrKey].lat; lng = $geocache[$addrKey].lng }
-            }
-
-            Write-Host ("Geocoding {0}" -f $fullAddress)
-            $encodedAddress = [System.Web.HttpUtility]::UrlEncode($fullAddress)
-            $gurl = "https://nominatim.openstreetmap.org/search?q=$encodedAddress&format=json&limit=1"
-            try {
-              $response = Invoke-RestMethod -Uri $gurl -Headers @{ "User-Agent" = "GatewayMapBot/1.0 (bot@example.com)" } -Method GET
-              if ($response -and $response.Count -gt 0) {
-                $coords = @{ lat = [double]$response[0].lat; lng = [double]$response[0].lon }
-                $geocache[$addrKey] = $coords
-                Write-Host ("Geocoded {0} to ({1}, {2})" -f $fullAddress, $coords.lat, $coords.lng)
-                Start-Sleep -Milliseconds 1000 # Respect Nominatim's 1 req/sec limit
-                return $coords
-              } else {
-                Write-Host ("No coords found for {0}" -f $fullAddress)
-              }
-            } catch {
-              Write-Host ("Geocoding failed for {0}: {1}" -f $fullAddress, $_)
-            }
-            return @{ lat = 0.0; lng = 0.0 }
-          }
-
-          # ---- Map SharePoint fields -> map schema ----
+          # ---- Map SharePoint fields -> map schema (initial pass) ----
           function Map-Row($f) {
-            $coords = Get-Coordinates -address $f.field_6 -city $f.field_7 -state $f.field_8 -zip $f.field_9 -existingLat ([double]($f.Latitude ?? 0.0)) -existingLng ([double]($f.Longitude ?? 0.0))
             [pscustomobject]@{
               name           = $f.Title
               type           = $f.TYPE
@@ -196,12 +153,53 @@ jobs:
               rvp            = $f.field_14
               owner          = $f.Owner
               legal_entity   = $f.LegalEntity
-              lat            = $coords.lat
-              lng            = $coords.lng
+              lat            = [double]($f.Latitude ?? 0.0)
+              lng            = [double]($f.Longitude ?? 0.0)
             }
           }
 
           $out = foreach ($it in $items) { Map-Row $it.fields }
+
+          # ---- Load geocache if exists ----
+          $geocacheFile = "geocache.json"
+          $geocache = @{}
+          if (Test-Path $geocacheFile) {
+            $geocache = Get-Content $geocacheFile -Raw | ConvertFrom-Json -AsHashtable
+          }
+
+          # ---- Geocode properties with missing coords ----
+          foreach ($prop in $out) {
+            if ($prop.lat -eq 0.0 -and $prop.lng -eq 0.0) {
+              $addr = "$($prop.address), $($prop.city), $($prop.state) $($prop.zip)"
+              $addr = $addr -replace 'Hwy', 'Highway' -replace '\s+', ' ' # Clean address
+              $addrKey = $addr -replace '[^a-zA-Z0-9]', '' # Simple cache key
+              if ($geocache.ContainsKey($addrKey)) {
+                Write-Host ("Cache hit for {0}: ({1}, {2})" -f $addr, $geocache[$addrKey].lat, $geocache[$addrKey].lng)
+                $prop.lat = $geocache[$addrKey].lat
+                $prop.lng = $geocache[$addrKey].lng
+              } else {
+                Write-Host ("Geocoding {0}" -f $addr)
+                $encodedAddr = [System.Web.HttpUtility]::UrlEncode($addr)
+                $gurl = "https://nominatim.openstreetmap.org/search?q=$encodedAddr&format=json&limit=1"
+                try {
+                  $response = Invoke-RestMethod -Uri $gurl -Headers @{ "User-Agent" = "GatewayMapBot/1.0 (bot@example.com)" } -Method GET
+                  if ($response -and $response.Count -gt 0) {
+                    $prop.lat = [double]$response[0].lat
+                    $prop.lng = [double]$response[0].lon
+                    $geocache[$addrKey] = @{ lat = $prop.lat; lng = $prop.lng }
+                    Write-Host ("Geocoded {0} to ({1}, {2})" -f $addr, $prop.lat, $prop.lng)
+                  } else {
+                    Write-Host ("No coords found for {0}" -f $addr)
+                  }
+                } catch {
+                  Write-Host ("Geocoding failed for {0}: {1}" -f $addr, $_)
+                }
+                Start-Sleep -Milliseconds 1000 # Nominatim 1 req/sec limit
+              }
+            } else {
+              Write-Host ("Using existing coords for {0}: ({1}, {2})" -f $prop.address, $prop.lat, $prop.lng)
+            }
+          }
 
           # ---- Save geocache ----
           $geocache | ConvertTo-Json -Depth 4 | Set-Content -Encoding utf8 -Path $geocacheFile
