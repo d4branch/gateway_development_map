@@ -37,17 +37,13 @@ jobs:
           if (-not $tok.access_token) { throw "No Graph token returned." }
           $H = @{ Authorization = "Bearer $($tok.access_token)" }
 
-          # (Optional) dump token claims once for sanity
-          # $p = ($tok.access_token.Split('.')[1] + '==').Replace('-','+').Replace('_','/')
-          # $claims = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($p))
-          # Write-Host "Debug: TOKEN CLAIMS => $claims"
-
           # ---- Resolve site (must be hostname:/{path}) ----
           $spHost = $env:SP_SITE_HOSTNAME.TrimEnd('/')
           $spPath = $env:SP_SITE_PATH.TrimStart('/')
           Write-Host ("Debug: HOST.len={0} PATH.len={1}" -f $spHost.Length, $spPath.Length)
 
-          $siteUri = "https://graph.microsoft.com/v1.0/sites/$spHost:/$spPath"
+          # BRACED to avoid : parsing issue
+          $siteUri = "https://graph.microsoft.com/v1.0/sites/${spHost}:/${spPath}"
           Write-Host "Debug: Site URI: $siteUri"
 
           $site = Invoke-RestMethod -Headers $H -Uri $siteUri
@@ -112,23 +108,23 @@ jobs:
           function Map-Row($f) {
             $coords = Get-Coordinates -address $f.field_6 -city $f.field_7 -state $f.field_8 -zip $f.field_9
             [pscustomobject]@{
-              name           = $f.Title            # Property
-              type           = $f.TYPE             # Type
-              units          = $f.field_2          # Units
-              manager        = $f.field_3          # Manager
-              assistant_mgr  = $f.field_4          # Assistant Mgr
-              compliance     = $f.field_5          # Compliance Specialist
-              address        = $f.field_6          # Street
+              name           = $f.Title
+              type           = $f.TYPE
+              units          = $f.field_2
+              manager        = $f.field_3
+              assistant_mgr  = $f.field_4
+              compliance     = $f.field_5
+              address        = $f.field_6
               city           = $f.field_7
               state          = $f.field_8
               zip            = $f.field_9
-              office_phone   = $f.field_10         # Office
+              office_phone   = $f.field_10
               fax            = $f.field_11
               manager_email  = $f.field_12
-              rpm            = $f.field_13         # RPM
-              rvp            = $f.field_14         # RVP
-              owner          = $f.Owner            # Owner (new)
-              legal_entity   = $f.LegalEntity      # Legal Entity (new)
+              rpm            = $f.field_13
+              rvp            = $f.field_14
+              owner          = $f.Owner
+              legal_entity   = $f.LegalEntity
               lat            = $coords.lat
               lng            = $coords.lng
             }
