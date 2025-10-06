@@ -58,6 +58,12 @@
       <label for="legalFilter">Legal Entity</label>
       <select id="legalFilter"><option value="All">All</option></select>
     </div>
+
+    <!-- Export group (minimal styling; works without extra CSS) -->
+    <div class="group">
+      <label>&nbsp;</label>
+      <button id="btnUnmapped" title="Download a CSV of properties without coordinates">Download Unmapped CSV</button>
+    </div>
   </div>
 
   <!-- Map -->
@@ -171,7 +177,9 @@
           <span id="legendVisible">0</span> visible /
           <span id="legendEligible">0</span> mapped •
           <span id="legendTotal">0</span> total •
-          <span id="legendUnmapped">0</span> unmapped
+          <a href="#" id="legendUnmappedLink" title="Download unmapped list">
+            <span id="legendUnmapped">0</span> unmapped
+          </a>
         </div>
       </div>`;
     }
@@ -191,6 +199,41 @@
       set('legendEligible', totalEligible);
       set('legendTotal',    totalPortfolio);
       set('legendUnmapped', unmapped);
+
+      // enable/disable download button + link
+      const btn = document.getElementById('btnUnmapped');
+      if (btn) btn.disabled = (unmapped === 0);
+      const link = document.getElementById('legendUnmappedLink');
+      if (link) link.style.pointerEvents = (unmapped === 0 ? 'none' : 'auto');
+    }
+
+    // Build an unmapped array from the full dataset
+    function computeUnmapped() {
+      return allProps.filter(p => !(p.lat && p.lng && p.lat !== 0 && p.lng !== 0));
+    }
+
+    // CSV download for unmapped rows
+    function downloadUnmappedCSV() {
+      const unmapped = computeUnmapped();
+      const headers = [
+        'name','type','address','city','state','zip',
+        'rvp','rpm','owner','legal_entity','manager','manager_email','office_phone'
+      ];
+      const esc = v => `"${String(v ?? '').replace(/"/g,'""')}"`;
+      const lines = [
+        headers.map(h => esc(h)).join(','),
+        ...unmapped.map(p => headers.map(h => esc(p[h])).join(','))
+      ];
+      const csv = lines.join('\r\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href = url;
+      a.download = 'unmapped_properties.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     }
 
     // ---- Filters ----
@@ -251,6 +294,12 @@
         // Bind filter events
         ['rvpFilter','rpmFilter','stateFilter','typeFilter','ownerFilter','legalFilter']
           .forEach(id => document.getElementById(id).addEventListener('change', applyFilters));
+
+        // Wire the download button + legend link
+        const btn = document.getElementById('btnUnmapped');
+        if (btn) btn.addEventListener('click', downloadUnmappedCSV);
+        const link = document.getElementById('legendUnmappedLink');
+        if (link) link.addEventListener('click', (e) => { e.preventDefault(); downloadUnmappedCSV(); });
       })
       .catch(err => console.error('Error loading JSON:', err));
   </script>
