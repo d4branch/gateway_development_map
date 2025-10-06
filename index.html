@@ -4,45 +4,39 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gateway Properties Map</title>
+
+  <!-- main stylesheet -->
   <link rel="stylesheet" href="styles/app.css">
-  <!-- Leaflet CSS from CDN - this styles the map tiles and controls -->
+
+  <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
-  <!-- Header: Teal bar with title and subtitle (styled by app.css) -->
+  <!-- Header -->
   <div class="gaHeader">
     <h1>Gateway Properties Map</h1>
     <p class="sub">Property Filters</p>
   </div>
 
-  <!-- Toolbar: Sticky filters at the top (styled by app.css). Each group has a label and dropdown. -->
+  <!-- Toolbar -->
   <div class="toolbar">
     <div class="group">
-      <label for="rvpFilter">Regional Manager</label>
-      <select id="rvpFilter">
-        <option value="All">All</option>
-        <option value="Paula Hall">Paula Hall</option>
-        <option value="Erin Loupe">Erin Loupe</option>
-        <option value="Toni Raymond">Toni Raymond</option>
-        <option value="Melissa Valley">Melissa Valley</option>
-        <!-- Add more RVPs here if needed; we'll make this dynamic later -->
-      </select>
+      <label for="rvpFilter">RVP</label>
+      <select id="rvpFilter"><option value="All">All</option></select>
+    </div>
+
+    <div class="group">
+      <label for="rpmFilter">Regional Manager</label>
+      <select id="rpmFilter"><option value="All">All</option></select>
     </div>
 
     <div class="group">
       <label for="stateFilter">State</label>
       <select id="stateFilter">
         <option value="All">All</option>
-        <option value="AL">AL</option>
-        <option value="FL">FL</option>
-        <option value="GA">GA</option>
-        <option value="KS">KS</option>
-        <option value="LA">LA</option>
-        <option value="NC">NC</option>
-        <option value="OK">OK</option>
-        <option value="SC">SC</option>
-        <option value="TN">TN</option>
-        <option value="VA">VA</option>
+        <option>AL</option><option>FL</option><option>GA</option><option>KS</option>
+        <option>LA</option><option>NC</option><option>OK</option><option>SC</option>
+        <option>TN</option><option>VA</option>
       </select>
     </div>
 
@@ -50,136 +44,144 @@
       <label for="typeFilter">Property Type</label>
       <select id="typeFilter">
         <option value="All">All</option>
-        <option value="55">55</option>
-        <option value="62">62</option>
-        <option value="C">C</option>
-        <option value="F">F</option>
-        <option value="RD-62">RD-62</option>
-        <option value="S">S</option>
+        <option>55</option><option>62</option><option>C</option>
+        <option>F</option><option>RD-62</option><option>S</option>
       </select>
     </div>
 
     <div class="group">
       <label for="ownerFilter">Owner</label>
-      <select id="ownerFilter">
-        <option value="All">All</option>
-        <option value="Gateway">Gateway</option>
-        <option value="Rea Ventures">Rea Ventures</option>
-        <option value="LDG">LDG</option>
-        <option value="Rob Coats Banyon Foundation">Rob Coats Banyon Foundation</option>
-        <!-- Add more owners here; we'll make this dynamic later -->
-      </select>
+      <select id="ownerFilter"><option value="All">All</option></select>
     </div>
 
     <div class="group">
       <label for="legalFilter">Legal Entity</label>
-      <select id="legalFilter">
-        <option value="All">All</option>
-        <option value="TBD">TBD</option>
-        <!-- Placeholder; we'll populate with unique legal entities from JSON later -->
-      </select>
+      <select id="legalFilter"><option value="All">All</option></select>
     </div>
   </div>
 
-  <!-- Map Container: This div gets filled by Leaflet JS (height set in app.css) -->
+  <!-- Map -->
   <div id="map" class="map"></div>
 
-  <!-- Leaflet JS from CDN - this powers the map functionality -->
+  <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script>
-    // Initialize the map: Create it in the 'map' div, center on US, zoom out to show Southeast focus.
-    var map = L.map('map').setView([37.0902, -95.7129], 4);
-
-    // Add base map tiles (OpenStreetMap - free, no API key).
+    // Initialize map
+    const map = L.map('map').setView([34.5, -86.6], 6);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
-    // Array to store all markers (for filtering later).
-    var allMarkers = [];
+    const markersGroup = L.layerGroup().addTo(map);
+    let allProps = [];
+    let allMarkers = [];
 
-    // Fetch the JSON data and add markers.
-    fetch('final_properties_with_coords_and_rvp.json')
-      .then(response => response.json())  // Parse the response as JSON.
-      .then(data => {  // 'data' is now the array of property objects.
-        console.log(`Loaded ${data.length} properties.`);  // Debug: Check console for count.
+    function uniqueSorted(arr) {
+      return [...new Set(arr.filter(Boolean))].sort((a, b) => a.localeCompare(b));
+    }
 
-        // Wrap the loop in try-catch to catch any per-marker issues without breaking everything.
-        try {
-          data.forEach(property => {  // Loop through each property.
-            if (property.lat !== 0 && property.lng !== 0) {  // Skip invalid coords (0,0 placeholders).
+    function addOptions(selectId, values) {
+      const sel = document.getElementById(selectId);
+      [...sel.querySelectorAll('option:not([value="All"])')].forEach(o => o.remove());
+      values.forEach(v => {
+        const opt = document.createElement('option');
+        opt.value = v;
+        opt.textContent = v;
+        sel.appendChild(opt);
+      });
+    }
 
-              // Helper function: Pick color/shape based on property type.
-              function getMarkerOptions(type) {
-                switch (type) {
-                  case '55': return { color: '#60d5d7', shape: 'circle' };  // Teal circle for 55+
-                  case '62': return { color: '#10b981', shape: 'circle' };  // Green circle for 62+
-                  case 'F': return { color: '#f59e0b', shape: 'square' };   // Amber square for Family
-                  case 'C': return { color: '#8b5cf6', shape: 'diamond' };  // Purple diamond for Conventional
-                  case 'S': return { color: '#ef4444', shape: 'star' };     // Red star for Senior/other
-                  case 'RD-62': return { color: '#10b981', shape: 'circle' };  // Green for RD-62 (like 62)
-                  default: return { color: '#3b82f6', shape: 'circle' };    // Default blue circle
-                }
-              }
+    function getMarkerOptions(type) {
+      switch (type) {
+        case '55': return { color: '#60d5d7', shape: 'circle' };
+        case '62': return { color: '#10b981', shape: 'circle' };
+        case 'F': return { color: '#f59e0b', shape: 'square' };
+        case 'C': return { color: '#8b5cf6', shape: 'diamond' };
+        case 'S': return { color: '#ef4444', shape: 'star' };
+        case 'RD-62': return { color: '#10b981', shape: 'circle' };
+        default: return { color: '#3b82f6', shape: 'circle' };
+      }
+    }
 
-              // Get options for this property's type.
-              var markerOptions = getMarkerOptions(property.type);
+    function makeMarker(prop) {
+      const opt = getMarkerOptions(prop.type);
+      const icon = L.divIcon({
+        html: `<div style="width:20px;height:20px;background:${opt.color};
+                border-radius:${opt.shape === 'circle' ? '50%' : '0'};
+                border:2px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,.2);"></div>`,
+        className: 'custom-div-icon',
+        iconSize: [20, 20],
+        iconAnchor: [10, 10]
+      });
+      const m = L.marker([prop.lat, prop.lng], { icon });
+      m.bindPopup(
+        `<div style="font-family:system-ui,sans-serif;min-width:280px">
+          <h3 style="margin:0 0 8px;color:#073b3d;border-bottom:1px solid #60d5d7;padding-bottom:4px">
+            ${prop.name} 🏠</h3>
+          <p><strong>Type:</strong> ${prop.type} &nbsp;|&nbsp; <strong>Units:</strong> ${prop.units ?? ''}</p>
+          <p><strong>Address:</strong> ${prop.address}<br>${prop.city}, ${prop.state} ${prop.zip ?? ''}</p>
+          <p><strong>Manager:</strong> ${prop.manager ?? ''}<br>
+             <a href="mailto:${prop.manager_email ?? ''}" style="color:#0ea5e9">${prop.manager_email ?? ''}</a></p>
+          <p><strong>RVP:</strong> ${prop.rvp ?? ''} &nbsp;|&nbsp; <strong>Regional:</strong> ${prop.rpm ?? ''}</p>
+          <small style="color:#6b7280;border-top:1px solid #e5e7eb;padding-top:4px;display:block">
+            Owner: ${prop.owner ?? 'N/A'} &nbsp;|&nbsp; Legal: ${prop.legal_entity ?? 'N/A'} &nbsp;|&nbsp; Phone: ${prop.office_phone ?? 'N/A'}
+          </small>
+        </div>`
+      );
+      return m;
+    }
 
-              // Create a custom marker icon (colored div instead of default blue pin). Flattened to one line for safety.
-              var markerIcon = L.divIcon({
-                html: '<div style="width: 20px; height: 20px; background: ' + markerOptions.color + '; border-radius: ' + (markerOptions.shape === 'circle' ? '50%' : '0') + '; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></div>',
-                className: 'custom-div-icon',
-                iconSize: [20, 20],
-                iconAnchor: [10, 10]  // Centers the icon on the lat/lng point.
-              });
+    function applyFilters() {
+      const rvp   = document.getElementById('rvpFilter').value;
+      const rpm   = document.getElementById('rpmFilter').value;
+      const st    = document.getElementById('stateFilter').value;
+      const type  = document.getElementById('typeFilter').value;
+      const owner = document.getElementById('ownerFilter').value;
+      const legal = document.getElementById('legalFilter').value;
 
-              // Create the marker with custom icon (fallback to default if icon fails).
-              var marker;
-              try {
-                marker = L.marker([property.lat, property.lng], { icon: markerIcon }).addTo(map);
-              } catch (iconErr) {
-                console.warn('Marker icon error for ' + property.name + ': ' + iconErr.message + ' - using default');
-                marker = L.marker([property.lat, property.lng]).addTo(map);  // Fallback blue pin.
-              }
+      markersGroup.clearLayers();
 
-              // Bind a styled popup with property details.
-              marker.bindPopup(
-                '<div style="font-family: system-ui, sans-serif; min-width: 280px;">' +
-                '<h3 style="margin: 0 0 8px 0; color: #073b3d; border-bottom: 1px solid #60d5d7; padding-bottom: 4px;">' +
-                property.name + ' 🏠</h3>' +
-                '<p><strong>Type:</strong> ' + property.type + ' | <strong>Units:</strong> ' + property.units + '</p>' +
-                '<p><strong>Address:</strong> ' + property.address + '<br>' +
-                property.city + ', ' + property.state + ' ' + property.zip + '</p>' +
-                '<p><strong>Manager:</strong> ' + property.manager + '<br>' +
-                '<a href="mailto:' + property.manager_email + '" style="color: #0ea5e9;">' + property.manager_email + '</a></p>' +
-                '<p><strong>RVP:</strong> ' + property.rvp + ' | <strong>Owner:</strong> ' + property.owner + '</p>' +
-                '<small style="color: #6b7280; border-top: 1px solid #e5e7eb; padding-top: 4px; display: block;">' +
-                'Phone: ' + (property.office_phone || 'N/A') + '</small>' +
-                '</div>'
-              );
+      const rows = allMarkers.filter(({property:p}) => (
+        (rvp   === 'All' || p.rvp === rvp) &&
+        (rpm   === 'All' || p.rpm === rpm) &&
+        (st    === 'All' || p.state === st) &&
+        (type  === 'All' || p.type === type) &&
+        (owner === 'All' || p.owner === owner) &&
+        (legal === 'All' || p.legal_entity === legal)
+      ));
 
-              // Store the marker with its property data (for filtering later).
-              allMarkers.push({
-                marker: marker,
-                property: property
-              });
-            }
-          });
-        } catch (loopErr) {
-          console.error('Error in marker loop: ' + loopErr.message);
-        }
+      rows.forEach(({marker}) => markersGroup.addLayer(marker));
 
-        // Auto-fit the map to show all markers (bounds them nicely).
-        if (allMarkers.length > 0) {
-          var group = new L.featureGroup(allMarkers.map(m => m.marker));
-          map.fitBounds(group.getBounds(), { padding: [20, 20] });
-          console.log('Auto-fitted map to ' + allMarkers.length + ' markers.');
-        } else {
-          console.warn('No valid markers to fit - check coords in JSON.');
-        }
+      if (rows.length) {
+        const grp = L.featureGroup(rows.map(r => r.marker));
+        map.fitBounds(grp.getBounds(), { padding: [20,20] });
+      }
+    }
+
+    // Fetch JSON + build
+    fetch('./final_properties_with_coords_and_rvp.json?cb=' + Date.now())
+      .then(r => r.json())
+      .then(data => {
+        allProps = data;
+        allMarkers = allProps
+          .filter(p => p.lat && p.lng && p.lat !== 0 && p.lng !== 0)
+          .map(p => ({ property: p, marker: makeMarker(p) }));
+
+        // populate dropdowns
+        addOptions('rvpFilter',   uniqueSorted(allProps.map(p => p.rvp)));
+        addOptions('rpmFilter',   uniqueSorted(allProps.map(p => p.rpm)));
+        addOptions('ownerFilter', uniqueSorted(allProps.map(p => p.owner)));
+        addOptions('legalFilter', uniqueSorted(allProps.map(p => p.legal_entity)));
+
+        // initial draw
+        applyFilters();
+
+        // bind filter events
+        ['rvpFilter','rpmFilter','stateFilter','typeFilter','ownerFilter','legalFilter']
+          .forEach(id => document.getElementById(id).addEventListener('change', applyFilters));
       })
-      .catch(error => console.error('Error loading JSON:', error));  // Log any fetch errors to console.
+      .catch(err => console.error('Error loading JSON:', err));
   </script>
 </body>
 </html>
