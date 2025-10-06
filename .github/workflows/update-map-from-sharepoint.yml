@@ -1,0 +1,365 @@
+name: Update map data from SharePoint with Geocoding
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: "0 7 * * *"
+    - cron: "0 8 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  update-json:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Pull SharePoint list, geocode, and build JSON + reports
+        shell: pwsh
+        env:
+          GRAPH_TENANT_ID: ${{ secrets.GRAPH_TENANT_ID }}
+          GRAPH_CLIENT_ID: ${{ secrets.GRAPH_CLIENT_ID }}
+          GRAPH_CLIENT_SECRET: ${{ secrets.GRAPH_CLIENT_SECRET }}
+          SP_SITE_HOSTNAME: ${{ secrets.SP_SITE_HOSTNAME }}
+          SP_SITE_PATH: ${{ secrets.SP_SITE_PATH }}
+          SP_SITE_ID: ${{ secrets.SP_SITE_ID }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+
+          # ---- Get Graph token ----
+          $body = @{
+            client_id     = $env:GRAPH_CLIENT_ID
+            scope         = "https://graph.microsoft.com/.default"
+            client_secret = $env:GRAPH_CLIENT_SECRET
+            grant_type    = "client_credentials"
+          }
+          $tok = Invoke-RestMethod -Method Post -Uri ("https://login.microsoftonline.com/{0}/oauth2/v2.0/token" -f $env:GRAPH_TENANT_ID) -Body $body
+          if (-not $tok.access_token) { throw "No Graph token returned." }
+          $H = @{ Authorization = "Bearer $($tok.access_token)" }
+
+          # ---- Resolve site ----
+          if ($env:SP_SITE_ID -and $env:SP_SITE_ID.Trim()) {
+            $siteId = $env:SP_SITE_ID.Trim()
+          } else {
+            $spHost = ($env:SP_SITE_HOSTNAME ?? "").Trim()
+            $rawPath = ($env:SP_SITE_PATH ?? "").Trim()
+            if (-not $spHost) { throw "SP_SITE_HOSTNAME empty (e.g., gatewaymgt.sharepoint.com)" }
+            if (-not $rawPath) { throw "SP_SITE_PATH empty (e.g., sites/Intranet)" }
+            if ($spHost -match '^https?://') { $spHost = $spHost -replace '^https?://','' }
+            $spHost = $spHost.TrimEnd('/')
+            $rawPath = $rawPath.TrimStart('/')
+
+            $candidates = @()
+            if ($rawPath -match '^(sites|teams)/') { $candidates += $rawPath }
+            else {
+              $candidates += $rawPath
+              $candidates += ("sites/{0}" -f $rawPath)
+              $candidates += ("teams/{0}" -f $rawPath)
+            }
+
+            $site = $null
+            foreach ($p in ($candidates | Select-Object -Unique)) {
+              $siteUri = "https://graph.microsoft.com/v1.0/sites/${spHost}:/${p}"
+              try { $tmp = Invoke-RestMethod -Headers $H -Uri $siteUri -Method GET -ErrorAction Stop
+                    if ($tmp -and $tmp.id) { $site = $tmp; break } } catch { }
+            }
+            if (-not $site) {
+              $needle = ($rawPath.Split('/') | Select-Object -Last 1)
+              try {
+                $search = Invoke-RestMethod -Headers $H -Uri ("https://graph.microsoft.com/v1.0/sites?`$search={0}" -f $needle) -Method GET
+                if ($search.value) {
+                  $cands = $search.value | Where-Object { $_.webUrl -like ("https://{0}/*" -f $spHost) }
+                  $targetUrl = "https://{0}/{1}" -f $spHost, $rawPath
+                  $site = $cands | Sort-Object `
+                    @{Expression={ $_.webUrl -eq $targetUrl }; Descending=$true},
+                    @{Expression={ $_.webUrl -match ('/{0}(/|$)' -f [regex]::Escape($rawPath)) }; Descending=$true},
+                    @{Expression={ $_.webUrl.Length }; Descending=$true} |
+                    Select-Object -First 1
+                }
+              } catch { }
+            }
+            if (-not $site -or -not $site.id) {
+              throw "Could not resolve site. Check SP_SITE_HOSTNAME/SP_SITE_PATH or set SP_SITE_ID."
+            }
+            $siteId = $site.id
+          }
+
+          # ---- Resolve list ----
+          $listName = "Properties_by_RVP"
+          $listsUrl = "https://graph.microsoft.com/v1.0/sites/$siteId/lists?`$select=id,displayName&`$top=999"
+          $lists = Invoke-RestMethod -Headers $H -Uri $listsUrl -Method GET
+          if (-not $lists.value) { throw "No lists found for site id $siteId." }
+
+          $list = $lists.value | Where-Object { $_.displayName -eq $listName }
+          if (-not $list) { $list = $lists.value | Where-Object { $_.displayName.ToLower() -eq $listName.ToLower() } }
+          if (-not $list) {
+            $alt = ($listName -replace '_',' ')
+            $list = $lists.value | Where-Object { $_.displayName.ToLower() -eq $alt.ToLower() }
+          }
+          if (-not $list) {
+            throw ("List '{0}' not found. Available: {1}" -f $listName, ($lists.value.displayName -join ', '))
+          }
+          $listId = $list.id
+
+          # ---- Pull items ----
+          $items = @()
+          $url = "https://graph.microsoft.com/v1.0/sites/$siteId/lists/$listId/items?`$expand=fields&`$top=999"
+          while ($url) {
+            $r = Invoke-RestMethod -Headers $H -Uri $url -Method GET
+            $items += $r.value
+            $url = $r.'@odata.nextLink'
+          }
+
+          # ---- Dump detected field names (first item) ----
+          if ($items.Count -gt 0) {
+            ($items[0].fields | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty Name) |
+              Sort-Object | Out-File -Encoding utf8 -FilePath "$PWD/detected_sharepoint_fields.txt"
+          }
+
+          # ---- Map SharePoint fields -> schema ----
+          function Map-Row($f) {
+            [pscustomobject]@{
+              name             = $f.Title
+              type             = $f.TYPE
+              units            = $f.field_2
+              manager          = $f.field_3
+              assistant_mgr    = $f.field_4
+              compliance       = $f.field_5
+              address          = $f.field_6
+              city             = $f.field_7
+              state            = $f.field_8
+              zip              = $f.field_9
+              office_phone     = $f.field_10
+              fax              = $f.field_11
+              manager_email    = $f.field_12
+              rpm              = $f.field_13
+              rvp              = $f.field_14
+              owner            = $f.Owner
+              legal_entity     = $f.LegalEntity
+              lat              = [double]($f.Latitude  ?? 0.0)
+              lng              = [double]($f.Longitude ?? 0.0)
+              geocode_status   = "unknown"
+              geocode_source   = "none"
+              geocode_fail_code= $null
+            }
+          }
+          $out = foreach ($it in $items) { Map-Row $it.fields }
+
+          # ---- Geocache ----
+          $geocacheFile = "geocache.json"
+          $geocache = @{}
+          if (Test-Path $geocacheFile) {
+            $geocache = Get-Content $geocacheFile -Raw | ConvertFrom-Json -AsHashtable
+          }
+
+          # ---- Controls ----
+          $UseCityFallback   = $false    # set true to use city centroid as last resort
+          $UseCensusFallback = $true     # US-only fallback (recommended)
+
+          # ---- Helpers ----
+          function Normalize-Address([string]$addr) {
+            if (-not $addr) { return "" }
+            $a = $addr.Trim()
+            $a = $a -replace '(?i)\s+(Apt|Apartment|Unit|Lot|Suite|Ste|#)\s*\S+', ''
+            $a = $a -replace '(?i)\bHwy\b','Highway'
+            $a = $a -replace '(?i)\bRd\b','Road'
+            $a = $a -replace '(?i)\bAve\b','Avenue'
+            $a = $a -replace '(?i)\bSt\b','Street'
+            $a = $a -replace '(?i)\bBlvd\b','Boulevard'
+            $a = $a -replace '(?i)\bPkwy\b','Parkway'
+            $a = $a -replace '(?i)\bLn\b','Lane'
+            $a = $a -replace '(?i)\bDr\b','Drive'
+            $a = $a -replace '\s+', ' '
+            return $a
+          }
+          function FailCodesFor($prop) {
+            $codes = New-Object System.Collections.Generic.List[string]
+            if (-not $prop.address) { $codes.Add('ADDRESS_TOO_SHORT'); return $codes }
+            if ($prop.address -match '(?i)\bP\.?\s*O\.?\s*Box\b') { $codes.Add('PO_BOX') }
+            if ($prop.address -notmatch '^\s*\d+') { $codes.Add('MISSING_STREETNUM') }
+            if (-not $prop.city)  { $codes.Add('MISSING_CITY')  }
+            if (-not $prop.state) { $codes.Add('MISSING_STATE') }
+            if ($prop.zip -and $prop.zip -notmatch '^\d{5}(-\d{4})?$') { $codes.Add('BAD_ZIP') }
+            if ($prop.address.Length -lt 6) { $codes.Add('ADDRESS_TOO_SHORT') }
+            return $codes
+          }
+          function Try-Nominatim($q) {
+            $encoded = [System.Web.HttpUtility]::UrlEncode($q)
+            $url = "https://nominatim.openstreetmap.org/search?q=$encoded&format=json&limit=1&addressdetails=0"
+            try {
+              $resp = Invoke-RestMethod -Uri $url -Headers @{ "User-Agent" = "GatewayMapBot/1.0 (bot@example.com)" } -Method GET -TimeoutSec 30
+              if ($resp -and $resp.Count -gt 0) {
+                return @{ ok=$true; lat=[double]$resp[0].lat; lng=[double]$resp[0].lon; src='nominatim' }
+              } else { return @{ ok=$false; code='NO_MATCH_NOMINATIM' } }
+            } catch {
+              $code = try { [int]$_.Exception.Response.StatusCode.value__ } catch { 0 }
+              return @{ ok=$false; code=("PROVIDER_ERROR_{0}" -f ($code -as [string])) }
+            }
+          }
+          function Try-Census($street, $city, $state, $zip) {
+            $oneLine = ($street, $city, $state, $zip) -join ', '
+            $encoded = [System.Web.HttpUtility]::UrlEncode($oneLine)
+            $url = "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address=$encoded&benchmark=2020&format=json"
+            try {
+              $resp = Invoke-RestMethod -Uri $url -Method GET -TimeoutSec 30
+              $m = $resp.result.addressMatches
+              if ($m -and $m.Count -gt 0) {
+                return @{ ok=$true; lat=[double]$m[0].coordinates.y; lng=[double]$m[0].coordinates.x; src='census' }
+              } else { return @{ ok=$false; code='NO_MATCH_CENSUS' } }
+            } catch {
+              $code = try { [int]$_.Exception.Response.StatusCode.value__ } catch { 0 }
+              return @{ ok=$false; code=("PROVIDER_ERROR_{0}" -f ($code -as [string])) }
+            }
+          }
+
+          # ---- Buckets ----
+          $existing  = @()
+          $cacheHits = @()
+          $geocoded  = @()
+          $failed    = @()
+
+          # ---- Geocode loop ----
+          foreach ($prop in $out) {
+            $prop.geocode_status = "unknown"
+            $prop.geocode_source = "none"
+            $prop.geocode_fail_code = $null
+
+            if ($prop.lat -ne 0.0 -and $prop.lng -ne 0.0) {
+              $prop.geocode_status = "ok"
+              $prop.geocode_source = "existing"
+              $existing += $prop
+              continue
+            }
+
+            $pre = FailCodesFor $prop
+            $street = Normalize-Address $prop.address
+            $addrOne = (($street, $prop.city, $prop.state, $prop.zip) -join ', ') -replace '\s+', ' '
+            $addrKey = ($addrOne -replace '[^a-zA-Z0-9]','')
+
+            if ($geocache.ContainsKey($addrKey)) {
+              $prop.lat = $geocache[$addrKey].lat
+              $prop.lng = $geocache[$addrKey].lng
+              $prop.geocode_status = "ok"
+              $prop.geocode_source = "cache"
+              $cacheHits += $prop
+              continue
+            }
+
+            $try1 = Try-Nominatim $addrOne
+            if ($try1.ok) {
+              $prop.lat = $try1.lat; $prop.lng = $try1.lng
+              $prop.geocode_status = "ok"
+              $prop.geocode_source = $try1.src
+              $geocache[$addrKey] = @{ lat=$prop.lat; lng=$prop.lng }
+              $geocoded += $prop
+              Start-Sleep -Milliseconds 1000
+              continue
+            }
+
+            if ($UseCensusFallback) {
+              $try2 = Try-Census $street $prop.city $prop.state $prop.zip
+              if ($try2.ok) {
+                $prop.lat = $try2.lat; $prop.lng = $try2.lng
+                $prop.geocode_status = "ok"
+                $prop.geocode_source = $try2.src
+                $geocache[$addrKey] = @{ lat=$prop.lat; lng=$prop.lng }
+                $geocoded += $prop
+                Start-Sleep -Milliseconds 300
+                continue
+              } else { if ($try2.code) { $pre.Add($try2.code) } }
+            }
+
+            if ($UseCityFallback -and $prop.city -and $prop.state) {
+              $tryCity = Try-Nominatim ("{0}, {1}" -f $prop.city, $prop.state)
+              if ($tryCity.ok) {
+                $prop.lat = $tryCity.lat; $prop.lng = $tryCity.lng
+                $prop.geocode_status = "approx"
+                $prop.geocode_source = "city_centroid"
+                $prop.geocode_fail_code = "CITY_CENTROID_FALLBACK"
+                $geocoded += $prop
+                Start-Sleep -Milliseconds 500
+                continue
+              }
+            }
+
+            if (-not $pre.Contains('NO_MATCH_NOMINATIM') -and $try1.code) { $pre.Add($try1.code) }
+            if ($pre.Count -eq 0) { $pre.Add('NO_MATCH_NOMINATIM') }
+
+            $prop.geocode_status    = "failed"
+            $prop.geocode_source    = "none"
+            $prop.geocode_fail_code = ($pre -join ';')
+
+            $failed += [pscustomobject]@{
+              name               = $prop.name
+              address            = $prop.address
+              city               = $prop.city
+              state              = $prop.state
+              zip                = $prop.zip
+              rvp                = $prop.rvp
+              rpm                = $prop.rpm
+              owner              = $prop.owner
+              legal              = $prop.legal_entity
+              attempted_address  = $addrOne
+              fail_code          = $prop.geocode_fail_code
+            }
+
+            Start-Sleep -Milliseconds 300
+          }
+
+          # ---- Save geocache ----
+          $geocache | ConvertTo-Json -Depth 4 | Set-Content -Encoding utf8 -Path $geocacheFile
+
+          # ---- Backup previous JSON ----
+          $jsonFile = "final_properties_with_coords_and_rvp.json"
+          if (Test-Path $jsonFile) {
+            $stamp = Get-Date -Format "yyyyMMdd-HHmmss"
+            Copy-Item $jsonFile ("backup_final_properties_{0}.json" -f $stamp)
+          }
+
+          # ---- Write main JSON (includes geocode_* fields) ----
+          $out | ConvertTo-Json -Depth 4 | Set-Content -Encoding utf8 -Path $jsonFile
+          Write-Host ("Wrote {0} with {1} rows." -f $jsonFile, $out.Count)
+
+          # ---- Reports (latest) ----
+          $reportDir = "reports"
+          New-Item -ItemType Directory -Force -Path $reportDir | Out-Null
+          $failed | ConvertTo-Json -Depth 4 | Set-Content -Encoding utf8 -Path "$reportDir/unmapped_properties.json"
+          $failed | Export-Csv -NoTypeInformation -Encoding UTF8 -Path "$reportDir/unmapped_properties.csv"
+
+          $summary = @"
+Geocoding summary
+=================
+Existing coords : $($existing.Count)
+Cache hits      : $($cacheHits.Count)
+Newly geocoded  : $($geocoded.Count)
+Failures        : $($failed.Count)
+
+Generated at    : $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")
+"@
+          $summary | Set-Content -Encoding utf8 -Path "$reportDir/geocode_summary.txt"
+          Write-Host $summary
+
+      - name: Set git identity (fallback)
+        shell: bash
+        run: |
+          git config --global user.name "Gateway Map Bot"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Commit JSON + reports
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 'Auto-update: final_properties_with_coords_and_rvp.json (with reason-coded geocoding) + reports'
+          file_pattern: |
+            final_properties_with_coords_and_rvp.json
+            backup_final_properties_*.json
+            detected_sharepoint_fields.txt
+            geocache.json
+            reports/*.csv
+            reports/*.json
+            reports/*.txt
+          commit_user_name: 'Gateway Map Bot'
+          commit_user_email: 'github-actions[bot]@users.noreply.github.com'
+          commit_author: 'Gateway Map Bot <github-actions[bot]@users.noreply.github.com>'
