@@ -105,72 +105,78 @@
       .then(data => {  // 'data' is now the array of property objects.
         console.log(`Loaded ${data.length} properties.`);  // Debug: Check console for count.
 
-        data.forEach(property => {  // Loop through each property.
-          if (property.lat !== 0 && property.lng !== 0) {  // Skip invalid coords (0,0 placeholders).
+        // Wrap the loop in try-catch to catch any per-marker issues without breaking everything.
+        try {
+          data.forEach(property => {  // Loop through each property.
+            if (property.lat !== 0 && property.lng !== 0) {  // Skip invalid coords (0,0 placeholders).
 
-            // Helper function: Pick color/shape based on property type.
-            function getMarkerOptions(type) {
-              switch (type) {
-                case '55': return { color: '#60d5d7', shape: 'circle' };  // Teal circle for 55+
-                case '62': return { color: '#10b981', shape: 'circle' };  // Green circle for 62+
-                case 'F': return { color: '#f59e0b', shape: 'square' };   // Amber square for Family
-                case 'C': return { color: '#8b5cf6', shape: 'diamond' };  // Purple diamond for Conventional
-                case 'S': return { color: '#ef4444', shape: 'star' };     // Red star for Senior/other
-                case 'RD-62': return { color: '#10b981', shape: 'circle' };  // Green for RD-62 (like 62)
-                default: return { color: '#3b82f6', shape: 'circle' };    // Default blue circle
+              // Helper function: Pick color/shape based on property type.
+              function getMarkerOptions(type) {
+                switch (type) {
+                  case '55': return { color: '#60d5d7', shape: 'circle' };  // Teal circle for 55+
+                  case '62': return { color: '#10b981', shape: 'circle' };  // Green circle for 62+
+                  case 'F': return { color: '#f59e0b', shape: 'square' };   // Amber square for Family
+                  case 'C': return { color: '#8b5cf6', shape: 'diamond' };  // Purple diamond for Conventional
+                  case 'S': return { color: '#ef4444', shape: 'star' };     // Red star for Senior/other
+                  case 'RD-62': return { color: '#10b981', shape: 'circle' };  // Green for RD-62 (like 62)
+                  default: return { color: '#3b82f6', shape: 'circle' };    // Default blue circle
+                }
               }
+
+              // Get options for this property's type.
+              var markerOptions = getMarkerOptions(property.type);
+
+              // Create a custom marker icon (colored div instead of default blue pin). Flattened to one line for safety.
+              var markerIcon = L.divIcon({
+                html: '<div style="width: 20px; height: 20px; background: ' + markerOptions.color + '; border-radius: ' + (markerOptions.shape === 'circle' ? '50%' : '0') + '; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></div>',
+                className: 'custom-div-icon',
+                iconSize: [20, 20],
+                iconAnchor: [10, 10]  // Centers the icon on the lat/lng point.
+              });
+
+              // Create the marker with custom icon (fallback to default if icon fails).
+              var marker;
+              try {
+                marker = L.marker([property.lat, property.lng], { icon: markerIcon }).addTo(map);
+              } catch (iconErr) {
+                console.warn('Marker icon error for ' + property.name + ': ' + iconErr.message + ' - using default');
+                marker = L.marker([property.lat, property.lng]).addTo(map);  // Fallback blue pin.
+              }
+
+              // Bind a styled popup with property details.
+              marker.bindPopup(
+                '<div style="font-family: system-ui, sans-serif; min-width: 280px;">' +
+                '<h3 style="margin: 0 0 8px 0; color: #073b3d; border-bottom: 1px solid #60d5d7; padding-bottom: 4px;">' +
+                property.name + ' 🏠</h3>' +
+                '<p><strong>Type:</strong> ' + property.type + ' | <strong>Units:</strong> ' + property.units + '</p>' +
+                '<p><strong>Address:</strong> ' + property.address + '<br>' +
+                property.city + ', ' + property.state + ' ' + property.zip + '</p>' +
+                '<p><strong>Manager:</strong> ' + property.manager + '<br>' +
+                '<a href="mailto:' + property.manager_email + '" style="color: #0ea5e9;">' + property.manager_email + '</a></p>' +
+                '<p><strong>RVP:</strong> ' + property.rvp + ' | <strong>Owner:</strong> ' + property.owner + '</p>' +
+                '<small style="color: #6b7280; border-top: 1px solid #e5e7eb; padding-top: 4px; display: block;">' +
+                'Phone: ' + (property.office_phone || 'N/A') + '</small>' +
+                '</div>'
+              );
+
+              // Store the marker with its property data (for filtering later).
+              allMarkers.push({
+                marker: marker,
+                property: property
+              });
             }
-
-            // Get options for this property's type.
-            var markerOptions = getMarkerOptions(property.type);
-
-            // Create a custom marker icon (colored div instead of default blue pin).
-            var markerIcon = L.divIcon({
-              html: `<div style="
-                width: 20px; height: 20px; 
-                background: ${markerOptions.color}; 
-                border-radius: ${markerOptions.shape === 'circle' ? '50%' : '0'};
-                border: 2px solid white; 
-                box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-              "></div>`,
-              className: 'custom-div-icon',
-              iconSize: [20, 20],
-              iconAnchor: [10, 10]  // Centers the icon on the lat/lng point.
-            });
-
-            // Create the marker with custom icon.
-            var marker = L.marker([property.lat, property.lng], { icon: markerIcon }).addTo(map);
-
-            // Bind a styled popup with property details.
-            marker.bindPopup(`
-              <div style="font-family: system-ui, sans-serif; min-width: 280px;">
-                <h3 style="margin: 0 0 8px 0; color: #073b3d; border-bottom: 1px solid #60d5d7; padding-bottom: 4px;">
-                  ${property.name} 🏠
-                </h3>
-                <p><strong>Type:</strong> ${property.type} | <strong>Units:</strong> ${property.units}</p>
-                <p><strong>Address:</strong> ${property.address}<br>
-                   ${property.city}, ${property.state} ${property.zip}</p>
-                <p><strong>Manager:</strong> ${property.manager}<br>
-                   <a href="mailto:${property.manager_email}" style="color: #0ea5e9;">${property.manager_email}</a></p>
-                <p><strong>RVP:</strong> ${property.rvp} | <strong>Owner:</strong> ${property.owner}</p>
-                <small style="color: #6b7280; border-top: 1px solid #e5e7eb; padding-top: 4px; display: block;">
-                  Phone: ${property.office_phone || 'N/A'}
-                </small>
-              </div>
-            `);
-
-            // Store the marker with its property data (for filtering later).
-            allMarkers.push({
-              marker: marker,
-              property: property
-            });
-          }
-        });
+          });
+        } catch (loopErr) {
+          console.error('Error in marker loop: ' + loopErr.message);
+        }
 
         // Auto-fit the map to show all markers (bounds them nicely).
         if (allMarkers.length > 0) {
           var group = new L.featureGroup(allMarkers.map(m => m.marker));
           map.fitBounds(group.getBounds(), { padding: [20, 20] });
+          console.log('Auto-fitted map to ' + allMarkers.length + ' markers.');
+        } else {
+          console.warn('No valid markers to fit - check coords in JSON.');
         }
       })
       .catch(error => console.error('Error loading JSON:', error));  // Log any fetch errors to console.
