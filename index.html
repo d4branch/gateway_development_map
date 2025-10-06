@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Gateway Properties Map</title>
 
-  <!-- Main stylesheet (your teal header, toolbar, map height, + legend CSS appended) -->
+  <!-- Main stylesheet (teal header, toolbar, map height, + legend CSS appended) -->
   <link rel="stylesheet" href="styles/app.css" />
 
   <!-- Leaflet CSS -->
@@ -77,6 +77,8 @@
 
     let allProps = [];
     let allMarkers = []; // [{ property, marker }]
+    let totalPortfolio = 0; // all rows in JSON
+    let totalEligible  = 0; // rows with usable coordinates
 
     // ---- Utils ----
     const uniqueSorted = arr => [...new Set(arr.filter(Boolean))].sort((a,b)=>a.localeCompare(b));
@@ -144,7 +146,7 @@
       return m;
     }
 
-    // ---- Legend (uses same getMarkerOptions to stay in sync) ----
+    // ---- Legend (with counts) ----
     function legendHTML() {
       const items = [
         {label:'55+',    type:'55'},
@@ -165,7 +167,12 @@
       return `<div>
         <h4>Legend</h4>
         ${rows}
-        <div class="counts"><span id="legendCount">0</span> visible</div>
+        <div class="counts">
+          <span id="legendVisible">0</span> visible /
+          <span id="legendEligible">0</span> mapped •
+          <span id="legendTotal">0</span> total •
+          <span id="legendUnmapped">0</span> unmapped
+        </div>
       </div>`;
     }
 
@@ -177,9 +184,13 @@
     };
     legend.addTo(map);
 
-    function updateLegendCount(n) {
-      const el = document.getElementById('legendCount');
-      if (el) el.textContent = String(n);
+    function updateLegendCounts(visible) {
+      const unmapped = Math.max(totalPortfolio - totalEligible, 0);
+      const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = String(val); };
+      set('legendVisible',  visible);
+      set('legendEligible', totalEligible);
+      set('legendTotal',    totalPortfolio);
+      set('legendUnmapped', unmapped);
     }
 
     // ---- Filters ----
@@ -204,10 +215,10 @@
 
       rows.forEach(({marker}) => markersGroup.addLayer(marker));
 
-      // Visible count in legend
-      updateLegendCount(rows.length);
+      // Counts in legend
+      updateLegendCounts(rows.length);
 
-      // Fit to visible markers (only if some are visible)
+      // Fit to visible markers
       if (rows.length) {
         const grp = L.featureGroup(rows.map(r => r.marker));
         map.fitBounds(grp.getBounds(), { padding: [20,20] });
@@ -224,13 +235,17 @@
           .filter(p => p.lat && p.lng && p.lat !== 0 && p.lng !== 0)
           .map(p => ({ property: p, marker: makeMarker(p) }));
 
+        // Set totals for legend math
+        totalPortfolio = allProps.length;
+        totalEligible  = allMarkers.length;
+
         // Populate dropdowns dynamically
         addOptions('rvpFilter',   uniqueSorted(allProps.map(p => p.rvp)));
         addOptions('rpmFilter',   uniqueSorted(allProps.map(p => p.rpm)));
         addOptions('ownerFilter', uniqueSorted(allProps.map(p => p.owner)));
         addOptions('legalFilter', uniqueSorted(allProps.map(p => p.legal_entity)));
 
-        // Initial draw
+        // Initial draw (+ counts)
         applyFilters();
 
         // Bind filter events
