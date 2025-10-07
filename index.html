@@ -241,11 +241,14 @@
       if (link) link.style.pointerEvents = (unmapped === 0 ? 'none' : 'auto');
     }
 
-    // Build an unmapped array from the full dataset
-    function computeUnmapped() {
-      return allProps.filter(p => !(p.lat && p.lng && p.lat !== 0 && p.lng !== 0));
-    }
-
+// Build an unmapped array from the full dataset (exact workflow match)
+function computeUnmapped() {
+  const unmapped = allProps.filter(p => !(p.lat && p.lng && p.lat !== 0.0 && p.lng !== 0.0));
+  if (unmapped.length > 0) {
+    console.log('Unmapped debug:', unmapped.map(p => ({ name: p.name, lat: p.lat, lng: p.lng, status: p.geocode_status })));
+  }
+  return unmapped;
+}
     // CSV download for unmapped rows (includes geocode_fail_code)
     function downloadUnmappedCSV() {
       const unmapped = computeUnmapped();
