@@ -173,4 +173,139 @@
       const statusRows = [
         {label:'Ok', status:'ok', color:'#10b981'},
         {label:'Approx', status:'approx', color:'#f59e0b'},
-        {label:'Failed', status:'failed',
+        {label:'Failed', status:'failed', color:'#ef4444'}
+      ].map(it => `<div class="row"><div class="swatch circle" style="background:${it.color};width:12px;height:12px;border-radius:50%;border:1px solid #fff;"></div><div>${it.label}</div></div>`).join('');
+      return `<div>
+        <h4>Legend</h4>
+        ${rows}
+        <hr style="margin:8px 0;border:none;border-top:1px solid #e5e7eb;">
+        <h5 style="margin:0 0 4px;font-size:12px;color:#6b7280;">Status (Border)</h5>
+        ${statusRows}
+        <div class="counts">
+          <span id="legendVisible">0</span> visible /
+          <span id="legendEligible">0</span> mapped •
+          <span id="legendTotal">0</span> total •
+          <a href="#" id="legendUnmappedLink" title="Download unmapped list">
+            <span id="legendUnmapped">0</span> unmapped
+          </a>
+        </div>
+      </div>`;
+    }
+    const legend = L.control({ position: 'bottomleft' });
+    legend.onAdd = function() {
+      const div = L.DomUtil.create('div', 'leaflet-control legend');
+      div.innerHTML = legendHTML();
+      return div;
+    };
+    legend.addTo(map);
+    function updateLegendCounts(visible) {
+      const unmapped = Math.max(totalPortfolio - totalEligible, 0);
+      const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = String(val); };
+      set('legendVisible', visible);
+      set('legendEligible', totalEligible);
+      set('legendTotal', totalPortfolio);
+      set('legendUnmapped', unmapped);
+      // enable/disable download button + link
+      const btn = document.getElementById('btnUnmapped');
+      if (btn) btn.disabled = (unmapped === 0);
+      const link = document.getElementById('legendUnmappedLink');
+      if (link) link.style.pointerEvents = (unmapped === 0 ? 'none' : 'auto');
+    }
+    // Build an unmapped array from the full dataset (exact workflow match)
+    function computeUnmapped() {
+      const unmapped = allProps.filter(p => !(p.lat && p.lng && p.lat !== 0.0 && p.lng !== 0.0));
+      if (unmapped.length > 0) {
+        console.log('Unmapped debug:', unmapped.map(p => ({ name: p.name, lat: p.lat, lng: p.lng, status: p.geocode_status })));
+      }
+      return unmapped;
+    }
+    // CSV download for unmapped rows (includes geocode_fail_code)
+    function downloadUnmappedCSV() {
+      const unmapped = computeUnmapped();
+      const headers = [
+        'name','type','address','city','state','zip',
+        'rvp','rpm','owner','legal_entity','manager','manager_email','office_phone',
+        'geocode_fail_code' // <-- reason code from nightly workflow
+      ];
+      const esc = v => `"${String(v ?? '').replace(/"/g,'""')}"`;
+      const lines = [
+        headers.map(h => esc(h)).join(','),
+        ...unmapped.map(p => headers.map(h => esc(p[h])).join(','))
+      ];
+      const bom = '\uFEFF'; // Excel-friendly UTF-8 BOM
+      const csv = bom + lines.join('\r\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'unmapped_properties.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+    // ---- Filters ----
+    function applyFilters() {
+      const rvp = document.getElementById('rvpFilter').value;
+      const rpm = document.getElementById('rpmFilter').value;
+      const st = document.getElementById('stateFilter').value;
+      const type = document.getElementById('typeFilter').value;
+      const owner = document.getElementById('ownerFilter').value;
+      const legal = document.getElementById('legalFilter').value;
+      const status = document.getElementById('statusFilter').value; // New: Status filter
+      markersGroup.clearLayers();
+      const rows = allMarkers.filter(({property:p}) => (
+        (rvp === 'All' || p.rvp === rvp) &&
+        (rpm === 'All' || p.rpm === rpm) &&
+        (st === 'All' || p.state === st) &&
+        (type === 'All' || p.type === type) &&
+        (owner === 'All' || p.owner === owner) &&
+        (legal === 'All' || p.legal_entity === legal) &&
+        (status === 'All' || p.geocode_status === status) // New: Filter by status
+      ));
+      rows.forEach(({marker}) => markersGroup.addLayer(marker));
+      // Counts in legend
+      updateLegendCounts(rows.length);
+      // Fit to visible markers
+      if (rows.length) {
+        const grp = L.featureGroup(rows.map(r => r.marker));
+        map.fitBounds(grp.getBounds(), { padding: [20,20] });
+      }
+    }
+    // ---- Load data, build markers, wire UI ----
+    const jsonUrl = './final_properties_with_coords_and_rvp.json?v=' + Date.now();
+    console.log('Fetching JSON from:', jsonUrl); // Debug URL
+    fetch(jsonUrl)
+      .then(r => {
+        console.log('Response status:', r.status); // Debug load
+        return r.json();
+      })
+      .then(data => {
+        console.log('Loaded', data.length, 'props; Cedar Glades lat:', data.find(p => p.name === 'Cedar Glades')?.lat || 'N/A', 'status:', data.find(p => p.name === 'Cedar Glades')?.geocode_status || 'N/A'); // Debug specific prop
+        allProps = data;
+        allMarkers = allProps
+          .filter(p => p.lat && p.lng && p.lat !== 0.0 && p.lng !== 0.0) // Strict 0.0 check
+          .map(p => ({ property: p, marker: makeMarker(p) }));
+        // Set totals for legend math
+        totalPortfolio = allProps.length;
+        totalEligible = allMarkers.length;
+        // Populate dropdowns dynamically
+        addOptions('rvpFilter', uniqueSorted(allProps.map(p => p.rvp)));
+        addOptions('rpmFilter', uniqueSorted(allProps.map(p => p.rpm)));
+        addOptions('ownerFilter', uniqueSorted(allProps.map(p => p.owner)));
+        addOptions('legalFilter', uniqueSorted(allProps.map(p => p.legal_entity)));
+        // Initial draw (+ counts)
+        applyFilters();
+        // Bind filter events (added statusFilter)
+        ['rvpFilter','rpmFilter','stateFilter','typeFilter','ownerFilter','legalFilter','statusFilter']
+          .forEach(id => document.getElementById(id).addEventListener('change', applyFilters));
+        // Wire the download button + legend link
+        const btn = document.getElementById('btnUnmapped');
+        if (btn) btn.addEventListener('click', downloadUnmappedCSV);
+        const link = document.getElementById('legendUnmappedLink');
+        if (link) link.addEventListener('click', (e) => { e.preventDefault(); downloadUnmappedCSV(); });
+      })
+      .catch(err => console.error('Error loading JSON:', err));
+  </script>
+</body>
+</html>
