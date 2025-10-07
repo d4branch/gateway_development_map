@@ -117,7 +117,7 @@
     "lng": 0.0,
     "geocode_status": "failed",
     "geocode_source": "none",
-    "geocode_fail_code": "NO_MATCH_NOMINATIM"
+    "geocode_fail_code": "NO_MATCH_CENSUS;NO_MATCH_NOMINATIM"
   },
   {
     "name": "Americus Garden Apts.",
@@ -437,7 +437,7 @@
     "units": 192.0,
     "manager": "Alexis Williams",
     "assistant_mgr": "Angelina Neal",
-    "compliance": null,
+    "compliance": "",
     "address": "504 N Pierce Street",
     "city": "Lafayette",
     "state": "LA",
@@ -621,7 +621,7 @@
     "lng": 0.0,
     "geocode_status": "failed",
     "geocode_source": "none",
-    "geocode_fail_code": "NO_MATCH_NOMINATIM"
+    "geocode_fail_code": "NO_MATCH_CENSUS;NO_MATCH_NOMINATIM"
   },
   {
     "name": "Cedar Hollow Family ",
@@ -693,7 +693,7 @@
     "lng": 0.0,
     "geocode_status": "failed",
     "geocode_source": "none",
-    "geocode_fail_code": "NO_MATCH_NOMINATIM"
+    "geocode_fail_code": "NO_MATCH_CENSUS;NO_MATCH_NOMINATIM"
   },
   {
     "name": "Cherry Ridge Village Apts",
@@ -741,7 +741,7 @@
     "lng": 0.0,
     "geocode_status": "failed",
     "geocode_source": "none",
-    "geocode_fail_code": "NO_MATCH_NOMINATIM"
+    "geocode_fail_code": "NO_MATCH_CENSUS;NO_MATCH_NOMINATIM"
   },
   {
     "name": "Clement Belle Farm - Lease up",
@@ -765,7 +765,7 @@
     "lng": 0.0,
     "geocode_status": "failed",
     "geocode_source": "none",
-    "geocode_fail_code": "NO_MATCH_NOMINATIM"
+    "geocode_fail_code": "NO_MATCH_CENSUS;NO_MATCH_NOMINATIM"
   },
   {
     "name": "Cobblestone Village",
@@ -861,7 +861,7 @@
     "lng": 0.0,
     "geocode_status": "failed",
     "geocode_source": "none",
-    "geocode_fail_code": "NO_MATCH_NOMINATIM"
+    "geocode_fail_code": "NO_MATCH_CENSUS;NO_MATCH_NOMINATIM"
   },
   {
     "name": "Cottage MWC I  ",
@@ -933,7 +933,7 @@
     "lng": 0.0,
     "geocode_status": "failed",
     "geocode_source": "none",
-    "geocode_fail_code": "NO_MATCH_NOMINATIM"
+    "geocode_fail_code": "NO_MATCH_CENSUS;NO_MATCH_NOMINATIM"
   },
   {
     "name": "Cottage Park McAlester",
@@ -1005,7 +1005,7 @@
     "lng": 0.0,
     "geocode_status": "failed",
     "geocode_source": "none",
-    "geocode_fail_code": "NO_MATCH_NOMINATIM"
+    "geocode_fail_code": "NO_MATCH_CENSUS;NO_MATCH_NOMINATIM"
   },
   {
     "name": "Covington Mill Village",
@@ -1205,7 +1205,7 @@
     "units": 216.0,
     "manager": "Indira Morcol",
     "assistant_mgr": "Destinie Coston",
-    "compliance": null,
+    "compliance": "",
     "address": "801 N. Ardenwood Drive",
     "city": "Baton Rouge",
     "state": "LA",
@@ -1557,7 +1557,7 @@
     "lng": 0.0,
     "geocode_status": "failed",
     "geocode_source": "none",
-    "geocode_fail_code": "NO_MATCH_NOMINATIM"
+    "geocode_fail_code": "NO_MATCH_CENSUS;NO_MATCH_NOMINATIM"
   },
   {
     "name": "Heatherwood Apts",
@@ -1749,7 +1749,7 @@
     "lng": 0.0,
     "geocode_status": "failed",
     "geocode_source": "none",
-    "geocode_fail_code": "NO_MATCH_NOMINATIM"
+    "geocode_fail_code": "NO_MATCH_CENSUS;NO_MATCH_NOMINATIM"
   },
   {
     "name": "Highland Estates of Rome",
@@ -1869,7 +1869,7 @@
     "lng": 0.0,
     "geocode_status": "failed",
     "geocode_source": "none",
-    "geocode_fail_code": "NO_MATCH_NOMINATIM"
+    "geocode_fail_code": "NO_MATCH_CENSUS;NO_MATCH_NOMINATIM"
   },
   {
     "name": "Howell Senior School Apts ",
@@ -2037,7 +2037,7 @@
     "lng": 0.0,
     "geocode_status": "failed",
     "geocode_source": "none",
-    "geocode_fail_code": "NO_MATCH_NOMINATIM"
+    "geocode_fail_code": "NO_MATCH_CENSUS;NO_MATCH_NOMINATIM"
   },
   {
     "name": "Kenyon at Cross Creek, The",
@@ -2157,7 +2157,7 @@
     "lng": 0.0,
     "geocode_status": "failed",
     "geocode_source": "none",
-    "geocode_fail_code": "NO_MATCH_NOMINATIM"
+    "geocode_fail_code": "NO_MATCH_CENSUS;NO_MATCH_NOMINATIM"
   },
   {
     "name": "Laurel Ridge Development",
@@ -2189,7 +2189,7 @@
     "units": 264.0,
     "manager": "Reve' Landry",
     "assistant_mgr": "Makenzie Ardoin ",
-    "compliance": null,
+    "compliance": "",
     "address": "4101 5th Avenue",
     "city": "Lake Charles",
     "state": "LA",
@@ -2333,7 +2333,7 @@
     "units": 192.0,
     "manager": "Ticoka Hines",
     "assistant_mgr": "Qairess Winston",
-    "compliance": null,
+    "compliance": "",
     "address": "11320 Greenwell Springs Rd.",
     "city": "Baton Rouge",
     "state": "LA",
@@ -2493,7 +2493,7 @@
     "lng": 0.0,
     "geocode_status": "failed",
     "geocode_source": "none",
-    "geocode_fail_code": "NO_MATCH_NOMINATIM"
+    "geocode_fail_code": "NO_MATCH_CENSUS;NO_MATCH_NOMINATIM"
   },
   {
     "name": "Meadows at Nicholson ",
@@ -2501,7 +2501,7 @@
     "units": 204.0,
     "manager": "Sharonda Brooks",
     "assistant_mgr": "Shirmelle Dyer",
-    "compliance": null,
+    "compliance": "",
     "address": "11777 Nicholson Drive",
     "city": "Baton Rouge",
     "state": "LA",
@@ -2589,7 +2589,7 @@
     "lng": 0.0,
     "geocode_status": "failed",
     "geocode_source": "none",
-    "geocode_fail_code": "NO_MATCH_NOMINATIM"
+    "geocode_fail_code": "NO_MATCH_CENSUS;NO_MATCH_NOMINATIM"
   },
   {
     "name": "Oakleigh Crossing",
@@ -2661,7 +2661,7 @@
     "lng": 0.0,
     "geocode_status": "failed",
     "geocode_source": "none",
-    "geocode_fail_code": "NO_MATCH_NOMINATIM"
+    "geocode_fail_code": "NO_MATCH_CENSUS;NO_MATCH_NOMINATIM"
   },
   {
     "name": "Orchard View ",
@@ -2829,7 +2829,7 @@
     "lng": 0.0,
     "geocode_status": "failed",
     "geocode_source": "none",
-    "geocode_fail_code": "NO_MATCH_NOMINATIM"
+    "geocode_fail_code": "NO_MATCH_CENSUS;NO_MATCH_NOMINATIM"
   },
   {
     "name": "Peaks of Dahlonega - Lease-up",
@@ -2853,7 +2853,7 @@
     "lng": 0.0,
     "geocode_status": "failed",
     "geocode_source": "none",
-    "geocode_fail_code": "NO_MATCH_NOMINATIM"
+    "geocode_fail_code": "NO_MATCH_CENSUS;NO_MATCH_NOMINATIM"
   },
   {
     "name": "Peaks of Dawson",
@@ -2901,7 +2901,7 @@
     "lng": 0.0,
     "geocode_status": "failed",
     "geocode_source": "none",
-    "geocode_fail_code": "NO_MATCH_NOMINATIM"
+    "geocode_fail_code": "NO_MATCH_CENSUS;NO_MATCH_NOMINATIM"
   },
   {
     "name": "Pebble Creek Apts.",
@@ -3029,7 +3029,7 @@
     "units": 192.0,
     "manager": "LaQuechia Jackson-Robertson ",
     "assistant_mgr": "Jennifer Perry",
-    "compliance": null,
+    "compliance": "",
     "address": "6454 Airline Hwy.",
     "city": "Baton Rouge",
     "state": "LA",
@@ -3285,7 +3285,7 @@
     "lng": 0.0,
     "geocode_status": "failed",
     "geocode_source": "none",
-    "geocode_fail_code": "NO_MATCH_NOMINATIM"
+    "geocode_fail_code": "NO_MATCH_CENSUS;NO_MATCH_NOMINATIM"
   },
   {
     "name": "SkyHouse RVP Michelle Clark",
@@ -3789,7 +3789,7 @@
     "lng": 0.0,
     "geocode_status": "failed",
     "geocode_source": "none",
-    "geocode_fail_code": "NO_MATCH_NOMINATIM"
+    "geocode_fail_code": "NO_MATCH_CENSUS;NO_MATCH_NOMINATIM"
   },
   {
     "name": "Union at Stonecrest",
@@ -4077,7 +4077,7 @@
     "lng": 0.0,
     "geocode_status": "failed",
     "geocode_source": "none",
-    "geocode_fail_code": "NO_MATCH_NOMINATIM"
+    "geocode_fail_code": "NO_MATCH_CENSUS;NO_MATCH_NOMINATIM"
   },
   {
     "name": "Vinings of Augusta",
@@ -4221,7 +4221,7 @@
     "lng": 0.0,
     "geocode_status": "failed",
     "geocode_source": "none",
-    "geocode_fail_code": "NO_MATCH_NOMINATIM"
+    "geocode_fail_code": "NO_MATCH_CENSUS;NO_MATCH_NOMINATIM"
   },
   {
     "name": "Windcliff Apts.",
@@ -4277,7 +4277,7 @@
     "units": 48.0,
     "manager": "Brandon Douglas",
     "assistant_mgr": null,
-    "compliance": null,
+    "compliance": "",
     "address": "1682 N. Lobdell Ave.",
     "city": "Baton Rouge",
     "state": "LA",
