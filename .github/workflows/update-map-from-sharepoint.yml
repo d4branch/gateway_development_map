@@ -26,7 +26,6 @@ jobs:
           SP_SITE_HOSTNAME: ${{ secrets.SP_SITE_HOSTNAME }}
           SP_SITE_PATH: ${{ secrets.SP_SITE_PATH }}
           SP_SITE_ID: ${{ secrets.SP_SITE_ID }}
-        
         run: |
           $ErrorActionPreference = 'Stop'
 
@@ -143,7 +142,7 @@ jobs:
             $city = Get-Field $f 'field_7' 'city'
             $state = Get-Field $f 'field_8' 'state'
             $zip = Get-Field $f 'field_9' 'zip'
-            $office_phone = Get-Field $f 'field_10' 'phone'  # Fuzzy for office_phone
+            $office_phone = Get-Field $f 'field_10' 'phone'
             $fax = Get-Field $f 'field_11' 'fax'
             $manager_email = Get-Field $f 'field_12' 'email'
             $rpm = Get-Field $f 'field_13' 'rpm'
@@ -196,8 +195,8 @@ jobs:
           }
 
           # ---- Controls ----
-          $UseCityFallback   = $false    # set true to use city centroid as last resort
-          $UseCensusFallback = $true     # US-only fallback (recommended)
+          $UseCityFallback   = $false
+          $UseCensusFallback = $true
 
           # ---- Helpers ----
           function Normalize-Address([string]$addr) {
@@ -285,182 +284,9 @@ jobs:
               Write-Host "WARNING: $pre was null/invalid for $($prop.name); resetting to empty List"
               $pre = New-Object System.Collections.Generic.List[string]
             }
-            Write-Host "Pre for $($prop.name): List with $($pre.Count) items"
-            $street = Normalize-Address $prop.address
-            $addrOne = (($street, $prop.city, $prop.state, $prop.zip) -join ', ') -replace '\s+', ' '
-            $addrKey = ($addrOne -replace '[^a-zA-Z0-9]','')
-
-            if ($geocache.ContainsKey($addrKey)) {
-              $prop.lat = $geocache[$addrKey].lat
-              $prop.lng = $geocache[$addrKey].lng
-              $prop.geocode_status = "ok"
-              $prop.geocode_source = "cache"
-              $cacheHits += $prop
-              continue
+            if ($prop.name -in @('Alexander Village', 'Cedar Glades', 'Cherry Ridge Independent Living', 'Villas on Forsyth')) {
+              Write-Host "Pre for $($prop.name): List with $($pre.Count) items: $($pre -join ', ')"
             }
-
-            $try1 = Try-Nominatim $addrOne
-            if ($try1.ok) {
-              $prop.lat = $try1.lat; $prop.lng = $try1.lng
-              $prop.geocode_status = "ok"
-              $prop.geocode_source = $try1.src
-              $geocache[$addrKey] = @{ lat=$prop
-          # ---- Resolve list ----
-          $listName = "Properties_by_RVP"
-          $listsUrl = "https://graph.microsoft.com/v1.0/sites/$siteId/lists?`$select=id,displayName&`$top=999"
-          $lists = Invoke-RestMethod -Headers $H -Uri $listsUrl -Method GET
-          if (-not $lists.value) { throw "No lists found for site id $siteId." }
-
-          $list = $lists.value | Where-Object { $_.displayName -eq $listName }
-          if (-not $list) { $list = $lists.value | Where-Object { $_.displayName.ToLower() -eq $listName.ToLower() } }
-          if (-not $list) {
-            $alt = ($listName -replace '_',' ')
-            $list = $lists.value | Where-Object { $_.displayName.ToLower() -eq $alt.ToLower() }
-          }
-          if (-not $list) {
-            throw ("List '{0}' not found. Available: {1}" -f $listName, ($lists.value.displayName -join ', '))
-          }
-          $listId = $list.id
-
-          # ---- Pull items ----
-          $items = @()
-          $url = "https://graph.microsoft.com/v1.0/sites/$siteId/lists/$listId/items?`$expand=fields&`$top=999"
-          while ($url) {
-            $r = Invoke-RestMethod -Headers $H -Uri $url -Method GET
-            $items += $r.value
-            $url = $r.'@odata.nextLink'
-          }
-
-          # ---- Dump detected field names (first item) ----
-          if ($items.Count -gt 0) {
-            ($items[0].fields | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty Name) |
-              Sort-Object | Out-File -Encoding utf8 -FilePath "$PWD/detected_sharepoint_fields.txt"
-          }
-
-          # ---- Map SharePoint fields -> schema ----
-          function Map-Row($f) {
-            [pscustomobject]@{
-              name             = $f.Title
-              type             = $f.TYPE
-              units            = $f.field_2
-              manager          = $f.field_3
-              assistant_mgr    = $f.field_4
-              compliance       = $f.field_5
-              address          = $f.field_6
-              city             = $f.field_7
-              state            = $f.field_8
-              zip              = $f.field_9
-              office_phone     = $f.field_10
-              fax              = $f.field_11
-              manager_email    = $f.field_12
-              rpm              = $f.field_13
-              rvp              = $f.field_14
-              owner            = $f.Owner
-              legal_entity     = $f.LegalEntity
-              lat              = [double]($f.Latitude  ?? 0.0)
-              lng              = [double]($f.Longitude ?? 0.0)
-              geocode_status   = "unknown"
-              geocode_source   = "none"
-              geocode_fail_code= $null
-            }
-          }
-          $out = foreach ($it in $items) { Map-Row $it.fields }
-
-          # ---- Geocache ----
-          $geocacheFile = "geocache.json"
-          $geocache = @{}
-          if (Test-Path $geocacheFile) {
-            $geocache = Get-Content $geocacheFile -Raw | ConvertFrom-Json -AsHashtable
-          }
-
-          # ---- Controls ----
-          $UseCityFallback   = $false    # set true to use city centroid as last resort
-          $UseCensusFallback = $true     # US-only fallback (recommended)
-
-          # ---- Helpers ----
-          function Normalize-Address([string]$addr) {
-            if (-not $addr) { return "" }
-            $a = $addr.Trim()
-            $a = $a -replace '(?i)\s+(Apt|Apartment|Unit|Lot|Suite|Ste|#)\s*\S+', ''
-            $a = $a -replace '(?i)\bHwy\b','Highway'
-            $a = $a -replace '(?i)\bRd\b','Road'
-            $a = $a -replace '(?i)\bAve\b','Avenue'
-            $a = $a -replace '(?i)\bSt\b','Street'
-            $a = $a -replace '(?i)\bBlvd\b','Boulevard'
-            $a = $a -replace '(?i)\bPkwy\b','Parkway'
-            $a = $a -replace '(?i)\bLn\b','Lane'
-            $a = $a -replace '(?i)\bDr\b','Drive'
-            $a = $a -replace '\s+', ' '
-            return $a
-          }
-          function FailCodesFor($prop) {
-            $codes = New-Object System.Collections.Generic.List[string]
-            if (-not $prop.address) { $codes.Add('ADDRESS_TOO_SHORT'); return $codes }
-            if ($prop.address -match '(?i)\bP\.?\s*O\.?\s*Box\b') { $codes.Add('PO_BOX') }
-            if ($prop.address -notmatch '^\s*\d+') { $codes.Add('MISSING_STREETNUM') }
-            if (-not $prop.city)  { $codes.Add('MISSING_CITY')  }
-            if (-not $prop.state) { $codes.Add('MISSING_STATE') }
-            if ($prop.zip -and $prop.zip -notmatch '^\d{5}(-\d{4})?$') { $codes.Add('BAD_ZIP') }
-            if ($prop.address.Length -lt 6) { $codes.Add('ADDRESS_TOO_SHORT') }
-            return $codes
-          }
-          function Try-Nominatim($q) {
-            $encoded = [System.Net.WebUtility]::UrlEncode($q)
-            $url = "https://nominatim.openstreetmap.org/search?q=$encoded&format=json&limit=1&addressdetails=0"
-            try {
-              $resp = Invoke-RestMethod -Uri $url -Headers @{ "User-Agent" = "GatewayMapBot/1.0 (bot@example.com)" } -Method GET -TimeoutSec 30
-              if ($resp -and $resp.Count -gt 0) {
-                return @{ ok=$true; lat=[double]$resp[0].lat; lng=[double]$resp[0].lon; src='nominatim' }
-              } else { return @{ ok=$false; code='NO_MATCH_NOMINATIM' } }
-            } catch {
-              Write-Host "Nominatim error: $($_.Exception.Message)"
-              $code = try { [int]$_.Exception.Response.StatusCode.value__ } catch { 0 }
-              return @{ ok=$false; code=("PROVIDER_ERROR_{0}" -f ($code -as [string])) }
-            }
-          }
-          function Try-Census($street, $city, $state, $zip) {
-            $oneLine = ($street, $city, $state, $zip) -join ', '
-            $encoded = [System.Net.WebUtility]::UrlEncode($oneLine)
-            $url = "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address=$encoded&benchmark=2020&format=json"
-            try {
-              $resp = Invoke-RestMethod -Uri $url -Method GET -TimeoutSec 30
-              $m = $resp.result.addressMatches
-              if ($m -and $m.Count -gt 0) {
-                return @{ ok=$true; lat=[double]$m[0].coordinates.y; lng=[double]$m[0].coordinates.x; src='census' }
-              } else { return @{ ok=$false; code='NO_MATCH_CENSUS' } }
-            } catch {
-              Write-Host "Census error: $($_.Exception.Message)"
-              $code = try { [int]$_.Exception.Response.StatusCode.value__ } catch { 0 }
-              return @{ ok=$false; code=("PROVIDER_ERROR_{0}" -f ($code -as [string])) }
-            }
-          }
-
-          # ---- Buckets ----
-          $existing  = @()
-          $cacheHits = @()
-          $geocoded  = @()
-          $failed    = @()
-
-          # ---- Geocode loop ----
-          foreach ($prop in $out) {
-            $prop.geocode_status = "unknown"
-            $prop.geocode_source = "none"
-            $prop.geocode_fail_code = $null
-
-            if ($prop.lat -ne 0.0 -and $prop.lng -ne 0.0) {
-              $prop.geocode_status = "ok"
-              $prop.geocode_source = "existing"
-              $existing += $prop
-              continue
-            }
-
-            $pre = FailCodesFor $prop
-            # Safeguard: Ensure $pre is always a valid List
-            if ($pre -eq $null -or $pre -isnot [System.Collections.Generic.List[string]]) {
-              Write-Host "WARNING: $pre was null/invalid for $($prop.name); resetting to empty List"
-              $pre = New-Object System.Collections.Generic.List[string]
-            }
-            Write-Host "Pre for $($prop.name): List with $($pre.Count) items"
             $street = Normalize-Address $prop.address
             $addrOne = (($street, $prop.city, $prop.state, $prop.zip) -join ', ') -replace '\s+', ' '
             $addrKey = ($addrOne -replace '[^a-zA-Z0-9]','')
@@ -519,6 +345,10 @@ jobs:
             $prop.geocode_status    = "failed"
             $prop.geocode_source    = "none"
             $prop.geocode_fail_code = ($pre ? ($pre -join ';') : 'UNKNOWN_ERROR')
+
+            if ($prop.name -in @('Alexander Village', 'Cedar Glades', 'Cherry Ridge Independent Living', 'Villas on Forsyth')) {
+              Write-Host "DEBUG: Failed geocoding '$($prop.name)': lat=$($prop.lat), lng=$($prop.lng), fail=($($prop.geocode_fail_code))"
+            }
 
             $failed += [pscustomobject]@{
               name               = $prop.name
