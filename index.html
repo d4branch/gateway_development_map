@@ -4,10 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Gateway Properties Map</title>
-
   <!-- Main stylesheet (teal header, toolbar, map height, + legend CSS appended) -->
   <link rel="stylesheet" href="styles/app.css" />
-
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
@@ -17,19 +15,16 @@
     <h1>Gateway Properties Map</h1>
     <p class="sub">Property Filters</p>
   </div>
-
   <!-- Toolbar -->
   <div class="toolbar">
     <div class="group">
       <label for="rvpFilter">RVP</label>
       <select id="rvpFilter"><option value="All">All</option></select>
     </div>
-
     <div class="group">
       <label for="rpmFilter">Regional Manager</label>
       <select id="rpmFilter"><option value="All">All</option></select>
     </div>
-
     <div class="group">
       <label for="stateFilter">State</label>
       <select id="stateFilter">
@@ -39,7 +34,6 @@
         <option>TN</option><option>VA</option>
       </select>
     </div>
-
     <div class="group">
       <label for="typeFilter">Property Type</label>
       <select id="typeFilter">
@@ -48,17 +42,14 @@
         <option>F</option><option>RD-62</option><option>S</option>
       </select>
     </div>
-
     <div class="group">
       <label for="ownerFilter">Owner</label>
       <select id="ownerFilter"><option value="All">All</option></select>
     </div>
-
     <div class="group">
       <label for="legalFilter">Legal Entity</label>
       <select id="legalFilter"><option value="All">All</option></select>
     </div>
-
     <!-- New: Geocode Status Filter -->
     <div class="group">
       <label for="statusFilter">Geocode Status</label>
@@ -69,37 +60,29 @@
         <option value="failed">Failed</option>
       </select>
     </div>
-
     <!-- Export group -->
     <div class="group">
       <label>&nbsp;</label>
       <button id="btnUnmapped" title="Download a CSV of properties without coordinates">Download Unmapped CSV</button>
     </div>
   </div>
-
   <!-- Map -->
   <div id="map" class="map"></div>
-
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
   <script>
     // ---- Map init ----
     const map = L.map('map').setView([34.5, -86.6], 6);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
-
     const markersGroup = L.layerGroup().addTo(map);
-
     let allProps = [];
     let allMarkers = []; // [{ property, marker }]
     let totalPortfolio = 0; // all rows in JSON
-    let totalEligible  = 0; // rows with usable coordinates
-
+    let totalEligible = 0; // rows with usable coordinates
     // ---- Utils ----
     const uniqueSorted = arr => [...new Set(arr.filter(Boolean))].sort((a,b)=>a.localeCompare(b));
-
     function addOptions(selectId, values) {
       const sel = document.getElementById(selectId);
       [...sel.querySelectorAll('option:not([value="All"])')].forEach(o => o.remove());
@@ -109,35 +92,31 @@
         sel.appendChild(opt);
       });
     }
-
     // Status colors (green/orange/red)
     function getStatusColor(status) {
       switch (status) {
-        case 'ok':     return '#10b981'; // green
+        case 'ok': return '#10b981'; // green
         case 'approx': return '#f59e0b'; // orange
         case 'failed': return '#ef4444'; // red
-        default:       return '#6b7280'; // gray
+        default: return '#6b7280'; // gray
       }
     }
-
     // Color/shape per Type (base color)
     function getMarkerOptions(type) {
       switch (type) {
-        case '55':   return { color: '#60d5d7', shape: 'circle' };  // teal circle
-        case '62':   return { color: '#10b981', shape: 'circle' };  // green circle
-        case 'F':    return { color: '#f59e0b', shape: 'square' };  // amber square
-        case 'C':    return { color: '#8b5cf6', shape: 'diamond' }; // purple diamond
-        case 'S':    return { color: '#ef4444', shape: 'star' };    // red star
-        case 'RD-62':return { color: '#10b981', shape: 'circle' };  // green circle
-        default:     return { color: '#3b82f6', shape: 'circle' };  // blue circle
+        case '55': return { color: '#60d5d7', shape: 'circle' }; // teal circle
+        case '62': return { color: '#10b981', shape: 'circle' }; // green circle
+        case 'F': return { color: '#f59e0b', shape: 'square' }; // amber square
+        case 'C': return { color: '#8b5cf6', shape: 'diamond' }; // purple diamond
+        case 'S': return { color: '#ef4444', shape: 'star' }; // red star
+        case 'RD-62':return { color: '#10b981', shape: 'circle' }; // green circle
+        default: return { color: '#3b82f6', shape: 'circle' }; // blue circle
       }
     }
-
     // Create a marker with a divIcon shape that matches the legend + status tint (border/glow)
     function makeMarker(prop) {
       const opt = getMarkerOptions(prop.type);
       const statusColor = getStatusColor(prop.geocode_status || 'unknown');
-
       let shapeCSS = `width:20px;height:20px;background:${opt.color};border:2px solid ${statusColor};box-shadow:0 2px 4px rgba(0,0,0,.2);`;
       if (opt.shape === 'circle') {
         shapeCSS += 'border-radius:50%;';
@@ -148,14 +127,12 @@
       } else if (opt.shape === 'star') {
         shapeCSS += 'clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);';
       }
-
       const icon = L.divIcon({
         html: `<div style="${shapeCSS}"></div>`,
         className: 'custom-div-icon',
         iconSize: [20,20],
         iconAnchor: [10,10]
       });
-
       const m = L.marker([prop.lat, prop.lng], { icon });
       m.bindPopup(
         `<div style="font-family:system-ui,sans-serif;min-width:280px">
@@ -174,16 +151,15 @@
       );
       return m;
     }
-
     // ---- Legend (with counts + status key) ----
     function legendHTML() {
       const items = [
-        {label:'55+',    type:'55'},
-        {label:'62+',    type:'62'},
+        {label:'55+', type:'55'},
+        {label:'62+', type:'62'},
         {label:'Family', type:'F'},
-        {label:'Conv.',  type:'C'},
+        {label:'Conv.', type:'C'},
         {label:'Senior', type:'S'},
-        {label:'RD-62',  type:'RD-62'},
+        {label:'RD-62', type:'RD-62'},
       ];
       const rows = items.map(it => {
         const opt = getMarkerOptions(it.type);
@@ -193,14 +169,12 @@
           <div>${it.label}</div>
         </div>`;
       }).join('');
-
       // Status key (simple dots)
       const statusRows = [
         {label:'Ok', status:'ok', color:'#10b981'},
         {label:'Approx', status:'approx', color:'#f59e0b'},
         {label:'Failed', status:'failed', color:'#ef4444'}
       ].map(it => `<div class="row"><div class="swatch circle" style="background:${it.color};width:12px;height:12px;border-radius:50%;border:1px solid #fff;"></div><div>${it.label}</div></div>`).join('');
-
       return `<div>
         <h4>Legend</h4>
         ${rows}
@@ -217,7 +191,6 @@
         </div>
       </div>`;
     }
-
     const legend = L.control({ position: 'bottomleft' });
     legend.onAdd = function() {
       const div = L.DomUtil.create('div', 'leaflet-control legend');
@@ -225,30 +198,27 @@
       return div;
     };
     legend.addTo(map);
-
     function updateLegendCounts(visible) {
       const unmapped = Math.max(totalPortfolio - totalEligible, 0);
       const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = String(val); };
-      set('legendVisible',  visible);
+      set('legendVisible', visible);
       set('legendEligible', totalEligible);
-      set('legendTotal',    totalPortfolio);
+      set('legendTotal', totalPortfolio);
       set('legendUnmapped', unmapped);
-
       // enable/disable download button + link
       const btn = document.getElementById('btnUnmapped');
       if (btn) btn.disabled = (unmapped === 0);
       const link = document.getElementById('legendUnmappedLink');
       if (link) link.style.pointerEvents = (unmapped === 0 ? 'none' : 'auto');
     }
-
-// Build an unmapped array from the full dataset (exact workflow match)
-function computeUnmapped() {
-  const unmapped = allProps.filter(p => !(p.lat && p.lng && p.lat !== 0.0 && p.lng !== 0.0));
-  if (unmapped.length > 0) {
-    console.log('Unmapped debug:', unmapped.map(p => ({ name: p.name, lat: p.lat, lng: p.lng, status: p.geocode_status })));
-  }
-  return unmapped;
-}
+    // Build an unmapped array from the full dataset (exact workflow match)
+    function computeUnmapped() {
+      const unmapped = allProps.filter(p => !(p.lat && p.lng && p.lat !== 0.0 && p.lng !== 0.0));
+      if (unmapped.length > 0) {
+        console.log('Unmapped debug:', unmapped.map(p => ({ name: p.name, lat: p.lat, lng: p.lng, status: p.geocode_status })));
+      }
+      return unmapped;
+    }
     // CSV download for unmapped rows (includes geocode_fail_code)
     function downloadUnmappedCSV() {
       const unmapped = computeUnmapped();
@@ -265,8 +235,8 @@ function computeUnmapped() {
       const bom = '\uFEFF'; // Excel-friendly UTF-8 BOM
       const csv = bom + lines.join('\r\n');
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const url  = URL.createObjectURL(blob);
-      const a    = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
       a.href = url;
       a.download = 'unmapped_properties.csv';
       document.body.appendChild(a);
@@ -274,68 +244,56 @@ function computeUnmapped() {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     }
-
     // ---- Filters ----
     function applyFilters() {
-      const rvp   = document.getElementById('rvpFilter').value;
-      const rpm   = document.getElementById('rpmFilter').value;
-      const st    = document.getElementById('stateFilter').value;
-      const type  = document.getElementById('typeFilter').value;
+      const rvp = document.getElementById('rvpFilter').value;
+      const rpm = document.getElementById('rpmFilter').value;
+      const st = document.getElementById('stateFilter').value;
+      const type = document.getElementById('typeFilter').value;
       const owner = document.getElementById('ownerFilter').value;
       const legal = document.getElementById('legalFilter').value;
       const status = document.getElementById('statusFilter').value; // New: Status filter
-
       markersGroup.clearLayers();
-
       const rows = allMarkers.filter(({property:p}) => (
-        (rvp   === 'All' || p.rvp === rvp) &&
-        (rpm   === 'All' || p.rpm === rpm) &&
-        (st    === 'All' || p.state === st) &&
-        (type  === 'All' || p.type === type) &&
+        (rvp === 'All' || p.rvp === rvp) &&
+        (rpm === 'All' || p.rpm === rpm) &&
+        (st === 'All' || p.state === st) &&
+        (type === 'All' || p.type === type) &&
         (owner === 'All' || p.owner === owner) &&
         (legal === 'All' || p.legal_entity === legal) &&
         (status === 'All' || p.geocode_status === status) // New: Filter by status
       ));
-
       rows.forEach(({marker}) => markersGroup.addLayer(marker));
-
       // Counts in legend
       updateLegendCounts(rows.length);
-
       // Fit to visible markers
       if (rows.length) {
         const grp = L.featureGroup(rows.map(r => r.marker));
         map.fitBounds(grp.getBounds(), { padding: [20,20] });
       }
     }
-
     // ---- Load data, build markers, wire UI ----
-    fetch('./final_properties_with_coords_and_rvp.json?cb=' + Date.now())
+    fetch('./final_properties_with_coords_and_rvp.json?v=' + Date.now())
       .then(r => r.json())
       .then(data => {
+        console.log('Loaded', data.length, 'props; Alexander Village lat:', data.find(p => p.name === 'Alexander Village')?.lat || 'N/A'); // Debug load
         allProps = data;
-
         allMarkers = allProps
-          .filter(p => p.lat && p.lng && p.lat !== 0 && p.lng !== 0)
+          .filter(p => p.lat && p.lng && p.lat !== 0.0 && p.lng !== 0.0) // Strict 0.0 check
           .map(p => ({ property: p, marker: makeMarker(p) }));
-
         // Set totals for legend math
         totalPortfolio = allProps.length;
-        totalEligible  = allMarkers.length;
-
+        totalEligible = allMarkers.length;
         // Populate dropdowns dynamically
-        addOptions('rvpFilter',   uniqueSorted(allProps.map(p => p.rvp)));
-        addOptions('rpmFilter',   uniqueSorted(allProps.map(p => p.rpm)));
+        addOptions('rvpFilter', uniqueSorted(allProps.map(p => p.rvp)));
+        addOptions('rpmFilter', uniqueSorted(allProps.map(p => p.rpm)));
         addOptions('ownerFilter', uniqueSorted(allProps.map(p => p.owner)));
         addOptions('legalFilter', uniqueSorted(allProps.map(p => p.legal_entity)));
-
         // Initial draw (+ counts)
         applyFilters();
-
         // Bind filter events (added statusFilter)
         ['rvpFilter','rpmFilter','stateFilter','typeFilter','ownerFilter','legalFilter','statusFilter']
           .forEach(id => document.getElementById(id).addEventListener('change', applyFilters));
-
         // Wire the download button + legend link
         const btn = document.getElementById('btnUnmapped');
         if (btn) btn.addEventListener('click', downloadUnmappedCSV);
