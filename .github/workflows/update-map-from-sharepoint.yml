@@ -63,8 +63,10 @@ jobs:
             $site = $null
             foreach ($p in ($candidates | Select-Object -Unique)) {
               $siteUri = "https://graph.microsoft.com/v1.0/sites/${spHost}:/${p}"
-              try { $tmp = Invoke-RestMethod -Headers $H -Uri $siteUri -Method GET -ErrorAction Stop
-                    if ($tmp -and $tmp.id) { $site = $tmp; break } } catch { }
+              try {
+                $tmp = Invoke-RestMethod -Headers $H -Uri $siteUri -Method GET -ErrorAction Stop
+                if ($tmp -and $tmp.id) { $site = $tmp; break }
+              } catch { }
             }
             if (-not $site) {
               $needle = ($rawPath.Split('/') | Select-Object -Last 1)
@@ -329,16 +331,17 @@ jobs:
           $failed | ConvertTo-Json -Depth 4 | Set-Content -Encoding utf8 -Path "$reportDir/unmapped_properties.json"
           $failed | Export-Csv -NoTypeInformation -Encoding UTF8 -Path "$reportDir/unmapped_properties.csv"
 
-          $summary = @"
-Geocoding summary
-=================
-Existing coords : $($existing.Count)
-Cache hits      : $($cacheHits.Count)
-Newly geocoded  : $($geocoded.Count)
-Failures        : $($failed.Count)
-
-Generated at    : $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")
-"@
+          $summaryLines = @(
+            "Geocoding summary"
+            "================="
+            ("Existing coords : {0}" -f $existing.Count)
+            ("Cache hits      : {0}" -f $cacheHits.Count)
+            ("Newly geocoded  : {0}" -f $geocoded.Count)
+            ("Failures        : {0}" -f $failed.Count)
+            ""
+            ("Generated at    : {0}" -f (Get-Date -Format "yyyy-MM-dd HH:mm:ss"))
+          )
+          $summary = $summaryLines -join "`r`n"
           $summary | Set-Content -Encoding utf8 -Path "$reportDir/geocode_summary.txt"
           Write-Host $summary
 
