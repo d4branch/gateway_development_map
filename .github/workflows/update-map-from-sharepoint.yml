@@ -122,67 +122,62 @@ jobs:
             Write-Host "DEBUG: Detected fields: $(($items[0].fields | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty Name | Sort-Object) -join ', ')"
           }
 
-          # ---- Map SharePoint fields -> schema (smart fallback) ----
+          # ---- Map SharePoint fields -> schema (safe Get-Field) ----
           function Map-Row($f, $propName) {
-            # Smart field lookup: Exact first, then fuzzy (contains name, case-insensitive)
             function Get-Field($fields, $exact, $fuzzy) {
-              if ($fields.$exact) { return $fields.$exact }
-              $keys = $fields | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty Name
-              $match = $keys | Where-Object { $_.ToLower() -like "*$($fuzzy.ToLower())*" } | Select-Object -First 1
-              return if ($match) { $fields.$match } else { $null }
+              if ($fields.PSObject.Properties.Name -contains $exact) { return $fields.$exact }
+              $keys  = $fields | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty Name
+              $match = $keys | Where-Object { $_ -and $_.ToLower().Contains($fuzzy.ToLower()) } | Select-Object -First 1
+              if ($match) { return $fields.$match }
+              return $null
             }
 
-            $title = Get-Field $f 'Title' 'title'
-            $type = Get-Field $f 'TYPE' 'type'
-            $units = Get-Field $f 'field_2' 'units'
-            $manager = Get-Field $f 'field_3' 'manager'
-            $assistant_mgr = Get-Field $f 'field_4' 'assistant'
-            $compliance = Get-Field $f 'field_5' 'compliance'
-            $address = Get-Field $f 'field_6' 'address'
-            $city = Get-Field $f 'field_7' 'city'
-            $state = Get-Field $f 'field_8' 'state'
-            $zip = Get-Field $f 'field_9' 'zip'
-            $office_phone = Get-Field $f 'field_10' 'phone'
-            $fax = Get-Field $f 'field_11' 'fax'
-            $manager_email = Get-Field $f 'field_12' 'email'
-            $rpm = Get-Field $f 'field_13' 'rpm'
-            $rvp = Get-Field $f 'field_14' 'rvp'
-            $owner = Get-Field $f 'Owner' 'owner'
-            $legal_entity = Get-Field $f 'LegalEntity' 'legal'
+            $title          = Get-Field $f 'Title' 'title'
+            $type           = Get-Field $f 'TYPE' 'type'
+            $units          = Get-Field $f 'field_2' 'units'
+            $manager        = Get-Field $f 'field_3' 'manager'
+            $assistant_mgr  = Get-Field $f 'field_4' 'assistant'
+            $compliance     = Get-Field $f 'field_5' 'compliance'
+            $address        = Get-Field $f 'field_6' 'address'
+            $city           = Get-Field $f 'field_7' 'city'
+            $state          = Get-Field $f 'field_8' 'state'
+            $zip            = Get-Field $f 'field_9' 'zip'
+            $office_phone   = Get-Field $f 'field_10' 'phone'
+            $fax            = Get-Field $f 'field_11' 'fax'
+            $manager_email  = Get-Field $f 'field_12' 'email'
+            $rpm            = Get-Field $f 'field_13' 'rpm'
+            $rvp            = Get-Field $f 'field_14' 'rvp'
+            $owner          = Get-Field $f 'Owner' 'owner'
+            $legal_entity   = Get-Field $f 'LegalEntity' 'legal'
 
-            # Lat/Lng with debug for suspects
-            $rawLat = Get-Field $f 'Latitude' 'lat' ?? $null
-            $rawLng = Get-Field $f 'Longitude' 'lng' ?? $null
+            $rawLat = Get-Field $f 'Latitude' 'lat'
+            $rawLng = Get-Field $f 'Longitude' 'lng'
             $castLat = try { [double]$rawLat } catch { 0.0 }
             $castLng = try { [double]$rawLng } catch { 0.0 }
 
-            if ($propName -in @('Alexander Village', 'Cedar Glades', 'Cherry Ridge Independent Living', 'Villas on Forsyth')) {
-              Write-Host "DEBUG: For '$propName': address='$address' | city='$city' | rawLat='$rawLat' → cast=$castLat | rawLng='$rawLng' → cast=$castLng"
-            }
-
             [pscustomobject]@{
-              name           = $title
-              type           = $type
-              units          = $units
-              manager        = $manager
-              assistant_mgr  = $assistant_mgr
-              compliance     = $compliance
-              address        = $address
-              city           = $city
-              state          = $state
-              zip            = $zip
-              office_phone   = $office_phone
-              fax            = $fax
-              manager_email  = $manager_email
-              rpm            = $rpm
-              rvp            = $rvp
-              owner          = $owner
-              legal_entity   = $legal_entity
-              lat            = $castLat
-              lng            = $castLng
-              geocode_status = "unknown"
-              geocode_source = "none"
-              geocode_fail_code = $null
+              name               = $title
+              type               = $type
+              units              = $units
+              manager            = $manager
+              assistant_mgr      = $assistant_mgr
+              compliance         = $compliance
+              address            = $address
+              city               = $city
+              state              = $state
+              zip                = $zip
+              office_phone       = $office_phone
+              fax                = $fax
+              manager_email      = $manager_email
+              rpm                = $rpm
+              rvp                = $rvp
+              owner              = $owner
+              legal_entity       = $legal_entity
+              lat                = $castLat
+              lng                = $castLng
+              geocode_status     = "unknown"
+              geocode_source     = "none"
+              geocode_fail_code  = $null
             }
           }
           $out = foreach ($it in $items) { Map-Row $it.fields $it.fields.Title }
@@ -228,197 +223,3 @@ jobs:
           function Try-Nominatim($q) {
             $encoded = [System.Net.WebUtility]::UrlEncode($q)
             $url = "https://nominatim.openstreetmap.org/search?q=$encoded&format=json&limit=1&addressdetails=0"
-            try {
-              $resp = Invoke-RestMethod -Uri $url -Headers @{ "User-Agent" = "GatewayMapBot/1.0 (bot@example.com)" } -Method GET -TimeoutSec 30
-              if ($resp -and $resp.Count -gt 0) {
-                return @{ ok=$true; lat=[double]$resp[0].lat; lng=[double]$resp[0].lon; src='nominatim' }
-              } else { return @{ ok=$false; code='NO_MATCH_NOMINATIM' } }
-            } catch {
-              Write-Host "Nominatim error: $($_.Exception.Message)"
-              $code = try { [int]$_.Exception.Response.StatusCode.value__ } catch { 0 }
-              return @{ ok=$false; code=("PROVIDER_ERROR_{0}" -f ($code -as [string])) }
-            }
-          }
-          function Try-Census($street, $city, $state, $zip) {
-            $oneLine = ($street, $city, $state, $zip) -join ', '
-            $encoded = [System.Net.WebUtility]::UrlEncode($oneLine)
-            $url = "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address=$encoded&benchmark=2020&format=json"
-            try {
-              $resp = Invoke-RestMethod -Uri $url -Method GET -TimeoutSec 30
-              $m = $resp.result.addressMatches
-              if ($m -and $m.Count -gt 0) {
-                return @{ ok=$true; lat=[double]$m[0].coordinates.y; lng=[double]$m[0].coordinates.x; src='census' }
-              } else { return @{ ok=$false; code='NO_MATCH_CENSUS' } }
-            } catch {
-              Write-Host "Census error: $($_.Exception.Message)"
-              $code = try { [int]$_.Exception.Response.StatusCode.value__ } catch { 0 }
-              return @{ ok=$false; code=("PROVIDER_ERROR_{0}" -f ($code -as [string])) }
-            }
-          }
-
-          # ---- Buckets ----
-          $existing  = @()
-          $cacheHits = @()
-          $geocoded  = @()
-          $failed    = @()
-
-          # ---- Geocode loop ----
-          foreach ($prop in $out) {
-            $prop.geocode_status = "unknown"
-            $prop.geocode_source = "none"
-            $prop.geocode_fail_code = $null
-
-            if ($prop.lat -ne 0.0 -and $prop.lng -ne 0.0) {
-              $prop.geocode_status = "ok"
-              $prop.geocode_source = "existing"
-              $existing += $prop
-              if ($prop.name -in @('Alexander Village', 'Cedar Glades', 'Cherry Ridge Independent Living', 'Villas on Forsyth')) {
-                Write-Host "DEBUG: Skipped geocoding '$($prop.name)': using existing ($($prop.lat), $($prop.lng))"
-              }
-              continue
-            }
-
-            $pre = FailCodesFor $prop
-            # Safeguard: Ensure $pre is always a valid List
-            if ($pre -eq $null -or $pre -isnot [System.Collections.Generic.List[string]]) {
-              Write-Host "WARNING: $pre was null/invalid for $($prop.name); resetting to empty List"
-              $pre = New-Object System.Collections.Generic.List[string]
-            }
-            if ($prop.name -in @('Alexander Village', 'Cedar Glades', 'Cherry Ridge Independent Living', 'Villas on Forsyth')) {
-              Write-Host "Pre for $($prop.name): List with $($pre.Count) items: $($pre -join ', ')"
-            }
-            $street = Normalize-Address $prop.address
-            $addrOne = (($street, $prop.city, $prop.state, $prop.zip) -join ', ') -replace '\s+', ' '
-            $addrKey = ($addrOne -replace '[^a-zA-Z0-9]','')
-
-            if ($geocache.ContainsKey($addrKey)) {
-              $prop.lat = $geocache[$addrKey].lat
-              $prop.lng = $geocache[$addrKey].lng
-              $prop.geocode_status = "ok"
-              $prop.geocode_source = "cache"
-              $cacheHits += $prop
-              continue
-            }
-
-            $try1 = Try-Nominatim $addrOne
-            if ($try1.ok) {
-              $prop.lat = $try1.lat; $prop.lng = $try1.lng
-              $prop.geocode_status = "ok"
-              $prop.geocode_source = $try1.src
-              $geocache[$addrKey] = @{ lat=$prop.lat; lng=$prop.lng }
-              $geocoded += $prop
-              Start-Sleep -Milliseconds 1000
-              continue
-            }
-
-            if ($UseCensusFallback) {
-              $try2 = Try-Census $street $prop.city $prop.state $prop.zip
-              if ($try2.ok) {
-                $prop.lat = $try2.lat; $prop.lng = $try2.lng
-                $prop.geocode_status = "ok"
-                $prop.geocode_source = $try2.src
-                $geocache[$addrKey] = @{ lat=$prop.lat; lng=$prop.lng }
-                $geocoded += $prop
-                Start-Sleep -Milliseconds 300
-                continue
-              } else {
-                if ($try2.code -and $pre) { $pre.Add($try2.code) }
-              }
-            }
-
-            if ($UseCityFallback -and $prop.city -and $prop.state) {
-              $tryCity = Try-Nominatim ("{0}, {1}" -f $prop.city, $prop.state)
-              if ($tryCity.ok) {
-                $prop.lat = $tryCity.lat; $prop.lng = $tryCity.lng
-                $prop.geocode_status = "approx"
-                $prop.geocode_source = "city_centroid"
-                $prop.geocode_fail_code = "CITY_CENTROID_FALLBACK"
-                $geocoded += $prop
-                Start-Sleep -Milliseconds 500
-                continue
-              }
-            }
-
-            if ($pre -and -not $pre.Contains('NO_MATCH_NOMINATIM') -and $try1.code) { $pre.Add($try1.code) }
-            if (($pre ? $pre.Count : 0) -eq 0) { $pre.Add('NO_MATCH_NOMINATIM') }
-
-            $prop.geocode_status    = "failed"
-            $prop.geocode_source    = "none"
-            $prop.geocode_fail_code = ($pre ? ($pre -join ';') : 'UNKNOWN_ERROR')
-
-            if ($prop.name -in @('Alexander Village', 'Cedar Glades', 'Cherry Ridge Independent Living', 'Villas on Forsyth')) {
-              Write-Host "DEBUG: Failed geocoding '$($prop.name)': lat=$($prop.lat), lng=$($prop.lng), fail=($($prop.geocode_fail_code))"
-            }
-
-            $failed += [pscustomobject]@{
-              name               = $prop.name
-              address            = $prop.address
-              city               = $prop.city
-              state              = $prop.state
-              zip                = $prop.zip
-              rvp                = $prop.rvp
-              rpm                = $prop.rpm
-              owner              = $prop.owner
-              legal              = $prop.legal_entity
-              attempted_address  = $addrOne
-              fail_code          = $prop.geocode_fail_code
-            }
-
-            Start-Sleep -Milliseconds 300
-          }
-
-          # ---- Save geocache ----
-          $geocache | ConvertTo-Json -Depth 4 | Set-Content -Encoding utf8 -Path $geocacheFile
-
-          # ---- Backup previous JSON ----
-          $jsonFile = "final_properties_with_coords_and_rvp.json"
-          if (Test-Path $jsonFile) {
-            $stamp = Get-Date -Format "yyyyMMdd-HHmmss"
-            Copy-Item $jsonFile ("backup_final_properties_{0}.json" -f $stamp)
-          }
-
-          # ---- Write main JSON (includes geocode_* fields) ----
-          $out | ConvertTo-Json -Depth 4 | Set-Content -Encoding utf8 -Path $jsonFile
-          Write-Host ("Wrote {0} with {1} rows." -f $jsonFile, $out.Count)
-
-          # ---- Reports (latest) ----
-          $reportDir = "reports"
-          New-Item -ItemType Directory -Force -Path $reportDir | Out-Null
-          $failed | ConvertTo-Json -Depth 4 | Set-Content -Encoding utf8 -Path "$reportDir/unmapped_properties.json"
-          $failed | Export-Csv -NoTypeInformation -Encoding UTF8 -Path "$reportDir/unmapped_properties.csv"
-
-          $summaryLines = @(
-            "Geocoding summary"
-            "================="
-            ("Existing coords : {0}" -f $existing.Count)
-            ("Cache hits      : {0}" -f $cacheHits.Count)
-            ("Newly geocoded  : {0}" -f $geocoded.Count)
-            ("Failures        : {0}" -f $failed.Count)
-            ""
-            ("Generated at    : {0}" -f (Get-Date -Format "yyyy-MM-dd HH:mm:ss"))
-          )
-          $summary = $summaryLines -join "`r`n"
-          $summary | Set-Content -Encoding utf8 -Path "$reportDir/geocode_summary.txt"
-          Write-Host $summary
-
-      - name: Set git identity (fallback)
-        shell: bash
-        run: |
-          git config --global user.name "Gateway Map Bot"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Commit JSON + reports
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: 'Auto-update: final_properties_with_coords_and_rvp.json (with reason-coded geocoding) + reports'
-          file_pattern: |
-            final_properties_with_coords_and_rvp.json
-            backup_final_properties_*.json
-            detected_sharepoint_fields.txt
-            geocache.json
-            reports/*.csv
-            reports/*.json
-            reports/*.txt
-          commit_user_name: 'Gateway Map Bot'
-          commit_user_email: 'github-actions[bot]@users.noreply.github.com'
-          commit_author: 'Gateway Map Bot <github-actions[bot]@users.noreply.github.com>'
