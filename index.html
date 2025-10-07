@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gateway Properties Map</title>
+
+  <!-- Main stylesheet (teal header, toolbar, map height, + legend CSS appended) -->
+  <link rel="stylesheet" href="styles/app.css" />
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+  <!-- Header -->
+  <div class="gaHeader">
+    <h1>Gateway Properties Map</h1>
+    <p class="sub">Property Filters</p>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="group">
+      <label for="rvpFilter">RVP</label>
+      <select id="rvpFilter"><option value="All">All</option></select>
+    </div>
+
+    <div class="group">
+      <label for="rpmFilter">Regional Manager</label>
+      <select id="rpmFilter"><option value="All">All</option></select>
+    </div>
+
+    <div class="group">
+      <label for="stateFilter">State</label>
+      <select id="stateFilter">
+        <option value="All">All</option>
+        <option>AL</option><option>FL</option><option>GA</option><option>KS</option>
+        <option>LA</option><option>NC</option><option>OK</option><option>SC</option>
+        <option>TN</option><option>VA</option>
+      </select>
+    </div>
+
+    <div class="group">
+      <label for="typeFilter">Property Type</label>
+      <select id="typeFilter">
+        <option value="All">All</option>
+        <option>55</option><option>62</option><option>C</option>
+        <option>F</option><option>RD-62</option><option>S</option>
+      </select>
+    </div>
+
+    <div class="group">
+      <label for="ownerFilter">Owner</label>
+      <select id="ownerFilter"><option value="All">All</option></select>
+    </div>
+
+    <div class="group">
+      <label for="legalFilter">Legal Entity</label>
+      <select id="legalFilter"><option value="All">All</option></select>
+    </div>
+
+    <!-- Export group -->
+    <div class="group">
+      <label>&nbsp;</label>
+      <button id="btnUnmapped" title="Download a CSV of properties without coordinates">Download Unmapped CSV</button>
+    </div>
+  </div>
+
+  <!-- Map -->
+  <div id="map" class="map"></div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <script>
+    // ---- Map init ----
+    const map = L.map('map').setView([34.5, -86.6], 6);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    const markersGroup = L.layerGroup().addTo(map);
+
+    let allProps = [];
+    let allMarkers = []; // [{ property, marker }]
+    let totalPortfolio = 0; // all rows in JSON
+    let totalEligible  = 0; // rows with usable coordinates
+
+    // ---- Utils ----
+    const uniqueSorted = arr => [...new Set(arr.filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+
+    function addOptions(selectId, values) {
+      const sel = document.getElementById(selectId);
+      [...sel.querySelectorAll('option:not([value="All"])')].forEach(o => o.remove());
+      values.forEach(v => {
+        const opt = document.createElement('option');
+        opt.value = v; opt.textContent = v;
+        sel.appendChild(opt);
+      });
+    }
+
+    // Color/shape per Type
+    function getMarkerOptions(type) {
+      switch (type) {
+        case '55':   return { color: '#60d5d7', shape: 'circle' };  // teal circle
+        case '62':   return { color: '#10b981', shape: 'circle' };  // green circle
+        case 'F':    return { color: '#f59e0b', shape: 'square' };  // amber square
+        case 'C':    return { color: '#8b5cf6', shape: 'diamond' }; // purple diamond
+        case 'S':    return { color: '#ef4444', shape: 'star' };    // red star
+        case 'RD-62':return { color: '#10b981', shape: 'circle' };  // green circle
+        default:     return { color: '#3b82f6', shape: 'circle' };  // blue circle
+      }
+    }
+
+    // Create a marker with a divIcon shape that matches the legend
+    function makeMarker(prop) {
+      const opt = getMarkerOptions(prop.type);
+
+      let shapeCSS = `width:20px;height:20px;background:${opt.color};border:2px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,.2);`;
+      if (opt.shape === 'circle') {
+        shapeCSS += 'border-radius:50%;';
+      } else if (opt.shape === 'square') {
+        shapeCSS += 'border-radius:4px;';
+      } else if (opt.shape === 'diamond') {
+        shapeCSS += 'transform:rotate(45deg);border-radius:3px;';
+      } else if (opt.shape === 'star') {
+        shapeCSS += 'clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);';
+      }
+
+      const icon = L.divIcon({
+        html: `<div style="${shapeCSS}"></div>`,
+        className: 'custom-div-icon',
+        iconSize: [20,20],
+        iconAnchor: [10,10]
+      });
+
+      const m = L.marker([prop.lat, prop.lng], { icon });
+      m.bindPopup(
+        `<div style="font-family:system-ui,sans-serif;min-width:280px">
+          <h3 style="margin:0 0 8px;color:#073b3d;border-bottom:1px solid #60d5d7;padding-bottom:4px">
+            ${prop.name} 🏠</h3>
+          <p><strong>Type:</strong> ${prop.type} &nbsp;|&nbsp; <strong>Units:</strong> ${prop.units ?? ''}</p>
+          <p><strong>Address:</strong> ${prop.address}<br>${prop.city}, ${prop.state} ${prop.zip ?? ''}</p>
+          <p><strong>Manager:</strong> ${prop.manager ?? ''}<br>
+             <a href="mailto:${prop.manager_email ?? ''}" style="color:#0ea5e9">${prop.manager_email ?? ''}</a></p>
+          <p><strong>RVP:</strong> ${prop.rvp ?? ''} &nbsp;|&nbsp; <strong>Regional:</strong> ${prop.rpm ?? ''}</p>
+          <small style="color:#6b7280;border-top:1px solid #e5e7eb;padding-top:4px;display:block">
+            Owner: ${prop.owner ?? 'N/A'} &nbsp;|&nbsp; Legal: ${prop.legal_entity ?? 'N/A'} &nbsp;|&nbsp; Phone: ${prop.office_phone ?? 'N/A'}
+          </small>
+        </div>`
+      );
+      return m;
+    }
+
+    // ---- Legend (with counts) ----
+    function legendHTML() {
+      const items = [
+        {label:'55+',    type:'55'},
+        {label:'62+',    type:'62'},
+        {label:'Family', type:'F'},
+        {label:'Conv.',  type:'C'},
+        {label:'Senior', type:'S'},
+        {label:'RD-62',  type:'RD-62'},
+      ];
+      const rows = items.map(it => {
+        const opt = getMarkerOptions(it.type);
+        const shapeClass = ({circle:'circle', square:'square', diamond:'diamond', star:'star'})[opt.shape] || 'circle';
+        return `<div class="row">
+          <div class="swatch ${shapeClass}" style="background:${opt.color}"></div>
+          <div>${it.label}</div>
+        </div>`;
+      }).join('');
+      return `<div>
+        <h4>Legend</h4>
+        ${rows}
+        <div class="counts">
+          <span id="legendVisible">0</span> visible /
+          <span id="legendEligible">0</span> mapped •
+          <span id="legendTotal">0</span> total •
+          <a href="#" id="legendUnmappedLink" title="Download unmapped list">
+            <span id="legendUnmapped">0</span> unmapped
+          </a>
+        </div>
+      </div>`;
+    }
+
+    const legend = L.control({ position: 'bottomleft' });
+    legend.onAdd = function() {
+      const div = L.DomUtil.create('div', 'leaflet-control legend');
+      div.innerHTML = legendHTML();
+      return div;
+    };
+    legend.addTo(map);
+
+    function updateLegendCounts(visible) {
+      const unmapped = Math.max(totalPortfolio - totalEligible, 0);
+      const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = String(val); };
+      set('legendVisible',  visible);
+      set('legendEligible', totalEligible);
+      set('legendTotal',    totalPortfolio);
+      set('legendUnmapped', unmapped);
+
+      // enable/disable download button + link
+      const btn = document.getElementById('btnUnmapped');
+      if (btn) btn.disabled = (unmapped === 0);
+      const link = document.getElementById('legendUnmappedLink');
+      if (link) link.style.pointerEvents = (unmapped === 0 ? 'none' : 'auto');
+    }
+
+    // Build an unmapped array from the full dataset
+    function computeUnmapped() {
+      return allProps.filter(p => !(p.lat && p.lng && p.lat !== 0 && p.lng !== 0));
+    }
+
+    // CSV download for unmapped rows (includes geocode_fail_code)
+    function downloadUnmappedCSV() {
+      const unmapped = computeUnmapped();
+      const headers = [
+        'name','type','address','city','state','zip',
+        'rvp','rpm','owner','legal_entity','manager','manager_email','office_phone',
+        'geocode_fail_code' // <-- reason code from nightly workflow
+      ];
+      const esc = v => `"${String(v ?? '').replace(/"/g,'""')}"`;
+      const lines = [
+        headers.map(h => esc(h)).join(','),
+        ...unmapped.map(p => headers.map(h => esc(p[h])).join(','))
+      ];
+      const bom = '\uFEFF'; // Excel-friendly UTF-8 BOM
+      const csv = bom + lines.join('\r\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href = url;
+      a.download = 'unmapped_properties.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // ---- Filters ----
+    function applyFilters() {
+      const rvp   = document.getElementById('rvpFilter').value;
+      const rpm   = document.getElementById('rpmFilter').value;
+      const st    = document.getElementById('stateFilter').value;
+      const type  = document.getElementById('typeFilter').value;
+      const owner = document.getElementById('ownerFilter').value;
+      const legal = document.getElementById('legalFilter').value;
+
+      markersGroup.clearLayers();
+
+      const rows = allMarkers.filter(({property:p}) => (
+        (rvp   === 'All' || p.rvp === rvp) &&
+        (rpm   === 'All' || p.rpm === rpm) &&
+        (st    === 'All' || p.state === st) &&
+        (type  === 'All' || p.type === type) &&
+        (owner === 'All' || p.owner === owner) &&
+        (legal === 'All' || p.legal_entity === legal)
+      ));
+
+      rows.forEach(({marker}) => markersGroup.addLayer(marker));
+
+      // Counts in legend
+      updateLegendCounts(rows.length);
+
+      // Fit to visible markers
+      if (rows.length) {
+        const grp = L.featureGroup(rows.map(r => r.marker));
+        map.fitBounds(grp.getBounds(), { padding: [20,20] });
+      }
+    }
+
+    // ---- Load data, build markers, wire UI ----
+    fetch('./final_properties_with_coords_and_rvp.json?cb=' + Date.now())
+      .then(r => r.json())
+      .then(data => {
+        allProps = data;
+
+        allMarkers = allProps
+          .filter(p => p.lat && p.lng && p.lat !== 0 && p.lng !== 0)
+          .map(p => ({ property: p, marker: makeMarker(p) }));
+
+        // Set totals for legend math
+        totalPortfolio = allProps.length;
+        totalEligible  = allMarkers.length;
+
+        // Populate dropdowns dynamically
+        addOptions('rvpFilter',   uniqueSorted(allProps.map(p => p.rvp)));
+        addOptions('rpmFilter',   uniqueSorted(allProps.map(p => p.rpm)));
+        addOptions('ownerFilter', uniqueSorted(allProps.map(p => p.owner)));
+        addOptions('legalFilter', uniqueSorted(allProps.map(p => p.legal_entity)));
+
+        // Initial draw (+ counts)
+        applyFilters();
+
+        // Bind filter events
+        ['rvpFilter','rpmFilter','stateFilter','typeFilter','ownerFilter','legalFilter']
+          .forEach(id => document.getElementById(id).addEventListener('change', applyFilters));
+
+        // Wire the download button + legend link
+        const btn = document.getElementById('btnUnmapped');
+        if (btn) btn.addEventListener('click', downloadUnmappedCSV);
+        const link = document.getElementById('legendUnmappedLink');
+        if (link) link.addEventListener('click', (e) => { e.preventDefault(); downloadUnmappedCSV(); });
+      })
+      .catch(err => console.error('Error loading JSON:', err));
+  </script>
+</body>
+</html>
