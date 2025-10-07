@@ -365,7 +365,33 @@ jobs:
           # ---- Save geocache ----
           $geocache | ConvertTo-Json -Depth 4 | Set-Content -Encoding utf8 -Path $geocacheFile
 
-          # ---- Backup previous JSON ----
+                   # ---- Backup previous JSON ----
           $jsonFile = "final_properties_with_coords_and_rvp.json"
           if (Test-Path $jsonFile) {
-            $stamp = Get-Date -Format "yyyyMM
+            $stamp = Get-Date -Format "yyyyMMdd-HHmmss"
+            Copy-Item $jsonFile ("backup_final_properties_{0}.json" -f $stamp)
+          }
+
+          # ---- Write main JSON ----
+          $out | ConvertTo-Json -Depth 4 | Set-Content -Encoding utf8 -Path $jsonFile
+          Write-Host ("Wrote {0} with {1} rows." -f $jsonFile, $out.Count)
+
+          # ---- Reports ----
+          $reportDir = "reports"
+          New-Item -ItemType Directory -Force -Path $reportDir | Out-Null
+          $failed | ConvertTo-Json -Depth 4 | Set-Content -Encoding utf8 -Path "$reportDir/unmapped_properties.json"
+          $failed | Export-Csv -NoTypeInformation -Encoding UTF8 -Path "$reportDir/unmapped_properties.csv"
+
+          $summaryLines = @(
+            "Geocoding summary"
+            "================="
+            ("Existing coords : {0}" -f $existing.Count)
+            ("Cache hits      : {0}" -f $cacheHits.Count)
+            ("Newly geocoded  : {0}" -f $geocoded.Count)
+            ("Failures        : {0}" -f $failed.Count)
+            ""
+            ("Generated at    : {0}" -f (Get-Date -Format "yyyy-MM-dd HH:mm:ss"))
+          )
+          $summary = $summaryLines -join "`r`n"
+          $summary | Set-Content -Encoding utf8 -Path "$reportDir/geocode_summary.txt"
+          Write-Host $summary
