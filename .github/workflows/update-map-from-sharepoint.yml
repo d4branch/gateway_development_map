@@ -239,6 +239,12 @@ jobs:
             }
 
             $pre = FailCodesFor $prop
+            # Safeguard: Ensure $pre is always a valid List
+            if ($pre -eq $null -or $pre -isnot [System.Collections.Generic.List[string]]) {
+              Write-Host "WARNING: $pre was null/invalid for $($prop.name); resetting to empty List"
+              $pre = New-Object System.Collections.Generic.List[string]
+            }
+            Write-Host "Pre for $($prop.name): List with $($pre.Count) items"
             $street = Normalize-Address $prop.address
             $addrOne = (($street, $prop.city, $prop.state, $prop.zip) -join ', ') -replace '\s+', ' '
             $addrKey = ($addrOne -replace '[^a-zA-Z0-9]','')
@@ -273,7 +279,9 @@ jobs:
                 $geocoded += $prop
                 Start-Sleep -Milliseconds 300
                 continue
-              } else { if ($try2.code) { $pre.Add($try2.code) } }
+              } else {
+                if ($try2.code -and $pre) { $pre.Add($try2.code) }
+              }
             }
 
             if ($UseCityFallback -and $prop.city -and $prop.state) {
@@ -289,12 +297,12 @@ jobs:
               }
             }
 
-            if (-not $pre.Contains('NO_MATCH_NOMINATIM') -and $try1.code) { $pre.Add($try1.code) }
-            if ($pre.Count -eq 0) { $pre.Add('NO_MATCH_NOMINATIM') }
+            if ($pre -and -not $pre.Contains('NO_MATCH_NOMINATIM') -and $try1.code) { $pre.Add($try1.code) }
+            if (($pre ? $pre.Count : 0) -eq 0) { $pre.Add('NO_MATCH_NOMINATIM') }
 
             $prop.geocode_status    = "failed"
             $prop.geocode_source    = "none"
-            $prop.geocode_fail_code = ($pre -join ';')
+            $prop.geocode_fail_code = ($pre ? ($pre -join ';') : 'UNKNOWN_ERROR')
 
             $failed += [pscustomobject]@{
               name               = $prop.name
