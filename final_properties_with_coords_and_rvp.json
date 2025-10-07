@@ -18,7 +18,10 @@
     "owner": "Gateway",
     "legal_entity": "Eagle Pointe Apartment, LTD.",
     "lat": 34.684059,
-    "lng": -86.759483
+    "lng": -86.759483,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Abbington at Summit",
@@ -38,8 +41,11 @@
     "rvp": "Erin Loupe",
     "owner": "Rea Ventures",
     "legal_entity": "Irondale Abbington Summit Pointe, LP",
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 33.535106618251,
+    "lng": -86.689368296757,
+    "geocode_status": "ok",
+    "geocode_source": "census",
+    "geocode_fail_code": null
   },
   {
     "name": "Abbington Reserve Apartments",
@@ -59,8 +65,11 @@
     "rvp": "Toni Raymond",
     "owner": "Rea Ventures",
     "legal_entity": "Dekalb Abbington Reserve, LP",
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 33.701294749718,
+    "lng": -84.266711745254,
+    "geocode_status": "ok",
+    "geocode_source": "census",
+    "geocode_fail_code": null
   },
   {
     "name": "Agape - Lease up",
@@ -80,8 +89,11 @@
     "rvp": "Toni Raymond",
     "owner": "LDG",
     "legal_entity": "LDG Agape Family Development LLC",
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 33.749927372821,
+    "lng": -84.230790625809,
+    "geocode_status": "ok",
+    "geocode_source": "census",
+    "geocode_fail_code": null
   },
   {
     "name": "Alexander Village",
@@ -102,7 +114,10 @@
     "owner": "Gateway",
     "legal_entity": "Alexander Village Apartments LTD",
     "lat": 0.0,
-    "lng": 0.0
+    "lng": 0.0,
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "NO_MATCH_NOMINATIM"
   },
   {
     "name": "Americus Garden Apts.",
@@ -122,8 +137,11 @@
     "rvp": "Toni Raymond",
     "owner": "Gateway",
     "legal_entity": null,
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 32.08117731022,
+    "lng": -84.238889073828,
+    "geocode_status": "ok",
+    "geocode_source": "census",
+    "geocode_fail_code": null
   },
   {
     "name": "Atmore Senior",
@@ -144,7 +162,10 @@
     "owner": "Gateway",
     "legal_entity": "Atmore Senior Village, LTD",
     "lat": 31.008841,
-    "lng": -87.467777
+    "lng": -87.467777,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Augustine, The ",
@@ -165,7 +186,10 @@
     "owner": "Gateway",
     "legal_entity": "Augustine - Warner Robins LP",
     "lat": 32.5950346,
-    "lng": -83.6179657
+    "lng": -83.6179657,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Autumn Ridge",
@@ -186,7 +210,10 @@
     "owner": "Gateway",
     "legal_entity": "Autumn Ridge, LLC",
     "lat": 34.7874308,
-    "lng": -77.3932057
+    "lng": -77.3932057,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Bailey Springs ",
@@ -206,8 +233,11 @@
     "rvp": "Melissa Valley",
     "owner": "Gateway",
     "legal_entity": "Bailey Springs Apartments, Ltd.",
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 35.492709617306,
+    "lng": -81.238018458282,
+    "geocode_status": "ok",
+    "geocode_source": "census",
+    "geocode_fail_code": null
   },
   {
     "name": "Baytown Village",
@@ -228,7 +258,10 @@
     "owner": "Gateway",
     "legal_entity": "Baytown Senior Village, LTD",
     "lat": 30.7826627,
-    "lng": -88.259632
+    "lng": -88.259632,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Belle Isle Apts.",
@@ -248,8 +281,11 @@
     "rvp": "Paula Hall",
     "owner": "Gateway",
     "legal_entity": "Belle Isle Apartments LTD",
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 30.563797675586,
+    "lng": -87.704485121665,
+    "geocode_status": "ok",
+    "geocode_source": "census",
+    "geocode_fail_code": null
   },
   {
     "name": "Blue Springs",
@@ -270,7 +306,10 @@
     "owner": "Gateway",
     "legal_entity": "Blue Springs Apartments, LP",
     "lat": 34.7857794,
-    "lng": -77.3926553
+    "lng": -77.3926553,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Bocage",
@@ -291,7 +330,10 @@
     "owner": "RHG",
     "legal_entity": "Bocage Apartments LP",
     "lat": 35.2056723,
-    "lng": -97.411019
+    "lng": -97.411019,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Bradbury",
@@ -312,7 +354,10 @@
     "owner": "Gateway",
     "legal_entity": "Bradbury Apartments LP",
     "lat": 35.694391,
-    "lng": -81.230008
+    "lng": -81.230008,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Brentwood Landing Apts.",
@@ -333,7 +378,10 @@
     "owner": "Gateway",
     "legal_entity": "Brentwood Landing Apts.",
     "lat": 32.4789743,
-    "lng": -86.4151503
+    "lng": -86.4151503,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Brentwood Landing II Apts.",
@@ -354,7 +402,10 @@
     "owner": "Gateway",
     "legal_entity": "Brentwood Landing II Apts.",
     "lat": 32.4765818,
-    "lng": -86.4152958
+    "lng": -86.4152958,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Bridges at Landrum",
@@ -374,8 +425,11 @@
     "rvp": "Toni Raymond",
     "owner": "LDG",
     "legal_entity": "Landrum Family Development LP",
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 33.706256820582,
+    "lng": -84.482913216248,
+    "geocode_status": "ok",
+    "geocode_source": "census",
+    "geocode_fail_code": null
   },
   {
     "name": "Brook Pointe ",
@@ -396,7 +450,10 @@
     "owner": "LDG",
     "legal_entity": "Brooke Pointe LP",
     "lat": 30.2383407,
-    "lng": -92.0198381
+    "lng": -92.0198381,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Brookstone Village",
@@ -417,7 +474,10 @@
     "owner": "Gateway",
     "legal_entity": "Brookstone Village Apartments LTD",
     "lat": 33.8075808,
-    "lng": -85.7518905
+    "lng": -85.7518905,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Candler Reserve - Lease up",
@@ -437,8 +497,11 @@
     "rvp": "Toni Raymond",
     "owner": "LDG",
     "legal_entity": "LDG Candler Family Development LLC",
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 33.728502837399,
+    "lng": -84.281373295843,
+    "geocode_status": "ok",
+    "geocode_source": "census",
+    "geocode_fail_code": null
   },
   {
     "name": "Canebreak",
@@ -459,7 +522,10 @@
     "owner": "Gateway",
     "legal_entity": "Canebreak Apartments LP",
     "lat": 34.236816,
-    "lng": -77.883746
+    "lng": -77.883746,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Canter Chase",
@@ -480,7 +546,10 @@
     "owner": "Gateway",
     "legal_entity": "Canter Chase Apartments, LP",
     "lat": 35.2568043,
-    "lng": -87.3450802
+    "lng": -87.3450802,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Capstone at Barton Chapel (Trinity Manor)",
@@ -501,7 +570,10 @@
     "owner": "Rob Coats Banyon Foundation",
     "legal_entity": "Capstone at Barton Chapel, LP",
     "lat": 33.4396624,
-    "lng": -82.0864062
+    "lng": -82.0864062,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Carolina Oaks",
@@ -522,7 +594,10 @@
     "owner": "RHG",
     "legal_entity": "Carolina Oaks Village, LP",
     "lat": 33.6992233,
-    "lng": -78.8806512
+    "lng": -78.8806512,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Cedar Glades",
@@ -543,7 +618,10 @@
     "owner": "Gateway",
     "legal_entity": "Cedar Glades Apartments, LP",
     "lat": 0.0,
-    "lng": 0.0
+    "lng": 0.0,
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "NO_MATCH_NOMINATIM"
   },
   {
     "name": "Cedar Hollow Family ",
@@ -564,7 +642,10 @@
     "owner": "RHG",
     "legal_entity": "CEDAR HOLLOW, LP",
     "lat": 35.4758192,
-    "lng": -97.1606122
+    "lng": -97.1606122,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Cherokee Meadows",
@@ -585,7 +666,10 @@
     "owner": "RHG",
     "legal_entity": null,
     "lat": 36.1799488,
-    "lng": -95.9723113
+    "lng": -95.9723113,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Cherry Ridge Independent Living ",
@@ -606,7 +690,10 @@
     "owner": "Gateway",
     "legal_entity": "Cherry Ridge Independent Living LTD",
     "lat": 0.0,
-    "lng": 0.0
+    "lng": 0.0,
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "NO_MATCH_NOMINATIM"
   },
   {
     "name": "Cherry Ridge Village Apts",
@@ -627,7 +714,10 @@
     "owner": "Gateway",
     "legal_entity": "Cherry Ridge Village Apartments, LTD",
     "lat": 33.553053,
-    "lng": -86.87094
+    "lng": -86.87094,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Cherry Woods ",
@@ -648,7 +738,10 @@
     "owner": "Gateway",
     "legal_entity": "Cherry Woods Apartments LTD",
     "lat": 0.0,
-    "lng": 0.0
+    "lng": 0.0,
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "NO_MATCH_NOMINATIM"
   },
   {
     "name": "Clement Belle Farm - Lease up",
@@ -669,7 +762,10 @@
     "owner": "Mitchell Davenport",
     "legal_entity": "Clement Belle Farm LP",
     "lat": 0.0,
-    "lng": 0.0
+    "lng": 0.0,
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "NO_MATCH_NOMINATIM"
   },
   {
     "name": "Cobblestone Village",
@@ -690,7 +786,10 @@
     "owner": "Gateway",
     "legal_entity": "Cobblestone Village Apartments, LTD",
     "lat": 32.8139526,
-    "lng": -86.6061929
+    "lng": -86.6061929,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "College Square ",
@@ -710,8 +809,11 @@
     "rvp": "Toni Raymond",
     "owner": "Macon Housing",
     "legal_entity": "College Square Partners, LP",
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 32.542838954064,
+    "lng": -83.890323203268,
+    "geocode_status": "ok",
+    "geocode_source": "census",
+    "geocode_fail_code": null
   },
   {
     "name": "Colony West ",
@@ -732,7 +834,10 @@
     "owner": "Macon Housing",
     "legal_entity": "Colony West Partners, LP",
     "lat": 32.7959137,
-    "lng": -83.7074161
+    "lng": -83.7074161,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Coosa Village Apts",
@@ -753,7 +858,10 @@
     "owner": "Gateway",
     "legal_entity": "Coosa Village Apartments, LTD",
     "lat": 0.0,
-    "lng": 0.0
+    "lng": 0.0,
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "NO_MATCH_NOMINATIM"
   },
   {
     "name": "Cottage MWC I  ",
@@ -774,7 +882,10 @@
     "owner": "RHG",
     "legal_entity": "Cottage Park LP1",
     "lat": 35.482404,
-    "lng": -97.380833
+    "lng": -97.380833,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Cottage MWC II  ",
@@ -795,7 +906,10 @@
     "owner": "RHG",
     "legal_entity": "Cottage Park, LP2",
     "lat": 35.482404,
-    "lng": -97.380833
+    "lng": -97.380833,
+    "geocode_status": "ok",
+    "geocode_source": "cache",
+    "geocode_fail_code": null
   },
   {
     "name": "Cottage Park Guthrie ",
@@ -816,7 +930,10 @@
     "owner": "RHG",
     "legal_entity": "Cottage Park LP3",
     "lat": 0.0,
-    "lng": 0.0
+    "lng": 0.0,
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "NO_MATCH_NOMINATIM"
   },
   {
     "name": "Cottage Park McAlester",
@@ -837,7 +954,10 @@
     "owner": "RHG",
     "legal_entity": "Cottage Park McAlester LP",
     "lat": 34.9357758,
-    "lng": -95.7853205
+    "lng": -95.7853205,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Cottage Park Newcastle",
@@ -858,7 +978,10 @@
     "owner": "RHG",
     "legal_entity": "Cottage Park Newcastle, LP",
     "lat": 35.2506913,
-    "lng": -97.5912982
+    "lng": -97.5912982,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Cottage Park Shawnee  ",
@@ -879,7 +1002,10 @@
     "owner": "RHG",
     "legal_entity": "Cottage Park Shawnee",
     "lat": 0.0,
-    "lng": 0.0
+    "lng": 0.0,
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "NO_MATCH_NOMINATIM"
   },
   {
     "name": "Covington Mill Village",
@@ -900,7 +1026,10 @@
     "owner": "Gateway",
     "legal_entity": "Harmony at Covington LP",
     "lat": 33.5689964,
-    "lng": -83.8514249
+    "lng": -83.8514249,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Creekview",
@@ -920,8 +1049,11 @@
     "rvp": "Paula Hall",
     "owner": "Gateway",
     "legal_entity": "Creekview Village, LTD",
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 34.838866314039,
+    "lng": -87.700683547433,
+    "geocode_status": "ok",
+    "geocode_source": "census",
+    "geocode_fail_code": null
   },
   {
     "name": "Cross Creek Landing  ",
@@ -942,7 +1074,10 @@
     "owner": "RHG",
     "legal_entity": "Cross Creek Landing, LP",
     "lat": 35.6154971,
-    "lng": -97.5474922
+    "lng": -97.5474922,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Crossings at Conyers, The",
@@ -962,8 +1097,11 @@
     "rvp": "Toni Raymond",
     "owner": "Gateway",
     "legal_entity": "Harmony at Conyers, LP",
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 33.643506445116,
+    "lng": -83.990203258186,
+    "geocode_status": "ok",
+    "geocode_source": "census",
+    "geocode_fail_code": null
   },
   {
     "name": "Crosswinds ",
@@ -984,7 +1122,10 @@
     "owner": "Gateway",
     "legal_entity": "Crosswinds - Warner Robins LP",
     "lat": 32.5950346,
-    "lng": -83.6179657
+    "lng": -83.6179657,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Cypress Trace",
@@ -1005,7 +1146,10 @@
     "owner": "Gateway",
     "legal_entity": "Cypress Trace Apartments, LTD",
     "lat": 30.8876107,
-    "lng": -87.7865738
+    "lng": -87.7865738,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Dogwood Trail",
@@ -1026,7 +1170,10 @@
     "owner": "Mitchell Davenport",
     "legal_entity": "Dogwood Trail Apartments, LP",
     "lat": 31.5761118,
-    "lng": -84.1076739
+    "lng": -84.1076739,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Double Creek Apts",
@@ -1047,7 +1194,10 @@
     "owner": "Gateway",
     "legal_entity": null,
     "lat": 34.8819431,
-    "lng": -87.6718456
+    "lng": -87.6718456,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Drakes Landing ",
@@ -1068,7 +1218,10 @@
     "owner": "LDG",
     "legal_entity": "Drakes Landing Apartments LP",
     "lat": 30.456913,
-    "lng": -91.127665
+    "lng": -91.127665,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Dugan Square",
@@ -1088,8 +1241,11 @@
     "rvp": "Erin Loupe",
     "owner": "Gateway",
     "legal_entity": "Dugan Avenue Senior Village LTD",
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 33.539709491562,
+    "lng": -86.879150220483,
+    "geocode_status": "ok",
+    "geocode_source": "census",
+    "geocode_fail_code": null
   },
   {
     "name": "Eagles Landing Apts",
@@ -1110,7 +1266,10 @@
     "owner": "Gateway",
     "legal_entity": "Eagle's Landing Development, LTD",
     "lat": 34.6838269,
-    "lng": -86.7600384
+    "lng": -86.7600384,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "East Oaks Apts.",
@@ -1131,7 +1290,10 @@
     "owner": "Gateway",
     "legal_entity": null,
     "lat": 32.065971,
-    "lng": -84.2084697
+    "lng": -84.2084697,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Eastside Family",
@@ -1152,7 +1314,10 @@
     "owner": "RHG",
     "legal_entity": null,
     "lat": 36.3841084,
-    "lng": -97.8419573
+    "lng": -97.8419573,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Forest Mill Apts",
@@ -1172,8 +1337,11 @@
     "rvp": "Toni Raymond",
     "owner": "Gateway",
     "legal_entity": "Forest Mill Apartments, LP",
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 32.871814130607,
+    "lng": -85.164671522755,
+    "geocode_status": "ok",
+    "geocode_source": "census",
+    "geocode_fail_code": null
   },
   {
     "name": "Forest Ridge Heights",
@@ -1194,7 +1362,10 @@
     "owner": "RHG",
     "legal_entity": null,
     "lat": 36.3841084,
-    "lng": -97.8419573
+    "lng": -97.8419573,
+    "geocode_status": "ok",
+    "geocode_source": "cache",
+    "geocode_fail_code": null
   },
   {
     "name": "French Farms",
@@ -1215,7 +1386,10 @@
     "owner": "Gateway",
     "legal_entity": "French Farms Village Apartments, LTD",
     "lat": 34.7836976,
-    "lng": -86.9600353
+    "lng": -86.9600353,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Garden Lakes",
@@ -1236,7 +1410,10 @@
     "owner": "GDA Development Partners",
     "legal_entity": "Garden Lakes, LP",
     "lat": 34.0653592,
-    "lng": -81.0142636
+    "lng": -81.0142636,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Garden Oaks - Lease up",
@@ -1257,7 +1434,10 @@
     "owner": "GDA Development Partners",
     "legal_entity": "Garden Oaks, LP",
     "lat": 32.4262913,
-    "lng": -80.7097533
+    "lng": -80.7097533,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Gateway at Rossville ",
@@ -1277,8 +1457,11 @@
     "rvp": "Erin Loupe",
     "owner": "Gateway",
     "legal_entity": "Gateway at Rossville, LP",
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 34.948070741314,
+    "lng": -85.312843761076,
+    "geocode_status": "ok",
+    "geocode_source": "census",
+    "geocode_fail_code": null
   },
   {
     "name": "Gateway at the Green",
@@ -1299,7 +1482,10 @@
     "owner": "Gateway",
     "legal_entity": "Gateway at the Green LP",
     "lat": 34.8422927,
-    "lng": -82.3268908
+    "lng": -82.3268908,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Glencoe Trace Apts. ",
@@ -1319,8 +1505,11 @@
     "rvp": "Toni Raymond",
     "owner": "Gateway",
     "legal_entity": "Glencoe Trace, LP",
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 33.274869891829,
+    "lng": -84.298636129555,
+    "geocode_status": "ok",
+    "geocode_source": "census",
+    "geocode_fail_code": null
   },
   {
     "name": "Griffin Village",
@@ -1341,7 +1530,10 @@
     "owner": "Collaborative Housing",
     "legal_entity": "Griffin Village LP",
     "lat": 33.2211807,
-    "lng": -84.3097478
+    "lng": -84.3097478,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Hamilton Place Apts",
@@ -1362,7 +1554,10 @@
     "owner": "Gateway",
     "legal_entity": "Hamilton Place Apartments, LTD",
     "lat": 0.0,
-    "lng": 0.0
+    "lng": 0.0,
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "NO_MATCH_NOMINATIM"
   },
   {
     "name": "Heatherwood Apts",
@@ -1383,7 +1578,10 @@
     "owner": "Gateway",
     "legal_entity": "Heatherwood-DASH, LTD",
     "lat": 32.9189831,
-    "lng": -85.9345386
+    "lng": -85.9345386,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Heritage Townhomes ",
@@ -1404,7 +1602,10 @@
     "owner": "LDG",
     "legal_entity": "Heritage Family Development LP",
     "lat": 33.7052884,
-    "lng": -84.1242825
+    "lng": -84.1242825,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Heritage Vista Apts.",
@@ -1425,7 +1626,10 @@
     "owner": "Gateway",
     "legal_entity": "Heritage Vista Apartments, LP",
     "lat": 33.1180025,
-    "lng": -83.2599109
+    "lng": -83.2599109,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Heron Lake Apts.",
@@ -1446,7 +1650,10 @@
     "owner": "Gateway",
     "legal_entity": "Heron Lake Apartments, L.P.",
     "lat": 30.877554,
-    "lng": -83.261646
+    "lng": -83.261646,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Heron Lake II Apts.",
@@ -1467,7 +1674,10 @@
     "owner": "Gateway",
     "legal_entity": "Heron Lake II Apartments, L.P.",
     "lat": 30.8776608,
-    "lng": -83.2629076
+    "lng": -83.2629076,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Hickory Run I Apts.",
@@ -1488,7 +1698,10 @@
     "owner": "Gateway",
     "legal_entity": null,
     "lat": 33.8085529,
-    "lng": -85.7535919
+    "lng": -85.7535919,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Hickory Run II Apts.",
@@ -1509,7 +1722,10 @@
     "owner": "Gateway",
     "legal_entity": null,
     "lat": 33.808829,
-    "lng": -85.753587
+    "lng": -85.753587,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "High Point Senior",
@@ -1530,7 +1746,10 @@
     "owner": "Gateway",
     "legal_entity": "High Point Senior Apartments Ltd",
     "lat": 0.0,
-    "lng": 0.0
+    "lng": 0.0,
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "NO_MATCH_NOMINATIM"
   },
   {
     "name": "Highland Estates of Rome",
@@ -1551,7 +1770,10 @@
     "owner": "Gateway",
     "legal_entity": "Highland Estates of Rome, LP",
     "lat": 34.2810285,
-    "lng": -85.1976744
+    "lng": -85.1976744,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Highland Park Family",
@@ -1572,7 +1794,10 @@
     "owner": "RHG",
     "legal_entity": null,
     "lat": 36.7085017,
-    "lng": -97.1060105
+    "lng": -97.1060105,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Highland Park Senior Village",
@@ -1593,7 +1818,10 @@
     "owner": "Gateway",
     "legal_entity": "Highland Park Senior Village, LP",
     "lat": 33.7425695,
-    "lng": -84.7508605
+    "lng": -84.7508605,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Hill at Sand Mountain, The - Lease-up",
@@ -1613,8 +1841,11 @@
     "rvp": "Erin Loupe",
     "owner": "Gateway",
     "legal_entity": "Hill at Sand Mountain LTD",
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 34.494996736285,
+    "lng": -85.835556817884,
+    "geocode_status": "ok",
+    "geocode_source": "census",
+    "geocode_fail_code": null
   },
   {
     "name": "Horizon Ridge",
@@ -1635,7 +1866,10 @@
     "owner": "LDG",
     "legal_entity": "Horizon Ridge Family Development, LP",
     "lat": 0.0,
-    "lng": 0.0
+    "lng": 0.0,
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "NO_MATCH_NOMINATIM"
   },
   {
     "name": "Howell Senior School Apts ",
@@ -1656,7 +1890,10 @@
     "owner": "Rob Coats Banyon Foundation",
     "legal_entity": "Peaks at Dothan, LP",
     "lat": 31.2289026,
-    "lng": -85.3889841
+    "lng": -85.3889841,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Ivy Pointe Apts",
@@ -1676,8 +1913,11 @@
     "rvp": "Paula Hall",
     "owner": "Gateway",
     "legal_entity": null,
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 34.730288009357,
+    "lng": -87.679081291914,
+    "geocode_status": "ok",
+    "geocode_source": "census",
+    "geocode_fail_code": null
   },
   {
     "name": "Ivy Pointe II Apts.",
@@ -1697,8 +1937,11 @@
     "rvp": "Paula Hall",
     "owner": "Gateway",
     "legal_entity": null,
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 34.730288009357,
+    "lng": -87.679081291914,
+    "geocode_status": "ok",
+    "geocode_source": "cache",
+    "geocode_fail_code": null
   },
   {
     "name": "Jasmine Trails ",
@@ -1719,7 +1962,10 @@
     "owner": "Gateway",
     "legal_entity": "Jasmine Trails Apartments, LTD",
     "lat": 30.311798,
-    "lng": -87.6947253
+    "lng": -87.6947253,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Jefferson Grove ",
@@ -1740,7 +1986,10 @@
     "owner": "LDG",
     "legal_entity": "Jefferson Family Development LP",
     "lat": 33.3919902,
-    "lng": -84.7803468
+    "lng": -84.7803468,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Jonesboro Road ",
@@ -1760,8 +2009,11 @@
     "rvp": "Toni Raymond",
     "owner": "Gateway",
     "legal_entity": "Jonesboro Road Senior Village LP",
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 33.559415599392,
+    "lng": -84.51357629603,
+    "geocode_status": "ok",
+    "geocode_source": "census",
+    "geocode_fail_code": null
   },
   {
     "name": "Juanita Gardner ",
@@ -1782,7 +2034,10 @@
     "owner": "Gateway",
     "legal_entity": "Harmony at Bakers Ferry, LP",
     "lat": 0.0,
-    "lng": 0.0
+    "lng": 0.0,
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "NO_MATCH_NOMINATIM"
   },
   {
     "name": "Kenyon at Cross Creek, The",
@@ -1803,7 +2058,10 @@
     "owner": "Gateway",
     "legal_entity": "Gateway at Cross Creek LP",
     "lat": 34.7132033,
-    "lng": -82.7868182
+    "lng": -82.7868182,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Kinsey Cove",
@@ -1823,8 +2081,11 @@
     "rvp": "Paula Hall",
     "owner": "Rob Coats Banyon Foundation",
     "legal_entity": "Capstone At Kinsey Cove, LP",
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 31.235113071167,
+    "lng": -85.380167567578,
+    "geocode_status": "ok",
+    "geocode_source": "census",
+    "geocode_fail_code": null
   },
   {
     "name": "Kirby Creek Apts.",
@@ -1845,7 +2106,10 @@
     "owner": "Gateway",
     "legal_entity": "Kirby Creek Apartments, LP",
     "lat": 30.8590979,
-    "lng": -84.1960669
+    "lng": -84.1960669,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Kirkwood Trail Apts",
@@ -1866,7 +2130,10 @@
     "owner": "Gateway",
     "legal_entity": "Kirkwood Trail Apartments, LP",
     "lat": 33.993861,
-    "lng": -85.2521797
+    "lng": -85.2521797,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Lakeview Terrace",
@@ -1887,7 +2154,10 @@
     "owner": "Timshel",
     "legal_entity": null,
     "lat": 0.0,
-    "lng": 0.0
+    "lng": 0.0,
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "NO_MATCH_NOMINATIM"
   },
   {
     "name": "Laurel Ridge Development",
@@ -1908,7 +2178,10 @@
     "owner": "Gateway",
     "legal_entity": "Laurel Ridge Development, LP",
     "lat": 33.021691,
-    "lng": -85.059374
+    "lng": -85.059374,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Le Jolliet",
@@ -1929,7 +2202,10 @@
     "owner": "LDG",
     "legal_entity": "Le Jolliet LP",
     "lat": 30.1844786,
-    "lng": -93.1883399
+    "lng": -93.1883399,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Legacy Universal -RVP Michelle Clark",
@@ -1949,8 +2225,11 @@
     "rvp": "Paula Hall",
     "owner": "Veneto Capital",
     "legal_entity": null,
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 28.454322924931,
+    "lng": -81.464518192916,
+    "geocode_status": "ok",
+    "geocode_source": "census",
+    "geocode_fail_code": null
   },
   {
     "name": "Lory of Greenway Village, The",
@@ -1970,8 +2249,11 @@
     "rvp": "Paula Hall",
     "owner": "Lexerd",
     "legal_entity": "LCP Paducah II, LLC",
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 37.089179721788,
+    "lng": -88.65977452398,
+    "geocode_status": "ok",
+    "geocode_source": "census",
+    "geocode_fail_code": null
   },
   {
     "name": "Lory of Panama City, The ",
@@ -1992,7 +2274,10 @@
     "owner": "Lexerd",
     "legal_entity": "LCP Panama City, LLC",
     "lat": 30.1863947,
-    "lng": -85.6592172
+    "lng": -85.6592172,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Lory of Tallahassee, The  ",
@@ -2013,7 +2298,10 @@
     "owner": "Lexerd",
     "legal_entity": "LCP Tallahassee, LLC",
     "lat": 30.4793632,
-    "lng": -84.2952908
+    "lng": -84.2952908,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Loxley Station Development",
@@ -2033,8 +2321,11 @@
     "rvp": "Paula Hall",
     "owner": "Gateway",
     "legal_entity": "Gulf Coast Capital LP",
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 30.630843035819,
+    "lng": -87.747254665608,
+    "geocode_status": "ok",
+    "geocode_source": "census",
+    "geocode_fail_code": null
   },
   {
     "name": "Mallard Crossing",
@@ -2055,7 +2346,10 @@
     "owner": "LDG",
     "legal_entity": "Mallard Crossings, LP.",
     "lat": 30.4941023,
-    "lng": -91.0564709
+    "lng": -91.0564709,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Mallard Lake Apts",
@@ -2076,7 +2370,10 @@
     "owner": "Gateway",
     "legal_entity": "Mallard Lake Apartments, LP.",
     "lat": 33.021732,
-    "lng": -85.0699417
+    "lng": -85.0699417,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Mandell, The",
@@ -2096,8 +2393,11 @@
     "rvp": "Erin Loupe",
     "owner": "Gateway",
     "legal_entity": "Gateway Denham Springs LLC",
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 30.459377733569,
+    "lng": -90.90597963406,
+    "geocode_status": "ok",
+    "geocode_source": "census",
+    "geocode_fail_code": null
   },
   {
     "name": "Maple Square",
@@ -2117,8 +2417,11 @@
     "rvp": "Toni Raymond",
     "owner": "Gateway",
     "legal_entity": "Maple Square Apartments, LTD",
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 34.142817331506,
+    "lng": -83.604141391276,
+    "geocode_status": "ok",
+    "geocode_source": "census",
+    "geocode_fail_code": null
   },
   {
     "name": "Mary Leila Lofts",
@@ -2139,7 +2442,10 @@
     "owner": "RHG",
     "legal_entity": "Greensboro Mill LP",
     "lat": 33.5781868,
-    "lng": -83.1838324
+    "lng": -83.1838324,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Maxwell, The ",
@@ -2160,7 +2466,10 @@
     "owner": "Gateway",
     "legal_entity": "Gateway at Rome Manager LLC",
     "lat": 34.279654,
-    "lng": -85.194122
+    "lng": -85.194122,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Meadowood Creek",
@@ -2181,7 +2490,10 @@
     "owner": "Gateway",
     "legal_entity": "Meadowood Creek Senior Apartments",
     "lat": 0.0,
-    "lng": 0.0
+    "lng": 0.0,
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "NO_MATCH_NOMINATIM"
   },
   {
     "name": "Meadows at Nicholson ",
@@ -2202,7 +2514,10 @@
     "owner": "LDG",
     "legal_entity": "Meadows at Nicholson, LP",
     "lat": 30.3654715,
-    "lng": -91.1548987
+    "lng": -91.1548987,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Newport Trace",
@@ -2223,7 +2538,10 @@
     "owner": "Gateway",
     "legal_entity": "Newport Trace Apartments, LP",
     "lat": 32.446674,
-    "lng": -81.7607559
+    "lng": -81.7607559,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Northwinds",
@@ -2243,8 +2561,11 @@
     "rvp": "Erin Loupe",
     "owner": "Gateway",
     "legal_entity": "Northwinds Place Senior Living LP",
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 33.6072776018,
+    "lng": -85.081454295408,
+    "geocode_status": "ok",
+    "geocode_source": "census",
+    "geocode_fail_code": null
   },
   {
     "name": "Oakland Mill  ",
@@ -2265,7 +2586,10 @@
     "owner": "Gateway",
     "legal_entity": "Oakland Mill Apartments LP",
     "lat": 0.0,
-    "lng": 0.0
+    "lng": 0.0,
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "NO_MATCH_NOMINATIM"
   },
   {
     "name": "Oakleigh Crossing",
@@ -2285,8 +2609,11 @@
     "rvp": "Erin Loupe",
     "owner": "RHG",
     "legal_entity": null,
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 32.888907406386,
+    "lng": -86.03493606871,
+    "geocode_status": "ok",
+    "geocode_source": "census",
+    "geocode_fail_code": null
   },
   {
     "name": "Oleander Park Apts.",
@@ -2307,7 +2634,10 @@
     "owner": "Gateway",
     "legal_entity": "Oleander Park Apartments, LTD",
     "lat": 30.637326,
-    "lng": -88.220557
+    "lng": -88.220557,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Orchard Park",
@@ -2328,7 +2658,10 @@
     "owner": "Gateway",
     "legal_entity": "Orchard Park Apartments",
     "lat": 0.0,
-    "lng": 0.0
+    "lng": 0.0,
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "NO_MATCH_NOMINATIM"
   },
   {
     "name": "Orchard View ",
@@ -2349,7 +2682,10 @@
     "owner": "Gateway",
     "legal_entity": "Orchard View Apartments",
     "lat": 34.6758371,
-    "lng": -85.9821255
+    "lng": -85.9821255,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Palladian Apts., The",
@@ -2370,7 +2706,10 @@
     "owner": "Gateway",
     "legal_entity": "The Palladian Apartments, LTD",
     "lat": 30.6461124,
-    "lng": -88.2327363
+    "lng": -88.2327363,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Palladian at Fairhope",
@@ -2390,8 +2729,11 @@
     "rvp": "Paula Hall",
     "owner": "Gateway",
     "legal_entity": "Fairhope Ridge, LLC",
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 30.53089809244,
+    "lng": -87.883885168524,
+    "geocode_status": "ok",
+    "geocode_source": "census",
+    "geocode_fail_code": null
   },
   {
     "name": "Palladian II Apts.",
@@ -2412,7 +2754,10 @@
     "owner": "Gateway",
     "legal_entity": "The Palladian II Apartments, LTD",
     "lat": 30.6649893,
-    "lng": -88.2372065
+    "lng": -88.2372065,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Peach Orchard ",
@@ -2433,7 +2778,10 @@
     "owner": "LDG",
     "legal_entity": null,
     "lat": 33.3691586,
-    "lng": -82.0349074
+    "lng": -82.0349074,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Peaks at Manning, The",
@@ -2454,7 +2802,10 @@
     "owner": "RHG",
     "legal_entity": "The Peaks at Manning, LP",
     "lat": 33.6962838,
-    "lng": -80.2161795
+    "lng": -80.2161795,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Peaks of Cornelia ",
@@ -2475,7 +2826,10 @@
     "owner": "RHG",
     "legal_entity": "Peaks of Cornelia LP",
     "lat": 0.0,
-    "lng": 0.0
+    "lng": 0.0,
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "NO_MATCH_NOMINATIM"
   },
   {
     "name": "Peaks of Dahlonega - Lease-up",
@@ -2496,7 +2850,10 @@
     "owner": "RHG",
     "legal_entity": "Peaks of Dahlonega LP",
     "lat": 0.0,
-    "lng": 0.0
+    "lng": 0.0,
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "NO_MATCH_NOMINATIM"
   },
   {
     "name": "Peaks of Dawson",
@@ -2517,7 +2874,10 @@
     "owner": "RHG",
     "legal_entity": " Peaks of Dawson LP",
     "lat": 34.3667137,
-    "lng": -84.0364142
+    "lng": -84.0364142,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Peaks of Oakwood",
@@ -2538,7 +2898,10 @@
     "owner": "RHG",
     "legal_entity": "Peaks of Oakwood LP",
     "lat": 0.0,
-    "lng": 0.0
+    "lng": 0.0,
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "NO_MATCH_NOMINATIM"
   },
   {
     "name": "Pebble Creek Apts.",
@@ -2559,7 +2922,10 @@
     "owner": "Gateway",
     "legal_entity": "Pebble Creek Apartments, LTD.",
     "lat": 32.0955766,
-    "lng": -88.2086714
+    "lng": -88.2086714,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Pelican Landing",
@@ -2579,8 +2945,11 @@
     "rvp": "Paula Hall",
     "owner": "Gateway",
     "legal_entity": "Pelican Landing Apartments, LTD",
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 30.672993164059,
+    "lng": -88.249626729972,
+    "geocode_status": "ok",
+    "geocode_source": "census",
+    "geocode_fail_code": null
   },
   {
     "name": "Peyton Ridge Village ",
@@ -2601,7 +2970,10 @@
     "owner": "Gateway",
     "legal_entity": "Peyton Ridge Village, LTD",
     "lat": 34.7721394,
-    "lng": -86.9065758
+    "lng": -86.9065758,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Pinewood Village",
@@ -2622,7 +2994,10 @@
     "owner": "Gateway",
     "legal_entity": null,
     "lat": 32.1114579,
-    "lng": -81.251265
+    "lng": -81.251265,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Pinewood Village II ",
@@ -2643,7 +3018,10 @@
     "owner": "Gateway",
     "legal_entity": null,
     "lat": 32.1114579,
-    "lng": -81.251265
+    "lng": -81.251265,
+    "geocode_status": "ok",
+    "geocode_source": "cache",
+    "geocode_fail_code": null
   },
   {
     "name": "Port Royal Apts ",
@@ -2664,7 +3042,10 @@
     "owner": "LDG",
     "legal_entity": "Port Royal Development LP",
     "lat": 30.4945723,
-    "lng": -91.1262773
+    "lng": -91.1262773,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Powell Place Apts",
@@ -2685,7 +3066,10 @@
     "owner": "Gateway",
     "legal_entity": "Powell Place Apartments, LP",
     "lat": 33.0501696,
-    "lng": -84.1776879
+    "lng": -84.1776879,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Preston Place Apts",
@@ -2705,8 +3089,11 @@
     "rvp": "Paula Hall",
     "owner": "Gateway",
     "legal_entity": null,
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 30.782113521877,
+    "lng": -83.569080140901,
+    "geocode_status": "ok",
+    "geocode_source": "census",
+    "geocode_fail_code": null
   },
   {
     "name": "Red Cedar Village  ",
@@ -2727,7 +3114,10 @@
     "owner": "RHG",
     "legal_entity": "Red Cedar Village",
     "lat": 35.4758192,
-    "lng": -97.1606122
+    "lng": -97.1606122,
+    "geocode_status": "ok",
+    "geocode_source": "cache",
+    "geocode_fail_code": null
   },
   {
     "name": "Reserve at Grant Road",
@@ -2748,7 +3138,10 @@
     "owner": "Gateway",
     "legal_entity": "Harmony at Ellenwood LP",
     "lat": 33.6167553,
-    "lng": -84.296263
+    "lng": -84.296263,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Rivers Edge",
@@ -2769,7 +3162,10 @@
     "owner": "Gateway",
     "legal_entity": "Rivers Edge Apartments, LTD",
     "lat": 34.449272,
-    "lng": -86.9127253
+    "lng": -86.9127253,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Rose Rock Cottages",
@@ -2790,7 +3186,10 @@
     "owner": "RHG",
     "legal_entity": null,
     "lat": 35.1252835,
-    "lng": -97.3852323
+    "lng": -97.3852323,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Shellbrooke Pointe Apts.",
@@ -2811,7 +3210,10 @@
     "owner": "Gateway",
     "legal_entity": "Shellbrooke Pointe Apartments, LTD",
     "lat": 30.4969515,
-    "lng": -87.9155661
+    "lng": -87.9155661,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Sheppard Station Dev. ",
@@ -2832,7 +3234,10 @@
     "owner": "Gateway",
     "legal_entity": "Sheppard Station Apts, LP",
     "lat": 32.115604,
-    "lng": -81.265079
+    "lng": -81.265079,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Shoals Mill Development ",
@@ -2853,7 +3258,10 @@
     "owner": "Gateway",
     "legal_entity": "The Shoals Mill Development, LTD",
     "lat": 33.189778,
-    "lng": -86.5987847
+    "lng": -86.5987847,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Shoals Mill Village ",
@@ -2874,7 +3282,10 @@
     "owner": "Gateway",
     "legal_entity": "Shoals Mill Village Apartments LTD",
     "lat": 0.0,
-    "lng": 0.0
+    "lng": 0.0,
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "NO_MATCH_NOMINATIM"
   },
   {
     "name": "SkyHouse RVP Michelle Clark",
@@ -2895,7 +3306,10 @@
     "owner": "Veneto Capital",
     "legal_entity": "Silver ND I LLC",
     "lat": 28.5471377,
-    "lng": -81.3774519
+    "lng": -81.3774519,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Skyline Trace",
@@ -2916,7 +3330,10 @@
     "owner": "Gateway",
     "legal_entity": "Skyline Trace Apartments LP",
     "lat": 33.796917,
-    "lng": -83.724554
+    "lng": -83.724554,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "South Pointe Development",
@@ -2936,8 +3353,11 @@
     "rvp": "Erin Loupe",
     "owner": "Gateway",
     "legal_entity": "South Pointe Development, LTD.",
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 33.083594340423,
+    "lng": -86.752773862698,
+    "geocode_status": "ok",
+    "geocode_source": "census",
+    "geocode_fail_code": null
   },
   {
     "name": "Sovereign at North Bay - Lease up",
@@ -2958,7 +3378,10 @@
     "owner": "Strategic Group",
     "legal_entity": "Bid-A-Wee Apartments, LLC",
     "lat": 30.1821106,
-    "lng": -85.668332
+    "lng": -85.668332,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Sterling Oaks",
@@ -2979,7 +3402,10 @@
     "owner": "Gateway",
     "legal_entity": "Sterling Oaks Apartments LP",
     "lat": 35.3678645,
-    "lng": -81.9400432
+    "lng": -81.9400432,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Stoney Creek",
@@ -3000,7 +3426,10 @@
     "owner": "Gateway",
     "legal_entity": "Stoney Creek Apartments, LP",
     "lat": 34.7591487,
-    "lng": -79.4773747
+    "lng": -79.4773747,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Stony Ridge Apts ",
@@ -3021,7 +3450,10 @@
     "owner": "Gateway",
     "legal_entity": "Stony Ridge Apartments, LP",
     "lat": 33.1679362,
-    "lng": -84.9008663
+    "lng": -84.9008663,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Stony Ridge Apts II",
@@ -3042,7 +3474,10 @@
     "owner": "Gateway",
     "legal_entity": "Stony Ridge II, LP",
     "lat": 33.1679362,
-    "lng": -84.9008663
+    "lng": -84.9008663,
+    "geocode_status": "ok",
+    "geocode_source": "cache",
+    "geocode_fail_code": null
   },
   {
     "name": "Stove Lofts",
@@ -3063,7 +3498,10 @@
     "owner": "Lexerd",
     "legal_entity": "LCP Leavenworth LLC",
     "lat": 39.316676,
-    "lng": -94.910143
+    "lng": -94.910143,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Sullivan Village",
@@ -3084,7 +3522,10 @@
     "owner": "Gateway",
     "legal_entity": "Sullivan Village Apartments, LTD",
     "lat": 34.7181817,
-    "lng": -87.6907708
+    "lng": -87.6907708,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Sunrise View ",
@@ -3104,8 +3545,11 @@
     "rvp": "Toni Raymond",
     "owner": "LDG",
     "legal_entity": "Indian Creek Family Development, LP",
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 33.761939415639,
+    "lng": -84.234602103382,
+    "geocode_status": "ok",
+    "geocode_source": "census",
+    "geocode_fail_code": null
   },
   {
     "name": "Sweetwater Terrace ",
@@ -3125,8 +3569,11 @@
     "rvp": "Toni Raymond",
     "owner": "Veneto Capital",
     "legal_entity": "Sweetwater Community Associates LLC",
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 33.9448580447,
+    "lng": -84.121882666951,
+    "geocode_status": "ok",
+    "geocode_source": "census",
+    "geocode_fail_code": null
   },
   {
     "name": "Tattnall Place ",
@@ -3147,7 +3594,10 @@
     "owner": "Macon Housing",
     "legal_entity": null,
     "lat": 32.831909,
-    "lng": -83.6436508
+    "lng": -83.6436508,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "The Peaks of Tazewell ",
@@ -3168,7 +3618,10 @@
     "owner": "RHG",
     "legal_entity": "Peaks of Tazewell, LP",
     "lat": 36.4381828,
-    "lng": -83.5682792
+    "lng": -83.5682792,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Tranquility at Decatur - Lease up ",
@@ -3188,8 +3641,11 @@
     "rvp": "Toni Raymond",
     "owner": "Timshel",
     "legal_entity": null,
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 33.716447534802,
+    "lng": -84.278099734297,
+    "geocode_status": "ok",
+    "geocode_source": "census",
+    "geocode_fail_code": null
   },
   {
     "name": "Tranquility at Ferry Pass ",
@@ -3209,8 +3665,11 @@
     "rvp": "Paula Hall",
     "owner": "Timshel",
     "legal_entity": "Timshel Ferry Pass Housing LLC",
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 30.513918787624,
+    "lng": -87.208560493845,
+    "geocode_status": "ok",
+    "geocode_source": "census",
+    "geocode_fail_code": null
   },
   {
     "name": "Tranquility at Griffin",
@@ -3231,7 +3690,10 @@
     "owner": "Gateway",
     "legal_entity": "Tranquility at Griffin, LP",
     "lat": 33.2667233,
-    "lng": -84.2897646
+    "lng": -84.2897646,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Tranquility at Hope School",
@@ -3251,8 +3713,11 @@
     "rvp": "Paula Hall",
     "owner": "Timshel",
     "legal_entity": "East Lake Florida 2, LLC",
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 30.710416322119,
+    "lng": -85.188557810268,
+    "geocode_status": "ok",
+    "geocode_source": "census",
+    "geocode_fail_code": null
   },
   {
     "name": "Tranquility at Hope School II ",
@@ -3272,8 +3737,11 @@
     "rvp": "Paula Hall",
     "owner": "Timshel",
     "legal_entity": "East Lake Florida 3, LLC",
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 30.710416322119,
+    "lng": -85.188557810268,
+    "geocode_status": "ok",
+    "geocode_source": "cache",
+    "geocode_fail_code": null
   },
   {
     "name": "Tranquility at Milton ",
@@ -3293,8 +3761,11 @@
     "rvp": "Paula Hall",
     "owner": "Timshel",
     "legal_entity": "Tranquility Milton, LLC",
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 30.615228986548,
+    "lng": -87.060009338212,
+    "geocode_status": "ok",
+    "geocode_source": "census",
+    "geocode_fail_code": null
   },
   {
     "name": "Tucker Cottages",
@@ -3315,7 +3786,10 @@
     "owner": "Gateway",
     "legal_entity": "Azalea Mill Cottages, LP",
     "lat": 0.0,
-    "lng": 0.0
+    "lng": 0.0,
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "NO_MATCH_NOMINATIM"
   },
   {
     "name": "Union at Stonecrest",
@@ -3336,7 +3810,10 @@
     "owner": "Timshel",
     "legal_entity": null,
     "lat": 33.7052641,
-    "lng": -84.1237335
+    "lng": -84.1237335,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Union Landing",
@@ -3357,7 +3834,10 @@
     "owner": "LDG",
     "legal_entity": "Union City Family Development, LP",
     "lat": 33.5843208,
-    "lng": -84.5404491
+    "lng": -84.5404491,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Valley Ridge Apts.",
@@ -3378,7 +3858,10 @@
     "owner": "Gateway",
     "legal_entity": "Valley Ridge Apartments, LP",
     "lat": 33.0571881,
-    "lng": -85.0340718
+    "lng": -85.0340718,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Valley Senior Village",
@@ -3399,7 +3882,10 @@
     "owner": "Gateway",
     "legal_entity": "Valley Senior Village LTD",
     "lat": 32.8326028,
-    "lng": -85.1788317
+    "lng": -85.1788317,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Verandah Apts., The",
@@ -3419,8 +3905,11 @@
     "rvp": "Toni Raymond",
     "owner": "Gateway",
     "legal_entity": null,
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 32.085067086181,
+    "lng": -84.223045912692,
+    "geocode_status": "ok",
+    "geocode_source": "census",
+    "geocode_fail_code": null
   },
   {
     "name": "Village at Blackshear ",
@@ -3441,7 +3930,10 @@
     "owner": "Macon Housing",
     "legal_entity": "Blackshear Village, L.P.",
     "lat": 31.3015084,
-    "lng": -82.256715
+    "lng": -82.256715,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Village at Wedgewood",
@@ -3461,8 +3953,11 @@
     "rvp": "Paula Hall",
     "owner": "Gateway",
     "legal_entity": null,
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 30.89882829228,
+    "lng": -84.210878242488,
+    "geocode_status": "ok",
+    "geocode_source": "census",
+    "geocode_fail_code": null
   },
   {
     "name": "Village on Park",
@@ -3483,7 +3978,10 @@
     "owner": "Gateway",
     "legal_entity": null,
     "lat": 30.9884558,
-    "lng": -83.3787939
+    "lng": -83.3787939,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Villages at Congaree Pointe ",
@@ -3504,7 +4002,10 @@
     "owner": "Armanda/Exact",
     "legal_entity": "Congaree Pointe, LP",
     "lat": 33.9501768,
-    "lng": -80.9623581
+    "lng": -80.9623581,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Villages at Stone Mountain, The ",
@@ -3525,7 +4026,10 @@
     "owner": "Gateway",
     "legal_entity": "Harmony at Stone Mountain LP",
     "lat": 33.7889835,
-    "lng": -84.1688979
+    "lng": -84.1688979,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Villas of Benedictine ",
@@ -3546,7 +4050,10 @@
     "owner": "Rob Coats Banyon Foundation",
     "legal_entity": "Benedictine Senior Housing LP",
     "lat": 35.88106,
-    "lng": -97.449219
+    "lng": -97.449219,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Villas on Forsyth",
@@ -3567,7 +4074,10 @@
     "owner": "Gateway",
     "legal_entity": "Villas on Forsyth, LP",
     "lat": 0.0,
-    "lng": 0.0
+    "lng": 0.0,
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "NO_MATCH_NOMINATIM"
   },
   {
     "name": "Vinings of Augusta",
@@ -3588,7 +4098,10 @@
     "owner": "Gateway",
     "legal_entity": "Harmony at Augusta, LP",
     "lat": 33.3644752,
-    "lng": -82.0386353
+    "lng": -82.0386353,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Walden Crest ",
@@ -3608,8 +4121,11 @@
     "rvp": "Paula Hall",
     "owner": "Gateway",
     "legal_entity": "Hohenwald Estates, LP",
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 35.545449399104,
+    "lng": -87.546300592312,
+    "geocode_status": "ok",
+    "geocode_source": "census",
+    "geocode_fail_code": null
   },
   {
     "name": "Waring I",
@@ -3630,7 +4146,10 @@
     "owner": "Gateway",
     "legal_entity": "DASH Warning Apartments LLC",
     "lat": 31.240964,
-    "lng": -82.356566
+    "lng": -82.356566,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Waring II Apts.",
@@ -3651,7 +4170,10 @@
     "owner": "Gateway",
     "legal_entity": null,
     "lat": 31.240963,
-    "lng": -82.356936
+    "lng": -82.356936,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Waterford Farms",
@@ -3672,7 +4194,10 @@
     "owner": "Gateway",
     "legal_entity": "Waterford Farms Apartments, LTD",
     "lat": 34.3129898,
-    "lng": -86.5123977
+    "lng": -86.5123977,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Ways Station ",
@@ -3693,7 +4218,10 @@
     "owner": "Gateway",
     "legal_entity": null,
     "lat": 0.0,
-    "lng": 0.0
+    "lng": 0.0,
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "NO_MATCH_NOMINATIM"
   },
   {
     "name": "Windcliff Apts.",
@@ -3714,7 +4242,10 @@
     "owner": "Gateway",
     "legal_entity": "Windcliff  Apartments, LLC",
     "lat": 34.3318976,
-    "lng": -83.8043436
+    "lng": -83.8043436,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "Wood Meadow ",
@@ -3734,8 +4265,11 @@
     "rvp": "Toni Raymond",
     "owner": "Gateway",
     "legal_entity": "Wood Meadow Apartments, LP",
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 32.197936918163,
+    "lng": -81.196728532496,
+    "geocode_status": "ok",
+    "geocode_source": "census",
+    "geocode_fail_code": null
   },
   {
     "name": "Woodcrest Apts",
@@ -3755,8 +4289,11 @@
     "rvp": "Erin Loupe",
     "owner": "LDG",
     "legal_entity": "Woodcrest Apartments, LP",
-    "lat": 0.0,
-    "lng": 0.0
+    "lat": 30.462427457784,
+    "lng": -91.116067410753,
+    "geocode_status": "ok",
+    "geocode_source": "census",
+    "geocode_fail_code": null
   },
   {
     "name": "Woodlawn Terrace",
@@ -3777,7 +4314,10 @@
     "owner": "Gateway",
     "legal_entity": null,
     "lat": 30.848758,
-    "lng": -83.266142
+    "lng": -83.266142,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   },
   {
     "name": "South Rossville Senior Village (acquisition eff. 10/14/25)",
@@ -3798,6 +4338,9 @@
     "owner": "Gateway ",
     "legal_entity": null,
     "lat": 34.971101,
-    "lng": -85.294505
+    "lng": -85.294505,
+    "geocode_status": "ok",
+    "geocode_source": "nominatim",
+    "geocode_fail_code": null
   }
 ]
