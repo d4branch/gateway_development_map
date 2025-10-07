@@ -189,7 +189,7 @@ jobs:
             return $codes
           }
           function Try-Nominatim($q) {
-            $encoded = [System.Web.HttpUtility]::UrlEncode($q)
+            $encoded = [System.Net.WebUtility]::UrlEncode($q)
             $url = "https://nominatim.openstreetmap.org/search?q=$encoded&format=json&limit=1&addressdetails=0"
             try {
               $resp = Invoke-RestMethod -Uri $url -Headers @{ "User-Agent" = "GatewayMapBot/1.0 (bot@example.com)" } -Method GET -TimeoutSec 30
@@ -197,13 +197,14 @@ jobs:
                 return @{ ok=$true; lat=[double]$resp[0].lat; lng=[double]$resp[0].lon; src='nominatim' }
               } else { return @{ ok=$false; code='NO_MATCH_NOMINATIM' } }
             } catch {
+              Write-Host "Nominatim error: $($_.Exception.Message)"
               $code = try { [int]$_.Exception.Response.StatusCode.value__ } catch { 0 }
               return @{ ok=$false; code=("PROVIDER_ERROR_{0}" -f ($code -as [string])) }
             }
           }
           function Try-Census($street, $city, $state, $zip) {
             $oneLine = ($street, $city, $state, $zip) -join ', '
-            $encoded = [System.Web.HttpUtility]::UrlEncode($oneLine)
+            $encoded = [System.Net.WebUtility]::UrlEncode($oneLine)
             $url = "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address=$encoded&benchmark=2020&format=json"
             try {
               $resp = Invoke-RestMethod -Uri $url -Method GET -TimeoutSec 30
@@ -212,6 +213,7 @@ jobs:
                 return @{ ok=$true; lat=[double]$m[0].coordinates.y; lng=[double]$m[0].coordinates.x; src='census' }
               } else { return @{ ok=$false; code='NO_MATCH_CENSUS' } }
             } catch {
+              Write-Host "Census error: $($_.Exception.Message)"
               $code = try { [int]$_.Exception.Response.StatusCode.value__ } catch { 0 }
               return @{ ok=$false; code=("PROVIDER_ERROR_{0}" -f ($code -as [string])) }
             }
