@@ -59,6 +59,17 @@
       <select id="legalFilter"><option value="All">All</option></select>
     </div>
 
+    <!-- New: Geocode Status Filter -->
+    <div class="group">
+      <label for="statusFilter">Geocode Status</label>
+      <select id="statusFilter">
+        <option value="All">All</option>
+        <option value="ok">Ok</option>
+        <option value="approx">Approx</option>
+        <option value="failed">Failed</option>
+      </select>
+    </div>
+
     <!-- Export group -->
     <div class="group">
       <label>&nbsp;</label>
@@ -99,7 +110,17 @@
       });
     }
 
-    // Color/shape per Type
+    // Status colors (green/orange/red)
+    function getStatusColor(status) {
+      switch (status) {
+        case 'ok':     return '#10b981'; // green
+        case 'approx': return '#f59e0b'; // orange
+        case 'failed': return '#ef4444'; // red
+        default:       return '#6b7280'; // gray
+      }
+    }
+
+    // Color/shape per Type (base color)
     function getMarkerOptions(type) {
       switch (type) {
         case '55':   return { color: '#60d5d7', shape: 'circle' };  // teal circle
@@ -112,11 +133,12 @@
       }
     }
 
-    // Create a marker with a divIcon shape that matches the legend
+    // Create a marker with a divIcon shape that matches the legend + status tint (border/glow)
     function makeMarker(prop) {
       const opt = getMarkerOptions(prop.type);
+      const statusColor = getStatusColor(prop.geocode_status || 'unknown');
 
-      let shapeCSS = `width:20px;height:20px;background:${opt.color};border:2px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,.2);`;
+      let shapeCSS = `width:20px;height:20px;background:${opt.color};border:2px solid ${statusColor};box-shadow:0 2px 4px rgba(0,0,0,.2);`;
       if (opt.shape === 'circle') {
         shapeCSS += 'border-radius:50%;';
       } else if (opt.shape === 'square') {
@@ -144,6 +166,7 @@
           <p><strong>Manager:</strong> ${prop.manager ?? ''}<br>
              <a href="mailto:${prop.manager_email ?? ''}" style="color:#0ea5e9">${prop.manager_email ?? ''}</a></p>
           <p><strong>RVP:</strong> ${prop.rvp ?? ''} &nbsp;|&nbsp; <strong>Regional:</strong> ${prop.rpm ?? ''}</p>
+          <p><strong>Geocode Status:</strong> ${prop.geocode_status ?? 'unknown'} (${prop.geocode_source ?? 'none'})</p>
           <small style="color:#6b7280;border-top:1px solid #e5e7eb;padding-top:4px;display:block">
             Owner: ${prop.owner ?? 'N/A'} &nbsp;|&nbsp; Legal: ${prop.legal_entity ?? 'N/A'} &nbsp;|&nbsp; Phone: ${prop.office_phone ?? 'N/A'}
           </small>
@@ -152,7 +175,7 @@
       return m;
     }
 
-    // ---- Legend (with counts) ----
+    // ---- Legend (with counts + status key) ----
     function legendHTML() {
       const items = [
         {label:'55+',    type:'55'},
@@ -170,9 +193,20 @@
           <div>${it.label}</div>
         </div>`;
       }).join('');
+
+      // Status key (simple dots)
+      const statusRows = [
+        {label:'Ok', status:'ok', color:'#10b981'},
+        {label:'Approx', status:'approx', color:'#f59e0b'},
+        {label:'Failed', status:'failed', color:'#ef4444'}
+      ].map(it => `<div class="row"><div class="swatch circle" style="background:${it.color};width:12px;height:12px;border-radius:50%;border:1px solid #fff;"></div><div>${it.label}</div></div>`).join('');
+
       return `<div>
         <h4>Legend</h4>
         ${rows}
+        <hr style="margin:8px 0;border:none;border-top:1px solid #e5e7eb;">
+        <h5 style="margin:0 0 4px;font-size:12px;color:#6b7280;">Status (Border)</h5>
+        ${statusRows}
         <div class="counts">
           <span id="legendVisible">0</span> visible /
           <span id="legendEligible">0</span> mapped •
@@ -246,6 +280,7 @@
       const type  = document.getElementById('typeFilter').value;
       const owner = document.getElementById('ownerFilter').value;
       const legal = document.getElementById('legalFilter').value;
+      const status = document.getElementById('statusFilter').value; // New: Status filter
 
       markersGroup.clearLayers();
 
@@ -255,7 +290,8 @@
         (st    === 'All' || p.state === st) &&
         (type  === 'All' || p.type === type) &&
         (owner === 'All' || p.owner === owner) &&
-        (legal === 'All' || p.legal_entity === legal)
+        (legal === 'All' || p.legal_entity === legal) &&
+        (status === 'All' || p.geocode_status === status) // New: Filter by status
       ));
 
       rows.forEach(({marker}) => markersGroup.addLayer(marker));
@@ -293,8 +329,8 @@
         // Initial draw (+ counts)
         applyFilters();
 
-        // Bind filter events
-        ['rvpFilter','rpmFilter','stateFilter','typeFilter','ownerFilter','legalFilter']
+        // Bind filter events (added statusFilter)
+        ['rvpFilter','rpmFilter','stateFilter','typeFilter','ownerFilter','legalFilter','statusFilter']
           .forEach(id => document.getElementById(id).addEventListener('change', applyFilters));
 
         // Wire the download button + legend link
