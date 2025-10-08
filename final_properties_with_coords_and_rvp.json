@@ -17,10 +17,10 @@
     "rvp": "Paula Hall",
     "owner": "Gateway",
     "legal_entity": "Eagle Pointe Apartment, LTD.",
-    "lat": 34.684059,
-    "lng": -86.759483,
+    "lat": 4.684019838376,
+    "lng": -86.759552655917,
     "geocode_status": "ok",
-    "geocode_source": "nominatim",
+    "geocode_source": "existing",
     "geocode_fail_code": null
   },
   {
