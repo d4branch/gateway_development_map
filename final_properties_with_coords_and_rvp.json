@@ -833,8 +833,8 @@
     "rvp": "Toni Raymond",
     "owner": "Macon Housing",
     "legal_entity": "Colony West Partners, LP",
-    "lat": 32.8,
-    "lng": 83.6,
+    "lat": 36.0979,
+    "lng": -95.885,
     "geocode_status": "ok",
     "geocode_source": "manual",
     "geocode_fail_code": null
@@ -882,7 +882,7 @@
     "owner": "RHG",
     "legal_entity": "Cottage Park LP1",
     "lat": 35.5,
-    "lng": 97.3,
+    "lng": -97.3,
     "geocode_status": "ok",
     "geocode_source": "manual",
     "geocode_fail_code": null
@@ -906,7 +906,7 @@
     "owner": "RHG",
     "legal_entity": "Cottage Park, LP2",
     "lat": 35.5,
-    "lng": 97.3,
+    "lng": -97.3,
     "geocode_status": "ok",
     "geocode_source": "manual",
     "geocode_fail_code": null
@@ -978,7 +978,7 @@
     "owner": "RHG",
     "legal_entity": "Cottage Park Newcastle, LP",
     "lat": 35.3,
-    "lng": 97.6,
+    "lng": -97.6,
     "geocode_status": "ok",
     "geocode_source": "manual",
     "geocode_fail_code": null
@@ -1265,8 +1265,8 @@
     "rvp": "Paula Hall",
     "owner": "Gateway",
     "legal_entity": "Eagle's Landing Development, LTD",
-    "lat": 53.77391,
-    "lng": -2.71823,
+    "lat": 34.7095,
+    "lng": -86.738,
     "geocode_status": "ok",
     "geocode_source": "manual",
     "geocode_fail_code": null
@@ -2681,8 +2681,8 @@
     "rvp": "Erin Loupe",
     "owner": "Gateway",
     "legal_entity": "Orchard View Apartments",
-    "lat": -37.662,
-    "lng": 176.057,
+    "lat": 34.24815,
+    "lng": -77.9379,
     "geocode_status": "ok",
     "geocode_source": "manual",
     "geocode_fail_code": null
@@ -2969,8 +2969,8 @@
     "rvp": "Paula Hall",
     "owner": "Gateway",
     "legal_entity": "Peyton Ridge Village, LTD",
-    "lat": 33.98193,
-    "lng": -117.733,
+    "lat": 35.1352,
+    "lng": -85.2586,
     "geocode_status": "ok",
     "geocode_source": "manual",
     "geocode_fail_code": null
@@ -3401,8 +3401,8 @@
     "rvp": "Melissa Valley",
     "owner": "Gateway",
     "legal_entity": "Sterling Oaks Apartments LP",
-    "lat": 35.3,
-    "lng": -81.9,
+    "lat": 33.43652,
+    "lng": -82.088,
     "geocode_status": "ok",
     "geocode_source": "manual",
     "geocode_fail_code": null
