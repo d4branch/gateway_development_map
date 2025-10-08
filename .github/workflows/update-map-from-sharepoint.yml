@@ -213,17 +213,17 @@ jobs:
             return $a
           }
 
-          function FailCodesFor($prop) {
-            $codes = New-Object System.Collections.Generic.List[string]
-            if (-not $prop.address -or $prop.address.Trim() -eq '') { $codes.Add('MISSING_ADDRESS') }
-            if ($prop.address -and $prop.address.Trim() -match '(?i)\bP\.?\s*O\.?\s*Box\b') { $codes.Add('PO_BOX') }
-            if ($prop.address -and $prop.address.Trim() -notmatch '^\s*\d+') { $codes.Add('MISSING_STREETNUM') }
-            if (-not $prop.city -or $prop.city.Trim() -eq '') { $codes.Add('MISSING_CITY') }
-            if (-not $prop.state -or $prop.state.Trim() -eq '') { $codes.Add('MISSING_STATE') }
-            if ($prop.zip -and $prop.zip.Trim() -notmatch '^\d{5}(-\d{4})?$') { $codes.Add('BAD_ZIP') }
-            if ($prop.address -and $prop.address.Trim().Length -lt 6) { $codes.Add('ADDRESS_TOO_SHORT') }
-            return $codes
-          }
+         function FailCodesFor($prop) {
+         $codes = New-Object System.Collections.Generic.List[string]
+         if (-not $prop.address -or $prop.address.Trim() -eq '') { $codes.Add('MISSING_ADDRESS') }
+         if ($prop.address -and $prop.address.Trim() -match '(?i)\bP\.?\s*O\.?\s*Box\b') { $codes.Add('PO_BOX') }
+         if ($prop.address -and $prop.address.Trim() -notmatch '^\s*\d+\s+[A-Za-z]') { $codes.Add('INVALID_ADDRESS_FORMAT') } # Requires number + word
+         if (-not $prop.city -or $prop.city.Trim() -eq '') { $codes.Add('MISSING_CITY') }
+         if (-not $prop.state -or $prop.state.Trim() -eq '') { $codes.Add('MISSING_STATE') }
+         if ($prop.zip -and $prop.zip.Trim() -notmatch '^\d{5}(-\d{4})?$') { $codes.Add('BAD_ZIP') }
+         if ($prop.address -and $prop.address.Trim().Length -lt 6) { $codes.Add('ADDRESS_TOO_SHORT') }
+         return $codes
+       }
 
           function Try-Nominatim($q) {
             $encoded = [System.Net.WebUtility]::UrlEncode($q)
