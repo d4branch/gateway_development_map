@@ -191,75 +191,56 @@ jobs:
             $geocache = Get-Content $geocacheFile -Raw | ConvertFrom-Json -AsHashtable
           }
 
-                 # ---- Controls ----
-       $UseCityFallback   = $true  # Enable for city-center approx pins on fails
-       $UseCensusFallback = $true
+          # ---- Controls ----
+          $UseCityFallback   = $true  # Enable for city-center approx pins on fails
+          $UseCensusFallback = $true
 
-       # ---- Helpers ----
-       function Normalize-Address([string]$addr) {
-         if (-not $addr) { return "" }
-         $a = $addr.Trim()
-         $a = $a -replace '(?i)\s+(Apt|Apartment|Unit|Lot|Suite|Ste|#)\s*\S+', ''
-         $a = $a -replace '(?i)\bHwy\b','Highway'
-         $a = $a -replace '(?i)\bRd\b','Road'
-         $a = $a -replace '(?i)\bRaod\b','Road'  # Fix Juanita typo
-         $a = $a -replace '(?i)\bAve\b','Avenue'
-         $a = $a -replace '(?i)\bSt\b','Street'
-         $a = $a -replace '(?i)\bBlvd\b','Boulevard'
-         $a = $a -replace '(?i)\bPkwy\b','Parkway'
-         $a = $a -replace '(?i)\bLn\b','Lane'
-         $a = $a -replace '(?i)\bDr\b','Drive'
-         $a = $a -replace '\s+', ' '
-         return $a
-       }
+          # ---- Helpers ----
+          function Normalize-Address([string]$addr) {
+            if (-not $addr) { return "" }
+            $a = $addr.Trim()
+            $a = $a -replace '(?i)\s+(Apt|Apartment|Unit|Lot|Suite|Ste|#)\s*\S+', ''
+            $a = $a -replace '(?i)\bHwy\b','Highway'
+            $a = $a -replace '(?i)\bRd\b','Road'
+            $a = $a -replace '(?i)\bRaod\b','Road'  # Fix Juanita typo
+            $a = $a -replace '(?i)\bAve\b','Avenue'
+            $a = $a -replace '(?i)\bSt\b','Street'
+            $a = $a -replace '(?i)\bBlvd\b','Boulevard'
+            $a = $a -replace '(?i)\bPkwy\b','Parkway'
+            $a = $a -replace '(?i)\bLn\b','Lane'
+            $a = $a -replace '(?i)\bDr\b','Drive'
+            $a = $a -replace '\s+', ' '
+            return $a
+          }
 
-       function FailCodesFor($prop) {
-         $codes = New-Object System.Collections.Generic.List[string]
-         if (-not $prop.address -or $prop.address.Trim() -eq '') { $codes.Add('MISSING_ADDRESS') }
-         if ($prop.address -and $prop.address.Trim() -match '(?i)\bP\.?\s*O\.?\s*Box\b') { $codes.Add('PO_BOX') }
-         if ($prop.address -and $prop.address.Trim() -notmatch '^\s*\d+') { $codes.Add('MISSING_STREETNUM') }
-         if (-not $prop.city -or $prop.city.Trim() -eq '') { $codes.Add('MISSING_CITY') }
-         if (-not $prop.state -or $prop.state.Trim() -eq '') { $codes.Add('MISSING_STATE') }
-         if ($prop.zip -and $prop.zip.Trim() -notmatch '^\d{5}(-\d{4})?$') { $codes.Add('BAD_ZIP') }
-         if ($prop.address -and $prop.address.Trim().Length -lt 6) { $codes.Add('ADDRESS_TOO_SHORT') }
-         return $codes
-       }
+          function FailCodesFor($prop) {
+            $codes = New-Object System.Collections.Generic.List[string]
+            if (-not $prop.address -or $prop.address.Trim() -eq '') { $codes.Add('MISSING_ADDRESS') }
+            if ($prop.address -and $prop.address.Trim() -match '(?i)\bP\.?\s*O\.?\s*Box\b') { $codes.Add('PO_BOX') }
+            if ($prop.address -and $prop.address.Trim() -notmatch '^\s*\d+') { $codes.Add('MISSING_STREETNUM') }
+            if (-not $prop.city -or $prop.city.Trim() -eq '') { $codes.Add('MISSING_CITY') }
+            if (-not $prop.state -or $prop.state.Trim() -eq '') { $codes.Add('MISSING_STATE') }
+            if ($prop.zip -and $prop.zip.Trim() -notmatch '^\d{5}(-\d{4})?$') { $codes.Add('BAD_ZIP') }
+            if ($prop.address -and $prop.address.Trim().Length -lt 6) { $codes.Add('ADDRESS_TOO_SHORT') }
+            return $codes
+          }
 
-       function Try-Nominatim($q) {
-         $encoded = [System.Net.WebUtility]::UrlEncode($q)
-         $url = "https://nominatim.openstreetmap.org/search?q=$encoded&format=json&limit=1&addressdetails=0"
-         try {
-           $resp = Invoke-RestMethod -Uri $url -Headers @{ "User-Agent" = "GatewayMapBot/1.0 (bot@example.com)" } -Method GET -TimeoutSec 30
-           if ($resp -and $resp.Count -gt 0) {
-             return @{ ok=$true; lat=[double]$resp[0].lat; lng=[double]$resp[0].lon; src='nominatim' }
-           } else {
-             return @{ ok=$false; code='NO_MATCH_NOMINATIM' }
-           }
-         } catch {
-           Write-Host "Nominatim error: $($_.Exception.Message)"
-           $code = try { [int]$_.Exception.Response.StatusCode.value__ } catch { 0 }
-           return @{ ok=$false; code=("PROVIDER_ERROR_{0}" -f ($code -as [string])) }
-         }
-       }
-
-       function Try-Census($street, $city, $state, $zip) {
-         $oneLine = ($street, $city, $state, $zip) -join ', '
-         $encoded = [System.Net.WebUtility]::UrlEncode($oneLine)
-         $url = "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address=$encoded&benchmark=2020&format=json"
-         try {
-           $resp = Invoke-RestMethod -Uri $url -Method GET -TimeoutSec 30
-           $m = $resp.result.addressMatches
-           if ($m -and $m.Count -gt 0) {
-             return @{ ok=$true; lat=[double]$m[0].coordinates.y; lng=[double]$m[0].coordinates.x; src='census' }
-           } else {
-             return @{ ok=$false; code='NO_MATCH_CENSUS' }
-           }
-         } catch {
-           Write-Host "Census error: $($_.Exception.Message)"
-           $code = try { [int]$_.Exception.Response.StatusCode.value__ } catch { 0 }
-           return @{ ok=$false; code=("PROVIDER_ERROR_{0}" -f ($code -as [string])) }
-         }
-       }
+          function Try-Nominatim($q) {
+            $encoded = [System.Net.WebUtility]::UrlEncode($q)
+            $url = "https://nominatim.openstreetmap.org/search?q=$encoded&format=json&limit=1&addressdetails=0"
+            try {
+              $resp = Invoke-RestMethod -Uri $url -Headers @{ "User-Agent" = "GatewayMapBot/1.0 (bot@example.com)" } -Method GET -TimeoutSec 30
+              if ($resp -and $resp.Count -gt 0) {
+                return @{ ok=$true; lat=[double]$resp[0].lat; lng=[double]$resp[0].lon; src='nominatim' }
+              } else {
+                return @{ ok=$false; code='NO_MATCH_NOMINATIM' }
+              }
+            } catch {
+              Write-Host "Nominatim error: $($_.Exception.Message)"
+              $code = try { [int]$_.Exception.Response.StatusCode.value__ } catch { 0 }
+              return @{ ok=$false; code=("PROVIDER_ERROR_{0}" -f ($code -as [string])) }
+            }
+          }
 
           function Try-Census($street, $city, $state, $zip) {
             $oneLine = ($street, $city, $state, $zip) -join ', '
