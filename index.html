@@ -4,15 +4,27 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Gateway Properties Map</title>
+
+  <!-- Your main stylesheet -->
   <link rel="stylesheet" href="styles/app.css" />
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <!-- Leaflet CSS (use jsDelivr for reliability) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
+
+  <!-- Hard fallback so the map is always visible even if CSS fails -->
+  <style>
+    #map { height: 70vh; min-height: 520px; }         /* fallback height */
+    .leaflet-container { background: #eef2f7; }
+  </style>
 </head>
 <body>
+  <!-- Header -->
   <div class="gaHeader">
     <h1>Gateway Properties Map</h1>
     <p class="sub">Property Filters</p>
   </div>
 
+  <!-- Toolbar (status filter & export removed) -->
   <div class="toolbar">
     <div class="group">
       <label for="rvpFilter">RVP</label>
@@ -47,53 +59,152 @@
       <label for="legalFilter">Legal Entity</label>
       <select id="legalFilter"><option value="All">All</option></select>
     </div>
-    <!-- removed status filter + export button -->
   </div>
 
+  <!-- Map -->
   <div id="map" class="map"></div>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- Leaflet JS -->
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+
   <script>
-    const map = L.map('map').setView([34.5, -86.6], 6);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
-
-    const markersGroup = L.layerGroup().addTo(map);
-    let allProps = [];
-    let allMarkers = [];
-    let totalPortfolio = 0;
-    let totalEligible = 0;
-
-    const uniqueSorted = arr => [...new Set(arr.filter(Boolean))].sort((a,b)=>a.localeCompare(b));
-
-    function addOptions(selectId, values) {
-      const sel = document.getElementById(selectId);
-      [...sel.querySelectorAll('option:not([value="All"])')].forEach(o => o.remove());
-      values.forEach(v => {
-        const opt = document.createElement('option');
-        opt.value = v; opt.textContent = v;
-        sel.appendChild(opt);
-      });
-    }
-
-    // Color/shape per Type (no status border)
-    function getMarkerOptions(type) {
-      switch (type) {
-        case '55':   return { color: '#60d5d7', shape: 'circle' };
-        case '62':   return { color: '#10b981', shape: 'circle' };
-        case 'F':    return { color: '#f59e0b', shape: 'square' };
-        case 'C':    return { color: '#8b5cf6', shape: 'diamond' };
-        case 'S':    return { color: '#ef4444', shape: 'star' };
-        case 'RD-62':return { color: '#10b981', shape: 'circle' };
-        default:     return { color: '#3b82f6', shape: 'circle' };
+    (function () {
+      // --- Utilities ---
+      const uniqueSorted = arr => [...new Set(arr.filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+      function addOptions(selectId, values) {
+        const sel = document.getElementById(selectId);
+        [...sel.querySelectorAll('option:not([value="All"])')].forEach(o => o.remove());
+        values.forEach(v => {
+          const opt = document.createElement('option');
+          opt.value = v; opt.textContent = v;
+          sel.appendChild(opt);
+        });
       }
-    }
+      function getMarkerOptions(type) {
+        switch (type) {
+          case '55':    return { color: '#60d5d7', shape: 'circle' };
+          case '62':    return { color: '#10b981', shape: 'circle' };
+          case 'F':     return { color: '#f59e0b', shape: 'square' };
+          case 'C':     return { color: '#8b5cf6', shape: 'diamond' };
+          case 'S':     return { color: '#ef4444', shape: 'star' };
+          case 'RD-62': return { color: '#10b981', shape: 'circle' };
+          default:      return { color: '#3b82f6', shape: 'circle' };
+        }
+      }
+      function makeMarker(prop) {
+        const opt = getMarkerOptions(prop.type);
+        let shapeCSS = `width:20px;height:20px;background:${opt.color};box-shadow:0 2px 4px rgba(0,0,0,.2);`;
+        if (opt.shape === 'circle') shapeCSS += 'border-radius:50%;';
+        else if (opt.shape === 'square') shapeCSS += 'border-radius:4px;';
+        else if (opt.shape === 'diamond') shapeCSS += 'transform:rotate(45deg);border-radius:3px;';
+        else if (opt.shape === 'star') shapeCSS += 'clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);';
 
-    function makeMarker(prop) {
-      const opt = getMarkerOptions(prop.type);
-      let shapeCSS = `width:20px;height:20px;background:${opt.color};box-shadow:0 2px 4px rgba(0,0,0,.2);`;
-      if (opt.shape === 'circle') shapeCSS += 'border-radius:50%;';
-      else if (opt.shape === 'square') shapeCSS += 'border-radius:4px;';
-      else if (opt.shape === 'diamond') shapeCSS += 'transform:rotate(45deg);border-radius:3px;';
-      else if (opt.shape === 'star') shapeCSS += 'clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);';
+        const icon = L.divIcon({
+          html: `<div style="${shapeCSS}"></div>`,
+          className: 'custom-div-icon',
+          iconSize: [20,20],
+          iconAnchor: [10,10]
+        });
+
+        const m = L.marker([prop.lat, prop.lng], { icon });
+        m.bindPopup(
+          `<div style="font-family:system-ui,sans-serif;min-width:280px">
+            <h3 style="margin:0 0 8px;color:#073b3d;border-bottom:1px solid #60d5d7;padding-bottom:4px">
+              ${prop.name} 🏠</h3>
+            <p><strong>Type:</strong> ${prop.type} &nbsp;|&nbsp; <strong>Units:</strong> ${prop.units ?? ''}</p>
+            <p><strong>Address:</strong> ${prop.address}<br>${prop.city}, ${prop.state} ${prop.zip ?? ''}</p>
+            <p><strong>Manager:</strong> ${prop.manager ?? ''}<br>
+               <a href="mailto:${prop.manager_email ?? ''}" style="color:#0ea5e9">${prop.manager_email ?? ''}</a></p>
+            <p><strong>RVP:</strong> ${prop.rvp ?? ''} &nbsp;|&nbsp; <strong>Regional:</strong> ${prop.rpm ?? ''}</p>
+            <small style="color:#6b7280;border-top:1px solid #e5e7eb;padding-top:4px;display:block">
+              Owner: ${prop.owner ?? 'N/A'} &nbsp;|&nbsp; Legal: ${prop.legal_entity ?? 'N/A'} &nbsp;|&nbsp; Phone: ${prop.office_phone ?? 'N/A'}
+            </small>
+          </div>`
+        );
+        return m;
+      }
+
+      // --- Map init (render the basemap first, independent of data) ---
+      if (!window.L) {
+        const pre = document.createElement('pre');
+        pre.textContent = "Leaflet failed to load (window.L is undefined).";
+        document.body.appendChild(pre);
+        return;
+      }
+      const map = L.map('map', { zoomControl: true }).setView([34.5, -86.6], 6);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map);
+      const markersGroup = L.layerGroup().addTo(map);
+      window.addEventListener('load', () => map.invalidateSize());
+      setTimeout(() => map.invalidateSize(), 300);
+
+      // --- Data & filters ---
+      let allProps = [];
+      let allMarkers = [];
+      let totalPortfolio = 0;
+      let totalEligible  = 0;
+
+      function applyFilters() {
+        const rvp   = document.getElementById('rvpFilter').value;
+        const rpm   = document.getElementById('rpmFilter').value;
+        const st    = document.getElementById('stateFilter').value;
+        const type  = document.getElementById('typeFilter').value;
+        const owner = document.getElementById('ownerFilter').value;
+        const legal = document.getElementById('legalFilter').value;
+
+        markersGroup.clearLayers();
+        const rows = allMarkers.filter(({property:p}) => (
+          (rvp   === 'All' || p.rvp === rvp) &&
+          (rpm   === 'All' || p.rpm === rpm) &&
+          (st    === 'All' || p.state === st) &&
+          (type  === 'All' || p.type === type) &&
+          (owner === 'All' || p.owner === owner) &&
+          (legal === 'All' || p.legal_entity === legal)
+        ));
+        rows.forEach(({marker}) => markersGroup.addLayer(marker));
+
+        // Fit bounds on visible rows
+        if (rows.length) {
+          const grp = L.featureGroup(rows.map(r => r.marker));
+          map.fitBounds(grp.getBounds(), { padding: [20,20] });
+        }
+      }
+
+      // Load JSON (SharePoint-manual coords)
+      const jsonUrl = './final_properties_with_coords_and_rvp.json?v=' + Date.now();
+      fetch(jsonUrl)
+        .then(r => {
+          if (!r.ok) throw new Error('JSON fetch failed: ' + r.status + ' ' + r.statusText);
+          return r.json();
+        })
+        .then(data => {
+          allProps = Array.isArray(data) ? data : [];
+          // Only accept valid numeric coords (non-zero)
+          allMarkers = allProps
+            .filter(p => typeof p.lat === 'number' && typeof p.lng === 'number' &&
+                         !Number.isNaN(p.lat) && !Number.isNaN(p.lng) &&
+                         p.lat !== 0 && p.lng !== 0)
+            .map(p => ({ property: p, marker: makeMarker(p) }));
+          totalPortfolio = allProps.length;
+          totalEligible  = allMarkers.length;
+
+          addOptions('rvpFilter',   uniqueSorted(allProps.map(p => p.rvp)));
+          addOptions('rpmFilter',   uniqueSorted(allProps.map(p => p.rpm)));
+          addOptions('ownerFilter', uniqueSorted(allProps.map(p => p.owner)));
+          addOptions('legalFilter', uniqueSorted(allProps.map(p => p.legal_entity)));
+
+          applyFilters();
+
+          ['rvpFilter','rpmFilter','stateFilter','typeFilter','ownerFilter','legalFilter']
+            .forEach(id => document.getElementById(id).addEventListener('change', applyFilters));
+        })
+        .catch(err => {
+          console.error('Data load error:', err);
+          // Still leave the basemap usable; optionally drop a marker to show it's alive
+          L.marker([34.5, -86.6]).addTo(map).bindPopup('Basemap OK — data failed to load.').openPopup();
+        });
+    })();
+  </script>
+</body>
+</html>
