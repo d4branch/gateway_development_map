@@ -146,15 +146,15 @@ jobs:
             $owner         = Get-Field $f 'Owner' 'owner'
             $legal_entity  = Get-Field $f 'LegalEntity' 'legal'
 
-            # Lat/Lng: Expanded fuzzy for SharePoint variants + hard-map to field_15/16
-            $rawLat = $f.field_15 ?? $f.Latitude ?? $f.Latitude_x0020_ ?? (Get-Field $f 'lat' 'latitude') ?? $null
-            $rawLng = $f.field_16 ?? $f.Longitude ?? $f.Longitude_x0020_ ?? (Get-Field $f 'lng' 'longitude') ?? $null
+            # Lat/Lng: Hard-map to field_15/16 only
+            $rawLat = $f.field_15 ?? $null
+            $rawLng = $f.field_16 ?? $null
             $castLat = try { [double]$rawLat } catch { 0.0 }
             $castLng = try { [double]$rawLng } catch { 0.0 }
 
             # Debug for Cedar Glades
             if ($propName -eq 'Cedar Glades') {
-              Write-Host "DEBUG: For '$propName': rawLat='$rawLat' → cast=$castLat | rawLng='$rawLng' → cast=$castLng | field_15='$($f.field_15)' | field_16='$($f.field_16)' | Latitude='$($f.Latitude)'"
+              Write-Host "DEBUG: For '$propName': rawLat='$rawLat' → cast=$castLat | rawLng='$rawLng' → cast=$castLng | field_15='$($f.field_15)' | field_16='$($f.field_16)'"
             }
 
             [pscustomobject]@{
@@ -184,187 +184,50 @@ jobs:
           }
           $out = foreach ($it in $items) { Map-Row $it.fields $it.fields.Title }
 
-          # ---- Geocache ----
-          $geocacheFile = "geocache.json"
-          $geocache = @{}
-          if (Test-Path $geocacheFile) {
-            $geocache = Get-Content $geocacheFile -Raw | ConvertFrom-Json -AsHashtable
-          }
-
-          # ---- Controls ----
-          $UseCityFallback   = $true  # Enable for city-center approx pins on fails
-          $UseCensusFallback = $true
-
-          # ---- Helpers ----
-          function Normalize-Address([string]$addr) {
-            if (-not $addr) { return "" }
-            $a = $addr.Trim()
-            $a = $a -replace '(?i)\s+(Apt|Apartment|Unit|Lot|Suite|Ste|#)\s*\S+', ''
-            $a = $a -replace '(?i)\bHwy\b','Highway'
-            $a = $a -replace '(?i)\bRd\b','Road'
-            $a = $a -replace '(?i)\bRaod\b','Road'  # Fix Juanita typo
-            $a = $a -replace '(?i)\bAve\b','Avenue'
-            $a = $a -replace '(?i)\bSt\b','Street'
-            $a = $a -replace '(?i)\bBlvd\b','Boulevard'
-            $a = $a -replace '(?i)\bPkwy\b','Parkway'
-            $a = $a -replace '(?i)\bLn\b','Lane'
-            $a = $a -replace '(?i)\bDr\b','Drive'
-            $a = $a -replace '\s+', ' '
-            return $a
-          }
-
-          function FailCodesFor($prop) {
-            $codes = New-Object System.Collections.Generic.List[string]
-            if (-not $prop.address -or $prop.address.Trim() -eq '') { $codes.Add('MISSING_ADDRESS') }
-            if ($prop.address -and $prop.address.Trim() -match '(?i)\bP\.?\s*O\.?\s*Box\b') { $codes.Add('PO_BOX') }
-            if ($prop.address -and $prop.address.Trim() -notmatch '^\s*\d+\s+[A-Za-z]') { $codes.Add('INVALID_ADDRESS_FORMAT') } # Requires number + word
-            if (-not $prop.city -or $prop.city.Trim() -eq '') { $codes.Add('MISSING_CITY') }
-            if (-not $prop.state -or $prop.state.Trim() -eq '') { $codes.Add('MISSING_STATE') }
-            if ($prop.zip -and $prop.zip.Trim() -notmatch '^\d{5}(-\d{4})?$') { $codes.Add('BAD_ZIP') }
-            if ($prop.address -and $prop.address.Trim().Length -lt 6) { $codes.Add('ADDRESS_TOO_SHORT') }
-            return $codes
-          }
-
-          function Try-Nominatim($q) {
-            $encoded = [System.Net.WebUtility]::UrlEncode($q)
-            $url = "https://nominatim.openstreetmap.org/search?q=$encoded&format=json&limit=1&addressdetails=0"
-            try {
-              $resp = Invoke-RestMethod -Uri $url -Headers @{ "User-Agent" = "GatewayMapBot/1.0 (bot@example.com)" } -Method GET -TimeoutSec 30
-              if ($resp -and $resp.Count -gt 0) {
-                return @{ ok=$true; lat=[double]$resp[0].lat; lng=[double]$resp[0].lon; src='nominatim' }
-              } else {
-                return @{ ok=$false; code='NO_MATCH_NOMINATIM' }
-              }
-            } catch {
-              Write-Host "Nominatim error: $($_.Exception.Message)"
-              $code = try { [int]$_.Exception.Response.StatusCode.value__ } catch { 0 }
-              return @{ ok=$false; code=("PROVIDER_ERROR_{0}" -f ($code -as [string])) }
-            }
-          }
-
-          function Try-Census($street, $city, $state, $zip) {
-            $oneLine = ($street, $city, $state, $zip) -join ', '
-            $encoded = [System.Net.WebUtility]::UrlEncode($oneLine)
-            $url = "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address=$encoded&benchmark=2020&format=json"
-            try {
-              $resp = Invoke-RestMethod -Uri $url -Method GET -TimeoutSec 30
-              $m = $resp.result.addressMatches
-              if ($m -and $m.Count -gt 0) {
-                return @{ ok=$true; lat=[double]$m[0].coordinates.y; lng=[double]$m[0].coordinates.x; src='census' }
-              } else {
-                return @{ ok=$false; code='NO_MATCH_CENSUS' }
-              }
-            } catch {
-              Write-Host "Census error: $($_.Exception.Message)"
-              $code = try { [int]$_.Exception.Response.StatusCode.value__ } catch { 0 }
-              return @{ ok=$false; code=("PROVIDER_ERROR_{0}" -f ($code -as [string])) }
-            }
-          }
-
-          # ---- Buckets ----
-          $existing  = @()
-          $cacheHits = @()
-          $geocoded  = @()
-          $failed    = @()
-
-          # ---- Geocode loop ----
+          # ---- Geocode loop (manual-only) ----
           foreach ($prop in $out) {
             $prop.geocode_status = "unknown"
             $prop.geocode_source = "none"
             $prop.geocode_fail_code = $null
 
-            if ($prop.lat -ne 0.0 -and $prop.lng -ne 0.0) {
+            # Force manual lat/lng from field_15/16
+            $rawLat = $f.field_15 ?? $null
+            $rawLng = $f.field_16 ?? $null
+            $castLat = try { [double]$rawLat } catch { 0.0 }
+            $castLng = try { [double]$rawLng } catch { 0.0 }
+
+            if ($castLat -ne 0.0 -and $castLng -ne 0.0) {
+              $prop.lat = $castLat
+              $prop.lng = $castLng
               $prop.geocode_status = "ok"
-              $prop.geocode_source = "existing"
+              $prop.geocode_source = "manual"
               $existing += $prop
-              continue
-            }
-
-            $pre = FailCodesFor $prop
-            if ($null -eq $pre -or $pre -isnot [System.Collections.Generic.List[string]]) {
-              $pre = [System.Collections.Generic.List[string]]::new()
-            }
-
-            $street  = Normalize-Address $prop.address
-            $addrOne = (($street, $prop.city, $prop.state, $prop.zip) -join ', ') -replace '\s+', ' '
-            $addrKey = ($addrOne -replace '[^a-zA-Z0-9]','')
-
-            if ($geocache.ContainsKey($addrKey)) {
-              $prop.lat = $geocache[$addrKey].lat
-              $prop.lng = $geocache[$addrKey].lng
-              $prop.geocode_status = "ok"
-              $prop.geocode_source = "cache"
-              $cacheHits += $prop
-              continue
-            }
-
-            $try1 = Try-Nominatim $addrOne
-            if ($try1.ok) {
-              $prop.lat = $try1.lat; $prop.lng = $try1.lng
-              $prop.geocode_status = "ok"
-              $prop.geocode_source = $try1.src
-              $geocache[$addrKey] = @{ lat=$prop.lat; lng=$prop.lng }
-              $geocoded += $prop
-              Start-Sleep -Milliseconds 1000
-              continue
-            }
-
-            if ($UseCensusFallback) {
-              $try2 = Try-Census $street $prop.city $prop.state $prop.zip
-              if ($try2.ok) {
-                $prop.lat = $try2.lat; $prop.lng = $try2.lng
-                $prop.geocode_status = "ok"
-                $prop.geocode_source = $try2.src
-                $geocache[$addrKey] = @{ lat=$prop.lat; lng=$prop.lng }
-                $geocoded += $prop
-                Start-Sleep -Milliseconds 300
-                continue
-              } else {
-                if ($try2.code) { $pre.Add($try2.code) }
+            } else {
+              $prop.geocode_status = "failed"
+              $prop.geocode_source = "none"
+              $prop.geocode_fail_code = "MISSING_MANUAL_COORDS"
+              $failed += [pscustomobject]@{
+                name               = $prop.name
+                address            = $prop.address
+                city               = $prop.city
+                state              = $prop.state
+                zip                = $prop.zip
+                rvp                = $prop.rvp
+                rpm                = $prop.rpm
+                owner              = $prop.owner
+                legal              = $prop.legal_entity
+                attempted_address  = ($prop.address, $prop.city, $prop.state, $prop.zip) -join ', '
+                fail_code          = $prop.geocode_fail_code
               }
             }
-
-            if ($UseCityFallback -and $prop.city -and $prop.state) {
-              $tryCity = Try-Nominatim ("{0}, {1}" -f $prop.city, $prop.state)
-              if ($tryCity.ok) {
-                $prop.lat = $tryCity.lat; $prop.lng = $tryCity.lng
-                $prop.geocode_status = "approx"
-                $prop.geocode_source = "city_centroid"
-                $prop.geocode_fail_code = "CITY_CENTROID_FALLBACK"
-                $geocoded += $prop
-                Start-Sleep -Milliseconds 500
-                continue
-              }
-            }
-
-            if (-not $pre.Contains('NO_MATCH_NOMINATIM') -and $try1.code) { $pre.Add($try1.code) }
-            if ($pre.Count -eq 0) { $pre.Add('NO_MATCH_NOMINATIM') }
-
-            $prop.geocode_status = "failed"
-            $prop.geocode_source = "none"
-            $failString = 'UNKNOWN_ERROR'
-            if ($pre.Count -gt 0) { $failString = ($pre -join ';') }
-            $prop.geocode_fail_code = $failString
-
-            $failed += [pscustomobject]@{
-              name               = $prop.name
-              address            = $prop.address
-              city               = $prop.city
-              state              = $prop.state
-              zip                = $prop.zip
-              rvp                = $prop.rvp
-              rpm                = $prop.rpm
-              owner              = $prop.owner
-              legal              = $prop.legal_entity
-              attempted_address  = $addrOne
-              fail_code          = $prop.geocode_fail_code
-            }
-
-            Start-Sleep -Milliseconds 300
           }
 
           # ---- Save geocache ----
-          $geocache | ConvertTo-Json -Depth 4 | Set-Content -Encoding utf8 -Path $geocacheFile
+          $geocacheFile = "geocache.json"
+          $geocache = @{}
+          if (Test-Path $geocacheFile) {
+            $geocache = Get-Content $geocacheFile -Raw | ConvertFrom-Json -AsHashtable
+          }
 
           # ---- Backup previous JSON ----
           $jsonFile = "final_properties_with_coords_and_rvp.json"
