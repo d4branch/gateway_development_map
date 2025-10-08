@@ -1,32 +1,121 @@
-body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:#0f172a; }
-.gaHeader { background:#60d5d7; color:#073b3d; padding:12px 16px; box-shadow:0 1px 2px rgba(0,0,0,.06); }
-.gaHeader h1{ margin:0; font-size:20px; }
-.gaHeader .sub{ opacity:.8; font-size:12px; }
+/* ---------- Base ---------- */
+:root{
+  /* Tweak these if header/toolbar heights change */
+  --header-h: 56px;
+  --toolbar-h: 56px;
+}
 
-.toolbar { position:sticky; top:0; z-index:1000; background:#fff; border-bottom:1px solid #e5e7eb; padding:8px 12px; display:flex; gap:24px; align-items:flex-start; flex-wrap:wrap; }
-.toolbar .group { display:flex; gap:8px; align-items:center; }
-.toolbar .chips { display:flex; gap:8px; flex-wrap:wrap; max-width:100%; }
-.chip { display:inline-flex; gap:6px; align-items:center; border:1px solid #e5e7eb; border-radius:9999px; padding:4px 8px; font-size:12px; cursor:pointer; }
-.chip input{ accent-color:#0ea5e9; }
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  color: #0f172a;
+  background: #fff;
+}
 
-.map { height: calc(100vh - 110px); }   /* <-- this makes the map visible */
-.leaflet-popup-content{ min-width:260px; }
-/* Legend */
+/* ---------- Header ---------- */
+.gaHeader {
+  position: sticky;
+  top: 0;
+  z-index: 1100;
+  background: #60d5d7;
+  color: #073b3d;
+  padding: 12px 16px;
+  box-shadow: 0 1px 2px rgba(0,0,0,.06);
+}
+.gaHeader h1 { margin: 0; font-size: 20px; line-height: 1.2; }
+.gaHeader .sub { opacity: .8; font-size: 12px; margin-top: 2px; }
+
+/* ---------- Toolbar ---------- */
+.toolbar {
+  position: sticky;
+  top: var(--header-h);
+  z-index: 1000;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 8px 12px;
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+.toolbar .group { display: flex; gap: 8px; align-items: center; }
+.toolbar label { font-size: 12px; color: #334155; }
+.toolbar select {
+  font: inherit;
+  padding: 4px 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  background: #fff;
+}
+
+/* Optional chip row if you add quick filters later */
+.toolbar .chips { display: flex; gap: 8px; flex-wrap: wrap; max-width: 100%; }
+.chip {
+  display: inline-flex; gap: 6px; align-items: center;
+  border: 1px solid #e5e7eb; border-radius: 9999px;
+  padding: 4px 8px; font-size: 12px; cursor: pointer;
+}
+.chip input { accent-color: #0ea5e9; }
+
+/* ---------- Map container ---------- */
+/* Primary height: fill viewport minus header+toolbar */
+#map, .map {
+  height: calc(100vh - (var(--header-h) + var(--toolbar-h)));
+  min-height: 540px;            /* desktop fallback */
+}
+
+/* Better on mobile browsers with dynamic toolbars */
+@supports (height: 100dvh) {
+  #map, .map { height: calc(100dvh - (var(--header-h) + var(--toolbar-h))); }
+}
+
+/* In case CSS variables don't match actual rendered heights,
+   the script also calls map.invalidateSize() on load. */
+.leaflet-container { background: #eef2f7; }
+.custom-div-icon { line-height: 0; } /* remove stray inline spacing */
+
+/* ---------- Popups ---------- */
+.leaflet-popup-content { min-width: 280px; }
+
+/* ---------- Legend ---------- */
 .leaflet-control.legend {
   background: #ffffffcc;
   backdrop-filter: blur(3px);
   padding: 10px 12px;
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0,0,0,.12);
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   font-size: 13px;
   color: #0f172a;
 }
 .legend h4 { margin: 0 0 8px; font-size: 12px; font-weight: 700; color: #334155; }
-.legend .row { display: grid; grid-template-columns: 18px 1fr; gap: 8px; align-items: center; margin: 4px 0; }
-.legend .swatch { width: 16px; height: 16px; border: 2px solid #fff; box-shadow: 0 1px 2px rgba(0,0,0,.15); }
+.legend .row {
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  gap: 8px;
+  align-items: center;
+  margin: 4px 0;
+}
+.legend .swatch {
+  width: 16px; height: 16px;
+  border: 2px solid #fff;                 /* simple white edge; no status rings */
+  box-shadow: 0 1px 2px rgba(0,0,0,.15);
+}
 .legend .circle  { border-radius: 50%; }
 .legend .square  { border-radius: 4px; }
 .legend .diamond { transform: rotate(45deg); border-radius: 3px; }
 .legend .star    { clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); }
 .legend .counts  { margin-top: 8px; font-size: 12px; color: #475569; }
+
+/* ---------- Responsive tweaks ---------- */
+@media (max-width: 900px) {
+  :root { --header-h: 56px; --toolbar-h: 64px; }
+  .toolbar { gap: 12px; }
+}
+@media (max-width: 600px) {
+  :root { --toolbar-h: 92px; } /* room for wrapped filters */
+  .toolbar { padding: 8px; gap: 10px; }
+  .toolbar .group { flex: 1 1 46%; }
+  .leaflet-popup-content { min-width: 240px; }
+}
