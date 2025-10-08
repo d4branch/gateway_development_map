@@ -19,9 +19,9 @@
     "legal_entity": "Eagle Pointe Apartment, LTD.",
     "lat": 34.709,
     "lng": -86.7372,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Abbington at Summit",
@@ -43,9 +43,9 @@
     "legal_entity": "Irondale Abbington Summit Pointe, LP",
     "lat": 33.53161,
     "lng": -86.6901,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Abbington Reserve Apartments",
@@ -67,9 +67,9 @@
     "legal_entity": "Dekalb Abbington Reserve, LP",
     "lat": 33.7036,
     "lng": -84.2369,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Agape - Lease up",
@@ -91,9 +91,9 @@
     "legal_entity": "LDG Agape Family Development LLC",
     "lat": 33.7182,
     "lng": -84.1886,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Alexander Village",
@@ -115,9 +115,9 @@
     "legal_entity": "Alexander Village Apartments LTD",
     "lat": 34.8333,
     "lng": -87.6667,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Americus Garden Apts.",
@@ -139,9 +139,9 @@
     "legal_entity": null,
     "lat": 36.16229,
     "lng": -115.161,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Atmore Senior",
@@ -163,9 +163,9 @@
     "legal_entity": "Atmore Senior Village, LTD",
     "lat": 34.24815,
     "lng": -77.9379,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Augustine, The ",
@@ -187,9 +187,9 @@
     "legal_entity": "Augustine - Warner Robins LP",
     "lat": 32.59198,
     "lng": -83.6062,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Autumn Ridge",
@@ -211,9 +211,9 @@
     "legal_entity": "Autumn Ridge, LLC",
     "lat": 34.75,
     "lng": -77.4,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Bailey Springs ",
@@ -235,9 +235,9 @@
     "legal_entity": "Bailey Springs Apartments, Ltd.",
     "lat": 35.49307,
     "lng": -81.238,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Baytown Village",
@@ -259,9 +259,9 @@
     "legal_entity": "Baytown Senior Village, LTD",
     "lat": 30.7,
     "lng": -88.2,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Belle Isle Apts.",
@@ -283,9 +283,9 @@
     "legal_entity": "Belle Isle Apartments LTD",
     "lat": 30.04923,
     "lng": -94.72,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Blue Springs",
@@ -307,9 +307,9 @@
     "legal_entity": "Blue Springs Apartments, LP",
     "lat": 34.78666,
     "lng": -77.3919,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Bocage",
@@ -331,9 +331,9 @@
     "legal_entity": "Bocage Apartments LP",
     "lat": 39.98557,
     "lng": -76.7648,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Bradbury",
@@ -355,9 +355,9 @@
     "legal_entity": "Bradbury Apartments LP",
     "lat": 35.69448,
     "lng": -81.2307,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Brentwood Landing Apts.",
@@ -379,9 +379,9 @@
     "legal_entity": "Brentwood Landing Apts.",
     "lat": 32.47585,
     "lng": -86.4151,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Brentwood Landing II Apts.",
@@ -403,9 +403,9 @@
     "legal_entity": "Brentwood Landing II Apts.",
     "lat": 32.47568,
     "lng": -86.4125,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Bridges at Landrum",
@@ -427,9 +427,9 @@
     "legal_entity": "Landrum Family Development LP",
     "lat": 33.7042,
     "lng": -84.4845,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Brook Pointe ",
@@ -451,9 +451,9 @@
     "legal_entity": "Brooke Pointe LP",
     "lat": 30.2211,
     "lng": -92.0092,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Brookstone Village",
@@ -475,9 +475,9 @@
     "legal_entity": "Brookstone Village Apartments LTD",
     "lat": 33.80913,
     "lng": -85.7523,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Candler Reserve - Lease up",
@@ -499,9 +499,9 @@
     "legal_entity": "LDG Candler Family Development LLC",
     "lat": 33.72813,
     "lng": -84.2826,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Canebreak",
@@ -523,9 +523,9 @@
     "legal_entity": "Canebreak Apartments LP",
     "lat": 35.2922,
     "lng": -80.7263,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Canter Chase",
@@ -547,9 +547,9 @@
     "legal_entity": "Canter Chase Apartments, LP",
     "lat": 35.25,
     "lng": -87.0,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Capstone at Barton Chapel (Trinity Manor)",
@@ -571,9 +571,9 @@
     "legal_entity": "Capstone at Barton Chapel, LP",
     "lat": 33.43652,
     "lng": -82.088,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Carolina Oaks",
@@ -595,9 +595,9 @@
     "legal_entity": "Carolina Oaks Village, LP",
     "lat": 33.7,
     "lng": -78.9,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Cedar Glades",
@@ -619,9 +619,9 @@
     "legal_entity": "Cedar Glades Apartments, LP",
     "lat": 35.4833,
     "lng": -86.45,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Cedar Hollow Family ",
@@ -643,9 +643,9 @@
     "legal_entity": "CEDAR HOLLOW, LP",
     "lat": 35.4833,
     "lng": -97.2667,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Cherokee Meadows",
@@ -667,9 +667,9 @@
     "legal_entity": null,
     "lat": 36.17973,
     "lng": -95.972,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Cherry Ridge Independent Living ",
@@ -691,9 +691,9 @@
     "legal_entity": "Cherry Ridge Independent Living LTD",
     "lat": 33.549,
     "lng": -86.877,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Cherry Ridge Village Apts",
@@ -715,9 +715,9 @@
     "legal_entity": "Cherry Ridge Village Apartments, LTD",
     "lat": 35.29443,
     "lng": -101.849,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Cherry Woods ",
@@ -739,9 +739,9 @@
     "legal_entity": "Cherry Woods Apartments LTD",
     "lat": 33.5495,
     "lng": -86.877,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Clement Belle Farm - Lease up",
@@ -763,9 +763,9 @@
     "legal_entity": "Clement Belle Farm LP",
     "lat": 31.199,
     "lng": -81.4917,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Cobblestone Village",
@@ -787,9 +787,9 @@
     "legal_entity": "Cobblestone Village Apartments, LTD",
     "lat": 43.81186,
     "lng": -79.3694,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "College Square ",
@@ -811,9 +811,9 @@
     "legal_entity": "College Square Partners, LP",
     "lat": 38.18889,
     "lng": -99.1139,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Colony West ",
@@ -835,9 +835,9 @@
     "legal_entity": "Colony West Partners, LP",
     "lat": 32.8,
     "lng": 83.6,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Coosa Village Apts",
@@ -859,9 +859,9 @@
     "legal_entity": "Coosa Village Apartments, LTD",
     "lat": 33.1747,
     "lng": -86.2478,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Cottage MWC I  ",
@@ -883,9 +883,9 @@
     "legal_entity": "Cottage Park LP1",
     "lat": 35.5,
     "lng": 97.3,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Cottage MWC II  ",
@@ -907,9 +907,9 @@
     "legal_entity": "Cottage Park, LP2",
     "lat": 35.5,
     "lng": 97.3,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Cottage Park Guthrie ",
@@ -931,9 +931,9 @@
     "legal_entity": "Cottage Park LP3",
     "lat": 35.8778,
     "lng": -97.425,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Cottage Park McAlester",
@@ -955,9 +955,9 @@
     "legal_entity": "Cottage Park McAlester LP",
     "lat": 34.9359,
     "lng": -95.785,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Cottage Park Newcastle",
@@ -979,9 +979,9 @@
     "legal_entity": "Cottage Park Newcastle, LP",
     "lat": 35.3,
     "lng": 97.6,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Cottage Park Shawnee  ",
@@ -1003,9 +1003,9 @@
     "legal_entity": "Cottage Park Shawnee",
     "lat": 35.3272,
     "lng": -97.0278,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Covington Mill Village",
@@ -1027,9 +1027,9 @@
     "legal_entity": "Harmony at Covington LP",
     "lat": 33.56911,
     "lng": -83.8511,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Creekview",
@@ -1051,9 +1051,9 @@
     "legal_entity": "Creekview Village, LTD",
     "lat": 44.51865,
     "lng": -103.871,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Cross Creek Landing  ",
@@ -1075,9 +1075,9 @@
     "legal_entity": "Cross Creek Landing, LP",
     "lat": 35.5,
     "lng": -97.6,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Crossings at Conyers, The",
@@ -1099,9 +1099,9 @@
     "legal_entity": "Harmony at Conyers, LP",
     "lat": 33.63603,
     "lng": -83.9817,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Crosswinds ",
@@ -1123,9 +1123,9 @@
     "legal_entity": "Crosswinds - Warner Robins LP",
     "lat": 32.59275,
     "lng": -83.6062,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Cypress Trace",
@@ -1147,9 +1147,9 @@
     "legal_entity": "Cypress Trace Apartments, LTD",
     "lat": 38.62414,
     "lng": -90.1958,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Dogwood Trail",
@@ -1171,9 +1171,9 @@
     "legal_entity": "Dogwood Trail Apartments, LP",
     "lat": 41.36939,
     "lng": -75.8796,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Double Creek Apts",
@@ -1195,9 +1195,9 @@
     "legal_entity": null,
     "lat": 34.88136,
     "lng": -87.6727,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Drakes Landing ",
@@ -1219,9 +1219,9 @@
     "legal_entity": "Drakes Landing Apartments LP",
     "lat": 30.4511,
     "lng": -91.0986,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Dugan Square",
@@ -1243,9 +1243,9 @@
     "legal_entity": "Dugan Avenue Senior Village LTD",
     "lat": 29.58139,
     "lng": -90.6731,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Eagles Landing Apts",
@@ -1267,9 +1267,9 @@
     "legal_entity": "Eagle's Landing Development, LTD",
     "lat": 53.77391,
     "lng": -2.71823,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "East Oaks Apts.",
@@ -1291,9 +1291,9 @@
     "legal_entity": null,
     "lat": 33.63229,
     "lng": -98.6885,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Eastside Family",
@@ -1315,9 +1315,9 @@
     "legal_entity": null,
     "lat": 36.4,
     "lng": -97.8667,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Forest Mill Apts",
@@ -1339,9 +1339,9 @@
     "legal_entity": "Forest Mill Apartments, LP",
     "lat": 30.19802,
     "lng": -81.6369,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Forest Ridge Heights",
@@ -1363,9 +1363,9 @@
     "legal_entity": null,
     "lat": 37.32422,
     "lng": -79.9989,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "French Farms",
@@ -1387,9 +1387,9 @@
     "legal_entity": "French Farms Village Apartments, LTD",
     "lat": 30.28635,
     "lng": -95.6234,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Garden Lakes",
@@ -1411,9 +1411,9 @@
     "legal_entity": "Garden Lakes, LP",
     "lat": 34.06992,
     "lng": -81.0028,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Garden Oaks - Lease up",
@@ -1435,9 +1435,9 @@
     "legal_entity": "Garden Oaks, LP",
     "lat": 43.89803,
     "lng": -79.0309,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Gateway at Rossville ",
@@ -1459,9 +1459,9 @@
     "legal_entity": "Gateway at Rossville, LP",
     "lat": 35.06171,
     "lng": -90.0485,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Gateway at the Green",
@@ -1483,9 +1483,9 @@
     "legal_entity": "Gateway at the Green LP",
     "lat": 41.14165,
     "lng": -73.3427,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Glencoe Trace Apts. ",
@@ -1507,9 +1507,9 @@
     "legal_entity": "Glencoe Trace, LP",
     "lat": 29.51588,
     "lng": -98.4723,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Griffin Village",
@@ -1531,9 +1531,9 @@
     "legal_entity": "Griffin Village LP",
     "lat": 33.2913,
     "lng": -84.2931,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Hamilton Place Apts",
@@ -1555,9 +1555,9 @@
     "legal_entity": "Hamilton Place Apartments, LTD",
     "lat": 32.5042,
     "lng": -86.4025,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Heatherwood Apts",
@@ -1579,9 +1579,9 @@
     "legal_entity": "Heatherwood-DASH, LTD",
     "lat": 42.29729,
     "lng": -83.295,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Heritage Townhomes ",
@@ -1603,9 +1603,9 @@
     "legal_entity": "Heritage Family Development LP",
     "lat": 33.7066,
     "lng": -84.1242,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Heritage Vista Apts.",
@@ -1627,9 +1627,9 @@
     "legal_entity": "Heritage Vista Apartments, LP",
     "lat": 33.1,
     "lng": -83.2,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Heron Lake Apts.",
@@ -1651,9 +1651,9 @@
     "legal_entity": "Heron Lake Apartments, L.P.",
     "lat": 30.87667,
     "lng": -83.2616,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Heron Lake II Apts.",
@@ -1675,9 +1675,9 @@
     "legal_entity": "Heron Lake II Apartments, L.P.",
     "lat": 30.87667,
     "lng": -83.2616,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Hickory Run I Apts.",
@@ -1699,9 +1699,9 @@
     "legal_entity": null,
     "lat": 33.80802,
     "lng": -85.756,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Hickory Run II Apts.",
@@ -1723,9 +1723,9 @@
     "legal_entity": null,
     "lat": 33.80802,
     "lng": -85.756,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "High Point Senior",
@@ -1747,9 +1747,9 @@
     "legal_entity": "High Point Senior Apartments Ltd",
     "lat": 31.308,
     "lng": -86.4786,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Highland Estates of Rome",
@@ -1771,9 +1771,9 @@
     "legal_entity": "Highland Estates of Rome, LP",
     "lat": 34.28293,
     "lng": -85.1989,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Highland Park Family",
@@ -1795,9 +1795,9 @@
     "legal_entity": null,
     "lat": 29.98318,
     "lng": -90.2649,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Highland Park Senior Village",
@@ -1819,9 +1819,9 @@
     "legal_entity": "Highland Park Senior Village, LP",
     "lat": 33.74229,
     "lng": -84.7505,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Hill at Sand Mountain, The - Lease-up",
@@ -1843,9 +1843,9 @@
     "legal_entity": "Hill at Sand Mountain LTD",
     "lat": 43.23405,
     "lng": -77.6441,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Horizon Ridge",
@@ -1867,9 +1867,9 @@
     "legal_entity": "Horizon Ridge Family Development, LP",
     "lat": 33.3125,
     "lng": -82.095,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Howell Senior School Apts ",
@@ -1891,9 +1891,9 @@
     "legal_entity": "Peaks at Dothan, LP",
     "lat": 31.22895,
     "lng": -85.3885,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Ivy Pointe Apts",
@@ -1915,9 +1915,9 @@
     "legal_entity": null,
     "lat": 34.7286,
     "lng": -87.68,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Ivy Pointe II Apts.",
@@ -1939,9 +1939,9 @@
     "legal_entity": null,
     "lat": 34.72861,
     "lng": -87.68,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Jasmine Trails ",
@@ -1963,9 +1963,9 @@
     "legal_entity": "Jasmine Trails Apartments, LTD",
     "lat": 30.31384,
     "lng": -87.6923,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Jefferson Grove ",
@@ -1987,9 +1987,9 @@
     "legal_entity": "Jefferson Family Development LP",
     "lat": 33.3778,
     "lng": -84.8194,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Jonesboro Road ",
@@ -2011,9 +2011,9 @@
     "legal_entity": "Jonesboro Road Senior Village LP",
     "lat": 33.5691,
     "lng": -84.3511,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Juanita Gardner ",
@@ -2035,9 +2035,9 @@
     "legal_entity": "Harmony at Bakers Ferry, LP",
     "lat": 33.7486,
     "lng": -84.4319,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Kenyon at Cross Creek, The",
@@ -2059,9 +2059,9 @@
     "legal_entity": "Gateway at Cross Creek LP",
     "lat": 34.718,
     "lng": -82.78,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Kinsey Cove",
@@ -2083,9 +2083,9 @@
     "legal_entity": "Capstone At Kinsey Cove, LP",
     "lat": 31.23525,
     "lng": -85.3803,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Kirby Creek Apts.",
@@ -2107,9 +2107,9 @@
     "legal_entity": "Kirby Creek Apartments, LP",
     "lat": -30.0015,
     "lng": 30.9272,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Kirkwood Trail Apts",
@@ -2131,9 +2131,9 @@
     "legal_entity": "Kirkwood Trail Apartments, LP",
     "lat": -26.2088,
     "lng": 28.26686,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Lakeview Terrace",
@@ -2155,9 +2155,9 @@
     "legal_entity": null,
     "lat": 33.4736,
     "lng": -82.0667,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Laurel Ridge Development",
@@ -2179,9 +2179,9 @@
     "legal_entity": "Laurel Ridge Development, LP",
     "lat": 41.96649,
     "lng": -71.7108,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Le Jolliet",
@@ -2203,9 +2203,9 @@
     "legal_entity": "Le Jolliet LP",
     "lat": 30.2067,
     "lng": -93.1892,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Legacy Universal -RVP Michelle Clark",
@@ -2227,9 +2227,9 @@
     "legal_entity": null,
     "lat": 28.4478,
     "lng": -81.4672,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Lory of Greenway Village, The",
@@ -2251,9 +2251,9 @@
     "legal_entity": "LCP Paducah II, LLC",
     "lat": 48.43201,
     "lng": -124.069,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Lory of Panama City, The ",
@@ -2275,9 +2275,9 @@
     "legal_entity": "LCP Panama City, LLC",
     "lat": 30.18565,
     "lng": -85.66,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Lory of Tallahassee, The  ",
@@ -2299,9 +2299,9 @@
     "legal_entity": "LCP Tallahassee, LLC",
     "lat": 30.48332,
     "lng": -84.2938,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Loxley Station Development",
@@ -2323,9 +2323,9 @@
     "legal_entity": "Gulf Coast Capital LP",
     "lat": 30.63059,
     "lng": -87.7468,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Mallard Crossing",
@@ -2347,9 +2347,9 @@
     "legal_entity": "Mallard Crossings, LP.",
     "lat": 30.4833,
     "lng": -91.0667,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Mallard Lake Apts",
@@ -2371,9 +2371,9 @@
     "legal_entity": "Mallard Lake Apartments, LP.",
     "lat": 33.0,
     "lng": -85.0,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Mandell, The",
@@ -2395,9 +2395,9 @@
     "legal_entity": "Gateway Denham Springs LLC",
     "lat": 30.45879,
     "lng": -90.9023,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Maple Square",
@@ -2419,9 +2419,9 @@
     "legal_entity": "Maple Square Apartments, LTD",
     "lat": 36.55371,
     "lng": -78.1073,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Mary Leila Lofts",
@@ -2443,9 +2443,9 @@
     "legal_entity": "Greensboro Mill LP",
     "lat": 33.5667,
     "lng": -83.1833,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Maxwell, The ",
@@ -2467,9 +2467,9 @@
     "legal_entity": "Gateway at Rome Manager LLC",
     "lat": 34.2829,
     "lng": -85.1989,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Meadowood Creek",
@@ -2491,9 +2491,9 @@
     "legal_entity": "Meadowood Creek Senior Apartments",
     "lat": 33.927,
     "lng": -87.8139,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Meadows at Nicholson ",
@@ -2515,9 +2515,9 @@
     "legal_entity": "Meadows at Nicholson, LP",
     "lat": 30.3639,
     "lng": -91.1047,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Newport Trace",
@@ -2539,9 +2539,9 @@
     "legal_entity": "Newport Trace Apartments, LP",
     "lat": 32.4,
     "lng": -81.8,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Northwinds",
@@ -2563,9 +2563,9 @@
     "legal_entity": "Northwinds Place Senior Living LP",
     "lat": 33.60829,
     "lng": -85.0807,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Oakland Mill  ",
@@ -2587,9 +2587,9 @@
     "legal_entity": "Oakland Mill Apartments LP",
     "lat": 35.4658,
     "lng": -81.2347,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Oakleigh Crossing",
@@ -2611,9 +2611,9 @@
     "legal_entity": null,
     "lat": 30.43614,
     "lng": -90.2424,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Oleander Park Apts.",
@@ -2635,9 +2635,9 @@
     "legal_entity": "Oleander Park Apartments, LTD",
     "lat": 30.6381,
     "lng": -88.2199,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Orchard Park",
@@ -2659,9 +2659,9 @@
     "legal_entity": "Orchard Park Apartments",
     "lat": 32.1875,
     "lng": -86.4378,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Orchard View ",
@@ -2683,9 +2683,9 @@
     "legal_entity": "Orchard View Apartments",
     "lat": -37.662,
     "lng": 176.057,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Palladian Apts., The",
@@ -2707,9 +2707,9 @@
     "legal_entity": "The Palladian Apartments, LTD",
     "lat": 30.64693,
     "lng": -88.232,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Palladian at Fairhope",
@@ -2731,9 +2731,9 @@
     "legal_entity": "Fairhope Ridge, LLC",
     "lat": 30.53037,
     "lng": -87.8833,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Palladian II Apts.",
@@ -2755,9 +2755,9 @@
     "legal_entity": "The Palladian II Apartments, LTD",
     "lat": 30.64743,
     "lng": -88.232,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Peach Orchard ",
@@ -2779,9 +2779,9 @@
     "legal_entity": null,
     "lat": 33.36913,
     "lng": -82.0336,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Peaks at Manning, The",
@@ -2803,9 +2803,9 @@
     "legal_entity": "The Peaks at Manning, LP",
     "lat": 47.46416,
     "lng": -52.7136,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Peaks of Cornelia ",
@@ -2827,9 +2827,9 @@
     "legal_entity": "Peaks of Cornelia LP",
     "lat": 34.5614,
     "lng": -83.4061,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Peaks of Dahlonega - Lease-up",
@@ -2851,9 +2851,9 @@
     "legal_entity": "Peaks of Dahlonega LP",
     "lat": 34.5317,
     "lng": -83.9847,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Peaks of Dawson",
@@ -2875,9 +2875,9 @@
     "legal_entity": " Peaks of Dawson LP",
     "lat": 34.4,
     "lng": -84.1,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Peaks of Oakwood",
@@ -2899,9 +2899,9 @@
     "legal_entity": "Peaks of Oakwood LP",
     "lat": 34.2325,
     "lng": -83.88,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Pebble Creek Apts.",
@@ -2923,9 +2923,9 @@
     "legal_entity": "Pebble Creek Apartments, LTD.",
     "lat": 32.09666,
     "lng": -88.2104,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Pelican Landing",
@@ -2947,9 +2947,9 @@
     "legal_entity": "Pelican Landing Apartments, LTD",
     "lat": 30.6709,
     "lng": -88.2504,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Peyton Ridge Village ",
@@ -2971,9 +2971,9 @@
     "legal_entity": "Peyton Ridge Village, LTD",
     "lat": 33.98193,
     "lng": -117.733,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Pinewood Village",
@@ -2995,9 +2995,9 @@
     "legal_entity": null,
     "lat": 39.15855,
     "lng": -86.5383,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Pinewood Village II ",
@@ -3019,9 +3019,9 @@
     "legal_entity": null,
     "lat": 39.15855,
     "lng": -86.5383,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Port Royal Apts ",
@@ -3043,9 +3043,9 @@
     "legal_entity": "Port Royal Development LP",
     "lat": 30.4511,
     "lng": -91.0986,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Powell Place Apts",
@@ -3067,9 +3067,9 @@
     "legal_entity": "Powell Place Apartments, LP",
     "lat": 40.29238,
     "lng": -78.4576,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Preston Place Apts",
@@ -3091,9 +3091,9 @@
     "legal_entity": null,
     "lat": 27.99615,
     "lng": -82.2914,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Red Cedar Village  ",
@@ -3115,9 +3115,9 @@
     "legal_entity": "Red Cedar Village",
     "lat": 39.04024,
     "lng": -77.5741,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Reserve at Grant Road",
@@ -3139,9 +3139,9 @@
     "legal_entity": "Harmony at Ellenwood LP",
     "lat": 34.06313,
     "lng": -79.5897,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Rivers Edge",
@@ -3163,9 +3163,9 @@
     "legal_entity": "Rivers Edge Apartments, LTD",
     "lat": 43.53562,
     "lng": -79.8581,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Rose Rock Cottages",
@@ -3187,9 +3187,9 @@
     "legal_entity": null,
     "lat": 35.12562,
     "lng": -97.3849,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Shellbrooke Pointe Apts.",
@@ -3211,9 +3211,9 @@
     "legal_entity": "Shellbrooke Pointe Apartments, LTD",
     "lat": 30.49854,
     "lng": -87.8915,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Sheppard Station Dev. ",
@@ -3235,9 +3235,9 @@
     "legal_entity": "Sheppard Station Apts, LP",
     "lat": 32.11529,
     "lng": -81.2671,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Shoals Mill Development ",
@@ -3259,9 +3259,9 @@
     "legal_entity": "The Shoals Mill Development, LTD",
     "lat": 33.24,
     "lng": -86.6167,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Shoals Mill Village ",
@@ -3283,9 +3283,9 @@
     "legal_entity": "Shoals Mill Village Apartments LTD",
     "lat": 33.85521,
     "lng": -84.57,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "SkyHouse RVP Michelle Clark",
@@ -3307,9 +3307,9 @@
     "legal_entity": "Silver ND I LLC",
     "lat": 28.54701,
     "lng": -81.3771,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Skyline Trace",
@@ -3331,9 +3331,9 @@
     "legal_entity": "Skyline Trace Apartments LP",
     "lat": 33.79739,
     "lng": -83.724,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "South Pointe Development",
@@ -3355,9 +3355,9 @@
     "legal_entity": "South Pointe Development, LTD.",
     "lat": 33.08368,
     "lng": -86.7525,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Sovereign at North Bay - Lease up",
@@ -3379,9 +3379,9 @@
     "legal_entity": "Bid-A-Wee Apartments, LLC",
     "lat": 30.1857,
     "lng": -85.66,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Sterling Oaks",
@@ -3403,9 +3403,9 @@
     "legal_entity": "Sterling Oaks Apartments LP",
     "lat": 35.3,
     "lng": -81.9,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Stoney Creek",
@@ -3427,9 +3427,9 @@
     "legal_entity": "Stoney Creek Apartments, LP",
     "lat": 40.94235,
     "lng": -74.121,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Stony Ridge Apts ",
@@ -3451,9 +3451,9 @@
     "legal_entity": "Stony Ridge Apartments, LP",
     "lat": 42.24716,
     "lng": -70.898,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Stony Ridge Apts II",
@@ -3475,9 +3475,9 @@
     "legal_entity": "Stony Ridge II, LP",
     "lat": 30.42107,
     "lng": -84.2826,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Stove Lofts",
@@ -3499,9 +3499,9 @@
     "legal_entity": "LCP Leavenworth LLC",
     "lat": 38.25209,
     "lng": -85.7529,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Sullivan Village",
@@ -3523,9 +3523,9 @@
     "legal_entity": "Sullivan Village Apartments, LTD",
     "lat": 34.71804,
     "lng": -87.6918,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Sunrise View ",
@@ -3547,9 +3547,9 @@
     "legal_entity": "Indian Creek Family Development, LP",
     "lat": 33.7623,
     "lng": -84.2356,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Sweetwater Terrace ",
@@ -3571,9 +3571,9 @@
     "legal_entity": "Sweetwater Community Associates LLC",
     "lat": 33.94548,
     "lng": -84.1219,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Tattnall Place ",
@@ -3595,9 +3595,9 @@
     "legal_entity": null,
     "lat": 34.81449,
     "lng": -82.5246,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "The Peaks of Tazewell ",
@@ -3619,9 +3619,9 @@
     "legal_entity": "Peaks of Tazewell, LP",
     "lat": 36.43394,
     "lng": -83.5719,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Tranquility at Decatur - Lease up ",
@@ -3643,9 +3643,9 @@
     "legal_entity": null,
     "lat": 33.71623,
     "lng": -84.2776,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Tranquility at Ferry Pass ",
@@ -3667,9 +3667,9 @@
     "legal_entity": "Timshel Ferry Pass Housing LLC",
     "lat": 30.51382,
     "lng": -87.2089,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Tranquility at Griffin",
@@ -3691,9 +3691,9 @@
     "legal_entity": "Tranquility at Griffin, LP",
     "lat": 33.29135,
     "lng": -84.2931,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Tranquility at Hope School",
@@ -3715,9 +3715,9 @@
     "legal_entity": "East Lake Florida 2, LLC",
     "lat": 30.71013,
     "lng": -85.189,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Tranquility at Hope School II ",
@@ -3739,9 +3739,9 @@
     "legal_entity": "East Lake Florida 3, LLC",
     "lat": 30.71013,
     "lng": -85.189,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Tranquility at Milton ",
@@ -3763,9 +3763,9 @@
     "legal_entity": "Tranquility Milton, LLC",
     "lat": 32.39642,
     "lng": -111.071,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Tucker Cottages",
@@ -3787,9 +3787,9 @@
     "legal_entity": "Azalea Mill Cottages, LP",
     "lat": 33.0375,
     "lng": -85.0319,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Union at Stonecrest",
@@ -3811,9 +3811,9 @@
     "legal_entity": null,
     "lat": 33.70477,
     "lng": -84.124,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Union Landing",
@@ -3835,9 +3835,9 @@
     "legal_entity": "Union City Family Development, LP",
     "lat": 33.69952,
     "lng": -84.2663,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Valley Ridge Apts.",
@@ -3859,9 +3859,9 @@
     "legal_entity": "Valley Ridge Apartments, LP",
     "lat": 33.05795,
     "lng": -85.0328,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Valley Senior Village",
@@ -3883,9 +3883,9 @@
     "legal_entity": "Valley Senior Village LTD",
     "lat": 40.63545,
     "lng": -73.9791,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Verandah Apts., The",
@@ -3907,9 +3907,9 @@
     "legal_entity": null,
     "lat": 28.09992,
     "lng": -82.7778,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Village at Blackshear ",
@@ -3931,9 +3931,9 @@
     "legal_entity": "Blackshear Village, L.P.",
     "lat": 34.84556,
     "lng": -82.4135,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Village at Wedgewood",
@@ -3955,9 +3955,9 @@
     "legal_entity": null,
     "lat": 51.0677,
     "lng": -114.068,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Village on Park",
@@ -3979,9 +3979,9 @@
     "legal_entity": null,
     "lat": 40.11737,
     "lng": -88.2194,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Villages at Congaree Pointe ",
@@ -4003,9 +4003,9 @@
     "legal_entity": "Congaree Pointe, LP",
     "lat": 33.9399,
     "lng": -80.9797,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Villages at Stone Mountain, The ",
@@ -4027,9 +4027,9 @@
     "legal_entity": "Harmony at Stone Mountain LP",
     "lat": 33.78777,
     "lng": -84.1613,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Villas of Benedictine ",
@@ -4051,9 +4051,9 @@
     "legal_entity": "Benedictine Senior Housing LP",
     "lat": 41.95691,
     "lng": -87.6788,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Villas on Forsyth",
@@ -4075,9 +4075,9 @@
     "legal_entity": "Villas on Forsyth, LP",
     "lat": 33.0542,
     "lng": -84.1583,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Vinings of Augusta",
@@ -4099,9 +4099,9 @@
     "legal_entity": "Harmony at Augusta, LP",
     "lat": 33.36602,
     "lng": -82.0422,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Walden Crest ",
@@ -4123,9 +4123,9 @@
     "legal_entity": "Hohenwald Estates, LP",
     "lat": 30.32361,
     "lng": -97.7499,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Waring I",
@@ -4147,9 +4147,9 @@
     "legal_entity": "DASH Warning Apartments LLC",
     "lat": 31.24077,
     "lng": -82.3555,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Waring II Apts.",
@@ -4171,9 +4171,9 @@
     "legal_entity": null,
     "lat": 31.24077,
     "lng": -82.3555,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Waterford Farms",
@@ -4195,9 +4195,9 @@
     "legal_entity": "Waterford Farms Apartments, LTD",
     "lat": 34.3171,
     "lng": -86.5053,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Ways Station ",
@@ -4219,9 +4219,9 @@
     "legal_entity": null,
     "lat": 31.9333,
     "lng": -81.3167,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Windcliff Apts.",
@@ -4243,9 +4243,9 @@
     "legal_entity": "Windcliff  Apartments, LLC",
     "lat": 34.33133,
     "lng": -83.80438,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Wood Meadow ",
@@ -4267,9 +4267,9 @@
     "legal_entity": "Wood Meadow Apartments, LP",
     "lat": 32.19673,
     "lng": -81.1923,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Woodcrest Apts",
@@ -4291,9 +4291,9 @@
     "legal_entity": "Woodcrest Apartments, LP",
     "lat": 30.4511,
     "lng": -91.0986,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "Woodlawn Terrace",
@@ -4315,9 +4315,9 @@
     "legal_entity": null,
     "lat": 37.13955,
     "lng": -92.2679,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   },
   {
     "name": "South Rossville Senior Village (acquisition eff. 10/14/25)",
@@ -4339,8 +4339,8 @@
     "legal_entity": null,
     "lat": 34.9786,
     "lng": -85.2897,
-    "geocode_status": "ok",
-    "geocode_source": "existing",
-    "geocode_fail_code": null
+    "geocode_status": "failed",
+    "geocode_source": "none",
+    "geocode_fail_code": "MISSING_MANUAL_COORDS"
   }
 ]
