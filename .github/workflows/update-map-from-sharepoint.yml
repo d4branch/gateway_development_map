@@ -395,3 +395,24 @@ jobs:
           $summary = $summaryLines -join "`r`n"
           $summary | Set-Content -Encoding utf8 -Path "$reportDir/geocode_summary.txt"
           Write-Host $summary
+- name: Set git identity (fallback)
+        shell: bash
+        run: |
+          git config --global user.name "Gateway Map Bot"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Commit JSON + reports
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 'Auto-update: final_properties_with_coords_and_rvp.json (with reason-coded geocoding) + reports'
+          file_pattern: |
+            final_properties_with_coords_and_rvp.json
+            backup_final_properties_*.json
+            detected_sharepoint_fields.txt
+            geocache.json
+            reports/*.csv
+            reports/*.json
+            reports/*.txt
+          commit_user_name: 'Gateway Map Bot'
+          commit_user_email: 'github-actions[bot]@users.noreply.github.com'
+          commit_author: 'Gateway Map Bot <github-actions[bot]@users.noreply.github.com>'
