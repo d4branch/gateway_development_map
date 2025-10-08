@@ -12,6 +12,7 @@ permissions:
 jobs:
   update-json:
     runs-on: windows-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,7 +29,7 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
 
-          # --- Graph token
+          # ---- Graph token ----
           $body = @{
             client_id     = $env:GRAPH_CLIENT_ID
             scope         = "https://graph.microsoft.com/.default"
@@ -39,42 +40,69 @@ jobs:
           if (-not $tok.access_token) { throw "No Graph token returned." }
           $H = @{ Authorization = "Bearer $($tok.access_token)" }
 
-          # --- Resolve site
+          # ---- Resolve site ----
           if ($env:SP_SITE_ID -and $env:SP_SITE_ID.Trim()) {
             $siteId = $env:SP_SITE_ID.Trim()
           } else {
-            $spHost  = ($env:SP_SITE_HOSTNAME ?? "").Trim()
+            $spHost = ($env:SP_SITE_HOSTNAME ?? "").Trim()
             $rawPath = ($env:SP_SITE_PATH ?? "").Trim()
-            if (-not $spHost)  { throw "SP_SITE_HOSTNAME empty" }
-            if (-not $rawPath) { throw "SP_SITE_PATH empty" }
+            if (-not $spHost) { throw "SP_SITE_HOSTNAME empty (e.g., gatewaymgt.sharepoint.com)" }
+            if (-not $rawPath) { throw "SP_SITE_PATH empty (e.g., sites/Intranet)" }
             if ($spHost -match '^https?://') { $spHost = $spHost -replace '^https?://','' }
             $spHost = $spHost.TrimEnd('/')
             $rawPath = $rawPath.TrimStart('/')
 
             $candidates = @()
             if ($rawPath -match '^(sites|teams)/') { $candidates += $rawPath }
-            else { $candidates += $rawPath; $candidates += ("sites/{0}" -f $rawPath); $candidates += ("teams/{0}" -f $rawPath) }
+            else {
+              $candidates += $rawPath
+              $candidates += ("sites/{0}" -f $rawPath)
+              $candidates += ("teams/{0}" -f $rawPath)
+            }
 
             $site = $null
             foreach ($p in ($candidates | Select-Object -Unique)) {
               $siteUri = "https://graph.microsoft.com/v1.0/sites/${spHost}:/${p}"
-              try { $tmp = Invoke-RestMethod -Headers $H -Uri $siteUri -Method GET -ErrorAction Stop; if ($tmp -and $tmp.id) { $site = $tmp; break } } catch {}
+              try {
+                $tmp = Invoke-RestMethod -Headers $H -Uri $siteUri -Method GET -ErrorAction Stop
+                if ($tmp -and $tmp.id) { $site = $tmp; break }
+              } catch {}
             }
-            if (-not $site) { throw "Could not resolve site. Set SP_SITE_ID to bypass autodetect." }
+            if (-not $site) {
+              $needle = ($rawPath.Split('/') | Select-Object -Last 1)
+              try {
+                $search = Invoke-RestMethod -Headers $H -Uri ("https://graph.microsoft.com/v1.0/sites?`$search={0}" -f $needle) -Method GET
+                if ($search.value) {
+                  $cands = $search.value | Where-Object { $_.webUrl -like ("https://{0}/*" -f $spHost) }
+                  $targetUrl = "https://{0}/{1}" -f $spHost, $rawPath
+                  $site = $cands | Sort-Object `
+                    @{Expression={ $_.webUrl -eq $targetUrl }; Descending=$true},
+                    @{Expression={ $_.webUrl -match ('/{0}(/|$)' -f [regex]::Escape($rawPath)) }; Descending=$true},
+                    @{Expression={ $_.webUrl.Length }; Descending=$true} |
+                    Select-Object -First 1
+                }
+              } catch {}
+            }
+            if (-not $site -or -not $site.id) { throw "Could not resolve site." }
             $siteId = $site.id
           }
 
-          # --- Resolve list
+          # ---- Resolve list ----
           $listName = "Properties_by_RVP"
           $listsUrl = "https://graph.microsoft.com/v1.0/sites/$siteId/lists?`$select=id,displayName&`$top=999"
           $lists = Invoke-RestMethod -Headers $H -Uri $listsUrl -Method GET
-          $list = $lists.value | Where-Object { $_.displayName -eq $listName } 
+          if (-not $lists.value) { throw "No lists found for site id $siteId." }
+
+          $list = $lists.value | Where-Object { $_.displayName -eq $listName }
           if (-not $list) { $list = $lists.value | Where-Object { $_.displayName.ToLower() -eq $listName.ToLower() } }
-          if (-not $list) { $alt = ($listName -replace '_',' '); $list = $lists.value | Where-Object { $_.displayName.ToLower() -eq $alt.ToLower() } }
+          if (-not $list) {
+            $alt = ($listName -replace '_',' ')
+            $list = $lists.value | Where-Object { $_.displayName.ToLower() -eq $alt.ToLower() }
+          }
           if (-not $list) { throw "List '$listName' not found." }
           $listId = $list.id
 
-          # --- Pull items
+          # ---- Pull items ----
           $items = @()
           $url = "https://graph.microsoft.com/v1.0/sites/$siteId/lists/$listId/items?`$expand=fields&`$top=999"
           while ($url) {
@@ -83,84 +111,95 @@ jobs:
             $url = $r.'@odata.nextLink'
           }
 
-          # --- Field dump (debug)
+          # ---- Field dump (debug) ----
           if ($items.Count -gt 0) {
             ($items[0].fields | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty Name) |
               Sort-Object | Out-File -Encoding utf8 -FilePath "$PWD/detected_sharepoint_fields.txt"
+            Write-Host "DEBUG: Detected fields: $(($items[0].fields | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty Name | Sort-Object) -join ', ')"
           }
 
-          # --- Map fields
-          function Map-Row($f) {
+          # ---- Map SP fields -> our schema ----
+          function Map-Row($f, $propName) {
             function Get-Field($fields, $exact, $fuzzy) {
               if ($fields.PSObject.Properties.Name -contains $exact) { return $fields.$exact }
-              $keys  = $fields | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty Name
+              $keys = $fields | Get-Member -MemberType NoteProperty | Select-Object -ExpandProperty Name
               $match = $keys | Where-Object { $_ -and $_.ToLower().Contains($fuzzy.ToLower()) } | Select-Object -First 1
               if ($match) { return $fields.$match }
               return $null
             }
 
-            $rawLat = if ($f.PSObject.Properties.Name -contains 'field_15') { $f.field_15 } else { (Get-Field $f 'Latitude' 'lat') }
-            $rawLng = if ($f.PSObject.Properties.Name -contains 'field_16') { $f.field_16 } else { (Get-Field $f 'Longitude' 'lng') }
+            $title         = Get-Field $f 'Title' 'title'
+            $type          = Get-Field $f 'TYPE' 'type'
+            $units         = Get-Field $f 'field_2' 'units'
+            $manager       = Get-Field $f 'field_3' 'manager'
+            $assistant_mgr = Get-Field $f 'field_4' 'assistant'
+            $compliance    = Get-Field $f 'field_5' 'compliance'
+            $address       = Get-Field $f 'field_6' 'address'
+            $city          = Get-Field $f 'field_7' 'city'
+            $state         = Get-Field $f 'field_8' 'state'
+            $zip           = Get-Field $f 'field_9' 'zip'
+            $office_phone  = Get-Field $f 'field_10' 'phone'
+            $fax           = Get-Field $f 'field_11' 'fax'
+            $manager_email = Get-Field $f 'field_12' 'email'
+            $rpm           = Get-Field $f 'field_13' 'rpm'
+            $rvp           = Get-Field $f 'field_14' 'rvp'
+            $owner         = Get-Field $f 'Owner' 'owner'
+            $legal_entity  = Get-Field $f 'LegalEntity' 'legal'
+
+            # Lat/Lng: Expanded fuzzy for SharePoint variants + hard-map to field_15/16
+            $rawLat = $f.field_15 ?? $f.Latitude ?? $f.Latitude_x0020_ ?? (Get-Field $f 'lat' 'latitude') ?? $null
+            $rawLng = $f.field_16 ?? $f.Longitude ?? $f.Longitude_x0020_ ?? (Get-Field $f 'lng' 'longitude') ?? $null
             $castLat = try { [double]$rawLat } catch { 0.0 }
             $castLng = try { [double]$rawLng } catch { 0.0 }
 
+            # Debug for Cedar Glades
+            if ($propName -eq 'Cedar Glades') {
+              Write-Host "DEBUG: For '$propName': rawLat='$rawLat' → cast=$castLat | rawLng='$rawLng' → cast=$castLng | field_15='$($f.field_15)' | field_16='$($f.field_16)' | Latitude='$($f.Latitude)'"
+            }
+
             [pscustomobject]@{
-              name           = (Get-Field $f 'Title' 'title')
-              type           = (Get-Field $f 'TYPE' 'type')
-              units          = (Get-Field $f 'field_2' 'units')
-              manager        = (Get-Field $f 'field_3' 'manager')
-              assistant_mgr  = (Get-Field $f 'field_4' 'assistant')
-              compliance     = (Get-Field $f 'field_5' 'compliance')
-              address        = (Get-Field $f 'field_6' 'address')
-              city           = (Get-Field $f 'field_7' 'city')
-              state          = (Get-Field $f 'field_8' 'state')
-              zip            = (Get-Field $f 'field_9' 'zip')
-              office_phone   = (Get-Field $f 'field_10' 'phone')
-              fax            = (Get-Field $f 'field_11' 'fax')
-              manager_email  = (Get-Field $f 'field_12' 'email')
-              rpm            = (Get-Field $f 'field_13' 'rpm')
-              rvp            = (Get-Field $f 'field_14' 'rvp')
-              owner          = (Get-Field $f 'Owner' 'owner')
-              legal_entity   = (Get-Field $f 'LegalEntity' 'legal')
-              lat            = $castLat
-              lng            = $castLng
-              geocode_status = "unknown"
-              geocode_source = "none"
+              name              = $title
+              type              = $type
+              units             = $units
+              manager           = $manager
+              assistant_mgr     = $assistant_mgr
+              compliance        = $compliance
+              address           = $address
+              city              = $city
+              state             = $state
+              zip               = $zip
+              office_phone      = $office_phone
+              fax               = $fax
+              manager_email     = $manager_email
+              rpm               = $rpm
+              rvp               = $rvp
+              owner             = $owner
+              legal_entity      = $legal_entity
+              lat               = $castLat
+              lng               = $castLng
+              geocode_status    = "unknown"
+              geocode_source    = "none"
               geocode_fail_code = $null
             }
           }
-          $out = foreach ($it in $items) { Map-Row $it.fields }
+          $out = foreach ($it in $items) { Map-Row $it.fields $it.fields.Title }
 
-          # --- Geocache
+          # ---- Geocache ----
           $geocacheFile = "geocache.json"
           $geocache = @{}
           if (Test-Path $geocacheFile) {
             $geocache = Get-Content $geocacheFile -Raw | ConvertFrom-Json -AsHashtable
           }
 
-          # --- Manual overrides (optional)
-          $overrideFile = "overrides/manual_overrides.csv"
-          $overrides = @{}
-          if (Test-Path $overrideFile) {
-            try {
-              (Import-Csv $overrideFile) | ForEach-Object {
-                if ($_.name -and $_.lat -and $_.lng) {
-                  $overrides[$_.name.Trim()] = @{ lat = [double]$_.lat; lng = [double]$_.lng }
-                }
-              }
-              Write-Host ("Loaded {0} manual overrides." -f $overrides.Count)
-            } catch { Write-Host "WARN: overrides read failed: $($_.Exception.Message)" }
-          }
+          # ---- Controls ----
+          $UseCityFallback   = $false
+          $UseCensusFallback = $true
 
-          # --- Controls (rollback-safe)
-          $UseCensusFallback = $true     # keep US Census as second pass
-          # NOTE: no city-centroid fallback in rollback mode
-
-          # --- Helpers
+          # ---- Helpers ----
           function Normalize-Address([string]$addr) {
             if (-not $addr) { return "" }
             $a = $addr.Trim()
-            $a = $a -replace '(?i)\s+(Apt|Apartment|Unit|Lot|Suite|Ste|Bldg|#)\s*\S+', ''
+            $a = $a -replace '(?i)\s+(Apt|Apartment|Unit|Lot|Suite|Ste|#)\s*\S+', ''
             $a = $a -replace '(?i)\bHwy\b','Highway'
             $a = $a -replace '(?i)\bRd\b','Road'
             $a = $a -replace '(?i)\bAve\b','Avenue'
@@ -170,7 +209,7 @@ jobs:
             $a = $a -replace '(?i)\bLn\b','Lane'
             $a = $a -replace '(?i)\bDr\b','Drive'
             $a = $a -replace '\s+', ' '
-            return $a.Trim()
+            return $a
           }
 
           function FailCodesFor($prop) {
@@ -187,15 +226,16 @@ jobs:
 
           function Try-Nominatim($q) {
             $encoded = [System.Net.WebUtility]::UrlEncode($q)
-            # Hard-restrict to US to avoid stray world matches
-            $viewbox = "-125,49.5,-66.9,24.4"  # lower 48
-            $url = "https://nominatim.openstreetmap.org/search?q=$encoded&format=json&limit=1&addressdetails=0&dedupe=1&countrycodes=us&viewbox=$viewbox&bounded=1"
+            $url = "https://nominatim.openstreetmap.org/search?q=$encoded&format=json&limit=1&addressdetails=0"
             try {
-              $resp = Invoke-RestMethod -Uri $url -Headers @{ "User-Agent" = "GatewayMapBot/1.0 (bot@example.com)"; "Accept-Language" = "en-US" } -Method GET -TimeoutSec 30
+              $resp = Invoke-RestMethod -Uri $url -Headers @{ "User-Agent" = "GatewayMapBot/1.0 (bot@example.com)" } -Method GET -TimeoutSec 30
               if ($resp -and $resp.Count -gt 0) {
                 return @{ ok=$true; lat=[double]$resp[0].lat; lng=[double]$resp[0].lon; src='nominatim' }
-              } else { return @{ ok=$false; code='NO_MATCH_NOMINATIM' } }
+              } else {
+                return @{ ok=$false; code='NO_MATCH_NOMINATIM' }
+              }
             } catch {
+              Write-Host "Nominatim error: $($_.Exception.Message)"
               $code = try { [int]$_.Exception.Response.StatusCode.value__ } catch { 0 }
               return @{ ok=$false; code=("PROVIDER_ERROR_{0}" -f ($code -as [string])) }
             }
@@ -210,36 +250,28 @@ jobs:
               $m = $resp.result.addressMatches
               if ($m -and $m.Count -gt 0) {
                 return @{ ok=$true; lat=[double]$m[0].coordinates.y; lng=[double]$m[0].coordinates.x; src='census' }
-              } else { return @{ ok=$false; code='NO_MATCH_CENSUS' } }
+              } else {
+                return @{ ok=$false; code='NO_MATCH_CENSUS' }
+              }
             } catch {
+              Write-Host "Census error: $($_.Exception.Message)"
               $code = try { [int]$_.Exception.Response.StatusCode.value__ } catch { 0 }
               return @{ ok=$false; code=("PROVIDER_ERROR_{0}" -f ($code -as [string])) }
             }
           }
 
-          # --- Buckets
+          # ---- Buckets ----
           $existing  = @()
           $cacheHits = @()
           $geocoded  = @()
           $failed    = @()
 
-          # --- Geocode loop (rollback-safe)
+          # ---- Geocode loop ----
           foreach ($prop in $out) {
             $prop.geocode_status = "unknown"
             $prop.geocode_source = "none"
             $prop.geocode_fail_code = $null
 
-            # Manual override
-            if ($overrides.ContainsKey($prop.name)) {
-              $prop.lat = $overrides[$prop.name].lat
-              $prop.lng = $overrides[$prop.name].lng
-              $prop.geocode_status = "ok"
-              $prop.geocode_source = "manual"
-              $geocoded += $prop
-              continue
-            }
-
-            # Use coords from SharePoint if present
             if ($prop.lat -ne 0.0 -and $prop.lng -ne 0.0) {
               $prop.geocode_status = "ok"
               $prop.geocode_source = "existing"
@@ -265,7 +297,6 @@ jobs:
               continue
             }
 
-            # Pass 1: Nominatim (US-bounded)
             $try1 = Try-Nominatim $addrOne
             if ($try1.ok) {
               $prop.lat = $try1.lat; $prop.lng = $try1.lng
@@ -275,9 +306,8 @@ jobs:
               $geocoded += $prop
               Start-Sleep -Milliseconds 1000
               continue
-            } elseif ($try1.code) { $pre.Add($try1.code) }
+            }
 
-            # Pass 2: US Census
             if ($UseCensusFallback) {
               $try2 = Try-Census $street $prop.city $prop.state $prop.zip
               if ($try2.ok) {
@@ -288,13 +318,32 @@ jobs:
                 $geocoded += $prop
                 Start-Sleep -Milliseconds 300
                 continue
-              } elseif ($try2.code) { $pre.Add($try2.code) }
+              } else {
+                if ($try2.code) { $pre.Add($try2.code) }
+              }
             }
 
+            if ($UseCityFallback -and $prop.city -and $prop.state) {
+              $tryCity = Try-Nominatim ("{0}, {1}" -f $prop.city, $prop.state)
+              if ($tryCity.ok) {
+                $prop.lat = $tryCity.lat; $prop.lng = $tryCity.lng
+                $prop.geocode_status = "approx"
+                $prop.geocode_source = "city_centroid"
+                $prop.geocode_fail_code = "CITY_CENTROID_FALLBACK"
+                $geocoded += $prop
+                Start-Sleep -Milliseconds 500
+                continue
+              }
+            }
+
+            if (-not $pre.Contains('NO_MATCH_NOMINATIM') -and $try1.code) { $pre.Add($try1.code) }
             if ($pre.Count -eq 0) { $pre.Add('NO_MATCH_NOMINATIM') }
+
             $prop.geocode_status = "failed"
             $prop.geocode_source = "none"
-            $prop.geocode_fail_code = ($pre -join ';')
+            $failString = 'UNKNOWN_ERROR'
+            if ($pre.Count -gt 0) { $failString = ($pre -join ';') }
+            $prop.geocode_fail_code = $failString
 
             $failed += [pscustomobject]@{
               name               = $prop.name
@@ -313,25 +362,26 @@ jobs:
             Start-Sleep -Milliseconds 300
           }
 
-          # --- Save geocache
+          # ---- Save geocache ----
           $geocache | ConvertTo-Json -Depth 4 | Set-Content -Encoding utf8 -Path $geocacheFile
 
-          # --- Backup previous JSON
+          # ---- Backup previous JSON ----
           $jsonFile = "final_properties_with_coords_and_rvp.json"
           if (Test-Path $jsonFile) {
             $stamp = Get-Date -Format "yyyyMMdd-HHmmss"
             Copy-Item $jsonFile ("backup_final_properties_{0}.json" -f $stamp)
           }
 
-          # --- Write main JSON
+          # ---- Write main JSON ----
           $out | ConvertTo-Json -Depth 4 | Set-Content -Encoding utf8 -Path $jsonFile
           Write-Host ("Wrote {0} with {1} rows." -f $jsonFile, $out.Count)
 
-          # --- Reports
+          # ---- Reports ----
           $reportDir = "reports"
           New-Item -ItemType Directory -Force -Path $reportDir | Out-Null
           $failed | ConvertTo-Json -Depth 4 | Set-Content -Encoding utf8 -Path "$reportDir/unmapped_properties.json"
           $failed | Export-Csv -NoTypeInformation -Encoding UTF8 -Path "$reportDir/unmapped_properties.csv"
+
           $summaryLines = @(
             "Geocoding summary"
             "================="
@@ -342,7 +392,9 @@ jobs:
             ""
             ("Generated at    : {0}" -f (Get-Date -Format "yyyy-MM-dd HH:mm:ss"))
           )
-          ($summaryLines -join "`r`n") | Set-Content -Encoding utf8 -Path "$reportDir/geocode_summary.txt"
+          $summary = $summaryLines -join "`r`n"
+          $summary | Set-Content -Encoding utf8 -Path "$reportDir/geocode_summary.txt"
+          Write-Host $summary
 
       - name: Set git identity (fallback)
         shell: bash
@@ -353,13 +405,12 @@ jobs:
       - name: Commit JSON + reports
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: 'Auto-update: safe rollback geocode (US-only; no centroid) + reports'
+          commit_message: 'Auto-update: final_properties_with_coords_and_rvp.json (with reason-coded geocoding) + reports'
           file_pattern: |
             final_properties_with_coords_and_rvp.json
             backup_final_properties_*.json
             detected_sharepoint_fields.txt
             geocache.json
-            overrides/*.csv
             reports/*.csv
             reports/*.json
             reports/*.txt
