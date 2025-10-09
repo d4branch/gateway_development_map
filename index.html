@@ -5,18 +5,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Gateway Properties Map</title>
 
+  <!-- Your stylesheet -->
   <link rel="stylesheet" href="styles/app.css" />
+  <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
 
   <style>
+    /* Fallback map height so it always shows */
     #map { height: 70vh; min-height: 520px; }
     .leaflet-container { background: #eef2f7; }
+
+    /* Counter pill + legend styles */
     .count-pill{
       background:#ffffffcc; backdrop-filter: blur(3px);
       border-radius:9999px; padding:6px 10px;
       font:13px/1.1 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
       color:#0f172a; box-shadow:0 2px 8px rgba(0,0,0,.12); border:1px solid #e5e7eb;
     }
+    .legend-box{
+      background:#ffffffcc; backdrop-filter: blur(3px);
+      border-radius:10px; padding:10px 12px;
+      font:13px/1.1 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+      color:#0f172a; box-shadow:0 2px 8px rgba(0,0,0,.12); border:1px solid #e5e7eb;
+    }
+    .legend-box h4{ margin:0 0 8px; font-size:12px; color:#334155; }
+    .legend-row{ display:grid; grid-template-columns:18px 1fr; gap:8px; align-items:center; margin:4px 0; }
+    .sw{ width:16px; height:16px; box-shadow:0 1px 2px rgba(0,0,0,.15); border:2px solid #fff; }
+    .sw.circle{ border-radius:50%; }
+    .sw.square{ border-radius:4px; }
+    .sw.diamond{ transform:rotate(45deg); border-radius:3px; }
+    .sw.star{ clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%); }
+
+    /* Error overlay (so we never get a blank white page) */
     .err-overlay{
       position:fixed; inset:0; background:#fff; color:#111827; padding:24px;
       font:14px/1.4 ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
@@ -26,11 +46,13 @@
   </style>
 </head>
 <body>
+  <!-- Header -->
   <div class="gaHeader">
     <h1>Gateway Properties Map</h1>
     <p class="sub">Property Filters</p>
   </div>
 
+  <!-- Toolbar -->
   <div class="toolbar">
     <div class="group">
       <label for="rvpFilter">RVP</label>
@@ -67,15 +89,18 @@
     </div>
   </div>
 
+  <!-- Map -->
   <div id="map" class="map"></div>
 
   <!-- Error overlay -->
   <div id="err" class="err-overlay"><h2>Script error</h2><pre id="errMsg"></pre></div>
 
+  <!-- Leaflet JS -->
   <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+
   <script>
-    // show any unexpected error instead of a blank page
-    (function setupGlobalError(){
+    // Show any runtime error in an overlay
+    (function(){
       function showErr(msg){
         var box = document.getElementById('err');
         var pre = document.getElementById('errMsg');
@@ -92,7 +117,7 @@
 
     document.addEventListener('DOMContentLoaded', function(){
       try {
-        // --- Utilities ---
+        // ---- Utilities ----
         const uniqueSorted = arr => [...new Set(arr.filter(Boolean))].sort((a,b)=>a.localeCompare(b));
         function addOptions(selectId, values) {
           const sel = document.getElementById(selectId);
@@ -106,13 +131,13 @@
         }
         function getMarkerOptions(type) {
           switch (type) {
-            case '55':    return { color: '#60d5d7', shape: 'circle' };
-            case '62':    return { color: '#10b981', shape: 'circle' };
-            case 'F':     return { color: '#f59e0b', shape: 'square' };
-            case 'C':     return { color: '#8b5cf6', shape: 'diamond' };
-            case 'S':     return { color: '#ef4444', shape: 'star' };
-            case 'RD-62': return { color: '#10b981', shape: 'circle' };
-            default:      return { color: '#3b82f6', shape: 'circle' };
+            case '55':    return { color: '#60d5d7', shape: 'circle' };   // teal circle
+            case '62':    return { color: '#10b981', shape: 'circle' };   // green circle
+            case 'F':     return { color: '#f59e0b', shape: 'square' };   // amber square
+            case 'C':     return { color: '#8b5cf6', shape: 'diamond' };  // purple diamond
+            case 'S':     return { color: '#ef4444', shape: 'star' };     // red star
+            case 'RD-62': return { color: '#10b981', shape: 'circle' };   // green circle
+            default:      return { color: '#3b82f6', shape: 'circle' };   // blue circle
           }
         }
         function makeMarker(prop) {
@@ -140,6 +165,7 @@
           return m;
         }
 
+        // ---- Map init ----
         if (!window.L) throw new Error("Leaflet failed to load (window.L undefined)");
         const map = L.map('map', { zoomControl: true }).setView([34.5, -86.6], 6);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -149,9 +175,9 @@
         window.addEventListener('load', () => map.invalidateSize());
         setTimeout(() => map.invalidateSize(), 300);
 
-        // --- Counter control
-        let totalPortfolio = 0;
-        let totalEligible  = 0;
+        // ---- Counter control ----
+        let totalPortfolio = 0; // total rows in JSON
+        let totalEligible  = 0; // rows with usable coords
         const counterCtl = L.control({ position: 'bottomleft' });
         counterCtl.onAdd = function() {
           const div = L.DomUtil.create('div', 'count-pill');
@@ -165,7 +191,35 @@
           if (pill) pill.textContent = `${visible} visible • ${totalEligible} / ${totalPortfolio}`;
         }
 
-        // --- Data & filters
+        // ---- Legend control ----
+        function legendHTML() {
+          const items = [
+            {label:'55+',   type:'55'},
+            {label:'62+',   type:'62'},
+            {label:'Family',type:'F'},
+            {label:'Conv.', type:'C'},
+            {label:'Senior',type:'S'},
+            {label:'RD-62', type:'RD-62'},
+          ];
+          const rows = items.map(it => {
+            const opt = getMarkerOptions(it.type);
+            const shape = opt.shape || 'circle';
+            return `<div class="legend-row">
+              <div class="sw ${shape}" style="background:${opt.color}"></div>
+              <div>${it.label}</div>
+            </div>`;
+          }).join('');
+          return `<div class="legend-box"><h4>Legend</h4>${rows}</div>`;
+        }
+        const legendCtl = L.control({ position: 'bottomright' });
+        legendCtl.onAdd = function(){
+          const div = L.DomUtil.create('div');
+          div.innerHTML = legendHTML();
+          return div.firstChild;
+        };
+        legendCtl.addTo(map);
+
+        // ---- Data & filters ----
         let allProps = [];
         let allMarkers = [];
         function applyFilters() {
@@ -196,10 +250,7 @@
 
         const jsonUrl = './final_properties_with_coords_and_rvp.json?v=' + Date.now();
         fetch(jsonUrl)
-          .then(r => {
-            if (!r.ok) throw new Error('JSON fetch failed: ' + r.status + ' ' + r.statusText);
-            return r.json();
-          })
+          .then(r => { if (!r.ok) throw new Error('JSON fetch failed: ' + r.status + ' ' + r.statusText); return r.json(); })
           .then(data => {
             allProps = Array.isArray(data) ? data : [];
             allMarkers = allProps
@@ -216,12 +267,10 @@
             addOptions('legalFilter', uniqueSorted(allProps.map(p => p.legal_entity)));
 
             applyFilters();
-
             ['rvpFilter','rpmFilter','stateFilter','typeFilter','ownerFilter','legalFilter']
               .forEach(id => document.getElementById(id).addEventListener('change', applyFilters));
           })
           .catch(err => {
-            // show overlay so we never get a blank page mystery
             const box = document.getElementById('err');
             const pre = document.getElementById('errMsg');
             if (box && pre){ pre.textContent = 'Data load error:\n' + (err && err.stack ? err.stack : String(err)); box.style.display='block'; }
