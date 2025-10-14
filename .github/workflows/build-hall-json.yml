@@ -1,4 +1,6 @@
 name: Build Hall JSON
+permissions:
+  contents: write
 on:
   workflow_dispatch: {}   # manual only (safe)
 
