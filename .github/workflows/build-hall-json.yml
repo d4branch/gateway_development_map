@@ -2,7 +2,7 @@ name: Build Hall JSON
 permissions:
   contents: write
 on:
-  workflow_dispatch: {}   # manual only (safe)
+  workflow_dispatch: {}   # manual only
 
 jobs:
   build:
@@ -10,60 +10,74 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Convert Hall.csv -> hall_properties.json
+      - name: Convert Hall.csv -> data/hall_properties.json (ignore N/W, force US signs)
         shell: pwsh
         run: |
-          $in  = Test-Path ./Hall.csv
-          if (-not $in) { throw "Hall.csv not found at repo root. Upload it first." }
-
+          if (-not (Test-Path ./Hall.csv)) { throw "Hall.csv not found at repo root." }
           $rows = Import-Csv ./Hall.csv
+          if ($rows.Count -eq 0) { throw "Hall.csv is empty." }
 
-          # Map columns -> JSON fields. Adjust the left side to match your CSV headers exactly.
-          $out = foreach ($r in $rows) {
-            # Try to read flexible header names. Edit these if your CSV differs.
-            $name   = $r.Name         ?? $r.Property ?? $r.Title
-            $type   = $r.Type         ?? $r.PropertyType
-            $units  = $r.Units
-            $addr   = $r.Address
-            $city   = $r.City
-            $state  = $r.State        ?? $r.ST
-            $zip    = $r.Zip          ?? $r.ZIP
-            $owner  = $r.Owner
-            $manager= $r.Manager
-            $email  = $r.ManagerEmail ?? $r.Email
-            $rvp    = $r.RVP
-            $rpm    = $r.RPM
-            $lat    = $r.Latitude
-            $lng    = $r.Longitude
-
-            if ([string]::IsNullOrWhiteSpace($name)) { continue }
-            if (-not [double]::TryParse("$lat",[ref]([double]$null))) { continue }
-            if (-not [double]::TryParse("$lng",[ref]([double]$null))) { continue }
-
-            [pscustomobject]@{
-              dataset = "hall"
-              name    = $name
-              type    = $type
-              units   = if($units){[int]$units}else{$null}
-              address = $addr
-              city    = $city
-              state   = $state
-              zip     = $zip
-              owner   = $owner
-              manager = $manager
-              manager_email = $email
-              rvp     = $rvp
-              rpm     = $rpm
-              lat     = [double]$lat
-              lng     = [double]$lng
-            }
+          # Find headers (case/spacing tolerant)
+          $headers = ($rows | Select-Object -First 1).PSObject.Properties.Name
+          function Find-Header { param([string[]]$Patterns)
+            foreach ($pat in $Patterns) {
+              $hit = $headers | Where-Object { $_ -match $pat } | Select-Object -First 1
+              if ($hit) { return $hit }
+            }; return $null
           }
 
-          $outDir = "data"
-          New-Item -ItemType Directory -Force -Path $outDir | Out-Null
-          $outPath = "$outDir/hall_properties.json"
-          $out | ConvertTo-Json -Depth 6 | Out-File -FilePath $outPath -Encoding UTF8
-          Write-Host "Wrote $outPath with $($out.Count) rows."
+          $hName = Find-Header @('(?i)^\s*(property\s*name|name|property|title)\s*$')
+          $hLat  = Find-Header @('(?i)^\s*lat(it(u|)de)?\s*$')
+          $hLon  = Find-Header @('(?i)^\s*lon(g(it(u|)de)?|g|lng)\s*$')
+          $hAddr = Find-Header @('(?i)^\s*address\s*$')
+          $hOwner= Find-Header @('(?i)^\s*owner\s*$')
+
+          if (-not $hName -or -not $hLat -or -not $hLon) {
+            throw "Required headers not found. Name=$hName Lat=$hLat Lon=$hLon"
+          }
+
+          # Strip everything except digits, dot, minus; enforce US signs: lat>=0, lon<=0
+          function Parse-Num([string]$s) {
+            if ([string]::IsNullOrWhiteSpace($s)) { return $null }
+            $clean = ($s -replace '[^\d\.\-]', '') # e.g., '31.3409N' -> '31.3409'
+            if ($clean -eq '' -or $clean -eq '-') { return $null }
+            [double]::Parse($clean, [System.Globalization.CultureInfo]::InvariantCulture)
+          }
+
+          $out = New-Object System.Collections.Generic.List[object]
+          $skipped = 0
+
+          foreach ($r in $rows) {
+            $name = [string]$r.$hName
+            if ([string]::IsNullOrWhiteSpace($name)) { $skipped++; continue }
+
+            $lat = Parse-Num ([string]$r.$hLat)
+            $lon = Parse-Num ([string]$r.$hLon)
+            if ($lat -eq $null -or $lon -eq $null) { $skipped++; continue }
+
+            # Enforce US hemisphere
+            if ($lat -lt 0) { $lat = -$lat }      # should be North => positive
+            if ($lon -gt 0) { $lon = -$lon }      # should be West  => negative
+
+            # sanity range
+            if ($lat -lt -90 -or $lat -gt 90 -or $lon -lt -180 -or $lon -gt 180) { $skipped++; continue }
+
+            $obj = [pscustomobject]@{
+              dataset = "hall"
+              name    = $name
+              address = $(if ($hAddr) { [string]$r.$hAddr } else { $null })
+              owner   = $(if ($hOwner){ [string]$r.$hOwner } else { "Hall" })
+              lat     = [double]$lat
+              lng     = [double]$lon
+            }
+            $out.Add($obj) | Out-Null
+          }
+
+          New-Item -ItemType Directory -Force -Path data | Out-Null
+          $out | ConvertTo-Json -Depth 5 | Out-File data/hall_properties.json -Encoding UTF8
+
+          Write-Host "RESULT: wrote data/hall_properties.json with $($out.Count) rows. Skipped=$skipped of $($rows.Count)."
+          if ($out.Count -eq 0) { throw "No valid rows parsed from Hall.csv. Check numeric lat/lon values." }
 
       - name: Commit JSON
         uses: stefanzweifel/git-auto-commit-action@v5
