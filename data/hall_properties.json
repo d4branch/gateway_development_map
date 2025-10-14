@@ -1,0 +1,394 @@
+[
+  {
+    "dataset": "hall",
+    "name": "Woodpine Way",
+    "address": "421 S. Westover Blvd, Albany, GA 31707",
+    "owner": "Hall",
+    "lat": 31.3409,
+    "lng": -84.1332
+  },
+  {
+    "dataset": "hall",
+    "name": "Westover Place",
+    "address": "419  S. Westover Blvd, Albany, GA 31707",
+    "owner": "Hall",
+    "lat": 31.3411,
+    "lng": -84.1335
+  },
+  {
+    "dataset": "hall",
+    "name": "Cornerstone",
+    "address": "1702 Cornerstone Drive, Alexander City, AL 35010",
+    "owner": "Hall",
+    "lat": 32.5615,
+    "lng": -85.5825
+  },
+  {
+    "dataset": "hall",
+    "name": "Sun Pointe",
+    "address": "130 Sun Pointe Dr, Andalusia, AL 36421",
+    "owner": "Hall",
+    "lat": 31.1822,
+    "lng": -86.3004
+  },
+  {
+    "dataset": "hall",
+    "name": "Franklin Pointe",
+    "address": "350 Frank Price Blvd, Clinton, TN 37716",
+    "owner": "Hall",
+    "lat": 36.0951,
+    "lng": -84.0536
+  },
+  {
+    "dataset": "hall",
+    "name": "Beasley Pointe",
+    "address": "501 beasley Pointe Drive, Dickson, TN 37055",
+    "owner": "Hall",
+    "lat": 36.0346,
+    "lng": -87.2259
+  },
+  {
+    "dataset": "hall",
+    "name": "Brewington Pointe",
+    "address": "312 Scott St, Brewton, AL 36426",
+    "owner": "Hall",
+    "lat": 31.0551,
+    "lng": -87.0519
+  },
+  {
+    "dataset": "hall",
+    "name": "River Run",
+    "address": "160 The Trail, Brewton, AL 36426",
+    "owner": "Hall",
+    "lat": 31.0831,
+    "lng": -87.04
+  },
+  {
+    "dataset": "hall",
+    "name": "Highgate",
+    "address": "2300 Chapelridge Dr, Gardendale, AL 35071",
+    "owner": "Hall",
+    "lat": 33.3833,
+    "lng": -86.5015
+  },
+  {
+    "dataset": "hall",
+    "name": "River Pointe",
+    "address": "132 River Pointe, Childersburg, AL 35044",
+    "owner": "Hall",
+    "lat": 33.1709,
+    "lng": -86.2159
+  },
+  {
+    "dataset": "hall",
+    "name": "Columbia Hall",
+    "address": "101 Radney St, Columbia, AL 36319",
+    "owner": "Hall",
+    "lat": 31.1734,
+    "lng": -85.0621
+  },
+  {
+    "dataset": "hall",
+    "name": "Eagle Ridge Place",
+    "address": "1181 Murray Rd, Dothan, AL 36303",
+    "owner": "Hall",
+    "lat": 31.1527,
+    "lng": -85.2434
+  },
+  {
+    "dataset": "hall",
+    "name": "Eagle Ridge",
+    "address": "1181 Murray Rd, Dothan, AL 36303",
+    "owner": "Hall",
+    "lat": 31.1527,
+    "lng": -85.2434
+  },
+  {
+    "dataset": "hall",
+    "name": "Emerald Pointe",
+    "address": "111 Woodlawn Dr, Dublin, GA 31021",
+    "owner": "Hall",
+    "lat": 32.3248,
+    "lng": -82.5509
+  },
+  {
+    "dataset": "hall",
+    "name": "Cornrestone Place",
+    "address": "1702 Cornerstone Dr, Alexander City, AL 35010",
+    "owner": "Hall",
+    "lat": 32.5619,
+    "lng": -85.582
+  },
+  {
+    "dataset": "hall",
+    "name": "Heritage Gardens",
+    "address": "2572 Co Rd 25, Dothan, AL 36303",
+    "owner": "Hall",
+    "lat": 31.1803,
+    "lng": -85.261
+  },
+  {
+    "dataset": "hall",
+    "name": "Regency Pointe II",
+    "address": "501 Greentree LN, Foley, AL 36535",
+    "owner": "Hall",
+    "lat": 30.2415,
+    "lng": -87.394
+  },
+  {
+    "dataset": "hall",
+    "name": "Fords Mill",
+    "address": "2009 40th St, Valley, AL 36854",
+    "owner": "Hall",
+    "lat": 32.4959,
+    "lng": -85.104
+  },
+  {
+    "dataset": "hall",
+    "name": "Biltmore Place",
+    "address": "2810 Fortner St, Dothan AL 36305",
+    "owner": "Hall",
+    "lat": 31.1243,
+    "lng": -85.2602
+  },
+  {
+    "dataset": "hall",
+    "name": "Gist Creek",
+    "address": "446 Gists Creek Rd, Sevierville, TN 37876",
+    "owner": "Hall",
+    "lat": 35.5326,
+    "lng": -83.3618
+  },
+  {
+    "dataset": "hall",
+    "name": "Fontana Pointe",
+    "address": "Highway 11E near Harlan Street (refer to coordinates)",
+    "owner": "Hall",
+    "lat": 36.1106,
+    "lng": -82.4541
+  },
+  {
+    "dataset": "hall",
+    "name": "Hidden Pointe",
+    "address": "70 Hughes St, Daleville, AL 36322",
+    "owner": "Hall",
+    "lat": 31.185,
+    "lng": -85.4248
+  },
+  {
+    "dataset": "hall",
+    "name": "Honeysuckle Grove",
+    "address": "1780 Honeysuckle Rd, Dothan, AL 36305",
+    "owner": "Hall",
+    "lat": 31.1213,
+    "lng": -85.2613
+  },
+  {
+    "dataset": "hall",
+    "name": "Honeysuckle Place",
+    "address": "1780 Honeysuckle Rd, Dothan, AL 36305",
+    "owner": "Hall",
+    "lat": 31.1218,
+    "lng": -85.2613
+  },
+  {
+    "dataset": "hall",
+    "name": "The Kensley",
+    "address": "31230 Stagecoach Rd, Spanish Fort, AL 36527",
+    "owner": "Hall",
+    "lat": 30.405,
+    "lng": -87.5128
+  },
+  {
+    "dataset": "hall",
+    "name": "Kelly Pointe",
+    "address": "155 Kelly Ln, Lenoir City, TN 37771",
+    "owner": "Hall",
+    "lat": 35.4758,
+    "lng": -84.155
+  },
+  {
+    "dataset": "hall",
+    "name": "South Place",
+    "address": "8 South Pl, Luverne, AL 36049",
+    "owner": "Hall",
+    "lat": 31.4205,
+    "lng": -86.1536
+  },
+  {
+    "dataset": "hall",
+    "name": "South Pointe",
+    "address": "8 South Pl, Luverne, AL 36049",
+    "owner": "Hall",
+    "lat": 31.4208,
+    "lng": -86.1539
+  },
+  {
+    "dataset": "hall",
+    "name": "Island Grove",
+    "address": "150 Willow Creek Drive, Madisonville, TN 37354",
+    "owner": "Hall",
+    "lat": 35.3215,
+    "lng": -84.2011
+  },
+  {
+    "dataset": "hall",
+    "name": "Orchard Pointe",
+    "address": "4445 Orchard Pointe Dr, Marianna, FL 32448",
+    "owner": "Hall",
+    "lat": 30.4527,
+    "lng": -85.1339
+  },
+  {
+    "dataset": "hall",
+    "name": "Laurel Branch",
+    "address": "106 Laurel Branch Dr, Maryville, TN 37801",
+    "owner": "Hall",
+    "lat": 35.4611,
+    "lng": -84.0004
+  },
+  {
+    "dataset": "hall",
+    "name": "Wood Springs",
+    "address": "16940 US-231 H59, Midland City, AL 36350",
+    "owner": "Hall",
+    "lat": 31.1716,
+    "lng": -85.2816
+  },
+  {
+    "dataset": "hall",
+    "name": "Wood Springs II ",
+    "address": "16940 US-231 H59, Midland City, AL 36350",
+    "owner": "Hall",
+    "lat": 31.1716,
+    "lng": -85.2816
+  },
+  {
+    "dataset": "hall",
+    "name": "Waterford Place",
+    "address": "131 N Pickens St, Milledgeville, GA 31061",
+    "owner": "Hall",
+    "lat": 33.0444,
+    "lng": -83.1427
+  },
+  {
+    "dataset": "hall",
+    "name": "Monroe Ridge ",
+    "address": "700 Telford Rd, Sweetwater, TN 37874",
+    "owner": "Hall",
+    "lat": 35.3543,
+    "lng": -84.3051
+  },
+  {
+    "dataset": "hall",
+    "name": "Avonlea Greene ",
+    "address": "7315 Avonlea Way, Talbott, TN 37877",
+    "owner": "Hall",
+    "lat": 36.0919,
+    "lng": -83.2509
+  },
+  {
+    "dataset": "hall",
+    "name": "Peppertree ",
+    "address": "",
+    "owner": "Hall",
+    "lat": 32.2024,
+    "lng": -86.1012
+  },
+  {
+    "dataset": "hall",
+    "name": "Pike Grove ",
+    "address": "600 Botts Ave, Troy, AL 36081",
+    "owner": "Hall",
+    "lat": 31.4702,
+    "lng": -85.5649
+  },
+  {
+    "dataset": "hall",
+    "name": "Sumner Pointe ",
+    "address": "1048 Magnolia Springs Rd, Portland, TN 37148",
+    "owner": "Hall",
+    "lat": 36.3726,
+    "lng": -86.3321
+  },
+  {
+    "dataset": "hall",
+    "name": "Hunter Ridge",
+    "address": "2901 Hunter Ridge Dr, Birmingham, AL 35235",
+    "owner": "Hall",
+    "lat": 33.3516,
+    "lng": -86.3949
+  },
+  {
+    "dataset": "hall",
+    "name": "Laurel Pointe ",
+    "address": "510 E Main St, Statesboro, GA 30458-7009",
+    "owner": "Hall",
+    "lat": 32.27,
+    "lng": -81.4533
+  },
+  {
+    "dataset": "hall",
+    "name": "Tallokas Pointe",
+    "address": "2001 Tallokas Pointe Rd, Moultrie, GA 31768",
+    "owner": "Hall",
+    "lat": 31.0912,
+    "lng": -83.4627
+  },
+  {
+    "dataset": "hall",
+    "name": "The Groves Place",
+    "address": "2822 Rainwater Rd, Tifton, GA 31793",
+    "owner": "Hall",
+    "lat": 31.2827,
+    "lng": -83.3224
+  },
+  {
+    "dataset": "hall",
+    "name": "Hunter Ridge II",
+    "address": "2901 Hunter Ridge Dr, Birmingham, AL 35235",
+    "owner": "Hall",
+    "lat": 33.3516,
+    "lng": -86.3949
+  },
+  {
+    "dataset": "hall",
+    "name": "Walnut Square ",
+    "address": "99 Walnut Square Drive, Thomasville, GA 31757",
+    "owner": "Hall",
+    "lat": 30.5235,
+    "lng": -83.5643
+  },
+  {
+    "dataset": "hall",
+    "name": "Austin Pointe ",
+    "address": "115 Ave, Warner Robins, GA 31088",
+    "owner": "Hall",
+    "lat": 32.3652,
+    "lng": -83.3925
+  },
+  {
+    "dataset": "hall",
+    "name": "Ridgecrest",
+    "address": "301 Millside Dr, Warner Robins, GA 31088",
+    "owner": "Hall",
+    "lat": 32.3645,
+    "lng": -83.392
+  },
+  {
+    "dataset": "hall",
+    "name": "Wellington Place ",
+    "address": "3960 Mance Newton Rd, Midland City, AL 36350",
+    "owner": "Hall",
+    "lat": 31.1731,
+    "lng": -85.2809
+  },
+  {
+    "dataset": "hall",
+    "name": "Westchester",
+    "address": "13 Westchester Ln, Sylacauga, AL 35150",
+    "owner": "Hall",
+    "lat": 33.1145,
+    "lng": -86.1347
+  }
+]
