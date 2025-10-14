@@ -14,11 +14,11 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
 
   <style>
-    /* Fallback map height so it always shows */
+    /* Fallback map height */
     #map { height: 70vh; min-height: 520px; }
     .leaflet-container { background: #eef2f7; }
 
-    /* Counter pill + legend styles */
+    /* Counter pill + legend */
     .count-pill{
       background:#ffffffcc; backdrop-filter: blur(3px);
       border-radius:9999px; padding:6px 10px;
@@ -39,7 +39,7 @@
     .sw.diamond{ transform:rotate(45deg); border-radius:3px; }
     .sw.star{ clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%); }
 
-    /* Error overlay (so we never get a blank white page) */
+    /* Error overlay */
     .err-overlay{
       position:fixed; inset:0; background:#fff; color:#111827; padding:24px;
       font:14px/1.4 ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
@@ -90,6 +90,15 @@
       <label for="legalFilter">Legal Entity</label>
       <select id="legalFilter"><option value="All">All</option></select>
     </div>
+
+    <!-- Dataset toggles -->
+    <div class="group">
+      <label>Datasets</label>
+      <div style="display:flex; gap:10px; align-items:center">
+        <label><input type="checkbox" id="toggleGateway" checked /> Gateway</label>
+        <label><input type="checkbox" id="toggleHall" checked /> Hall</label>
+      </div>
+    </div>
   </div>
 
   <!-- Map -->
@@ -104,7 +113,7 @@
   <script src="https://cdn.jsdelivr.net/npm/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 
   <script>
-    // Show any runtime error in an overlay
+    // show any runtime error in an overlay
     (function(){
       function showErr(msg){
         var box = document.getElementById('err');
@@ -122,7 +131,7 @@
 
     document.addEventListener('DOMContentLoaded', function(){
       try {
-        // ---- Utilities ----
+        // ---- utilities ----
         const uniqueSorted = arr => [...new Set(arr.filter(Boolean))].sort((a,b)=>a.localeCompare(b));
         function addOptions(selectId, values) {
           const sel = document.getElementById(selectId);
@@ -145,7 +154,7 @@
             default:      return { color: '#3b82f6', shape: 'circle' };   // blue circle
           }
         }
-        function makeMarker(prop) {
+        function makeGatewayMarker(prop) {
           const opt = getMarkerOptions(prop.type);
           let css = `width:20px;height:20px;background:${opt.color};box-shadow:0 2px 4px rgba(0,0,0,.2);`;
           if (opt.shape==='circle') css += 'border-radius:50%;';
@@ -169,43 +178,61 @@
           );
           return m;
         }
+        function makeHallMarker(prop) {
+          const color = '#ec4899'; // magenta, distinct
+          let css = `width:20px;height:20px;background:${color};box-shadow:0 2px 4px rgba(0,0,0,.2);transform:rotate(45deg);border-radius:3px;`;
+          const icon = L.divIcon({ html:`<div style="${css}"></div>`, className:'custom-div-icon', iconSize:[20,20], iconAnchor:[10,10] });
+          const m = L.marker([prop.lat, prop.lng], { icon });
+          m.bindPopup(
+            `<div style="font-family:system-ui,sans-serif;min-width:280px">
+              <h3 style="margin:0 0 8px;color:#831843;border-bottom:1px solid #ec4899;padding-bottom:4px">${prop.name} (Hall)</h3>
+              <p><strong>Type:</strong> ${prop.type ?? ''} &nbsp;|&nbsp; <strong>Units:</strong> ${prop.units ?? ''}</p>
+              <p><strong>Address:</strong> ${prop.address ?? ''}<br>${prop.city ?? ''}, ${prop.state ?? ''} ${prop.zip ?? ''}</p>
+              <small style="color:#6b7280;border-top:1px solid #e5e7eb;padding-top:4px;display:block">
+                Owner: ${prop.owner ?? 'N/A'} &nbsp; Contact: ${prop.manager ?? ''} ${prop.manager_email ?? ''}
+              </small>
+            </div>`
+          );
+          return m;
+        }
 
-        // ---- Map init ----
+        // ---- map init ----
         if (!window.L) throw new Error("Leaflet failed to load (window.L undefined)");
         const map = L.map('map', { zoomControl: true }).setView([34.5, -86.6], 6);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
 
-        // Marker clustering with spiderfy for stacked points
-        const markersGroup = L.markerClusterGroup({
-          spiderfyOnMaxZoom: true,
-          showCoverageOnHover: false,
-          zoomToBoundsOnClick: true,
-          disableClusteringAtZoom: 18,   // separate when zoomed in close
-          maxClusterRadius: 50           // px; lower = separate sooner
+        // clustered layers
+        const gatewayGroup = L.markerClusterGroup({
+          spiderfyOnMaxZoom: true, showCoverageOnHover: false, zoomToBoundsOnClick: true,
+          disableClusteringAtZoom: 18, maxClusterRadius: 50
+        }).addTo(map);
+        const hallGroup = L.markerClusterGroup({
+          spiderfyOnMaxZoom: true, showCoverageOnHover: false, zoomToBoundsOnClick: true,
+          disableClusteringAtZoom: 18, maxClusterRadius: 50
         }).addTo(map);
 
         window.addEventListener('load', () => map.invalidateSize());
         setTimeout(() => map.invalidateSize(), 300);
 
-        // ---- Counter control ----
-        let totalPortfolio = 0; // total rows in JSON
-        let totalEligible  = 0; // rows with usable coords
+        // ---- counter control ----
+        let totalPortfolio = 0; // total rows across datasets
+        let totalEligible  = 0; // rows with usable coords across datasets
         const counterCtl = L.control({ position: 'bottomleft' });
         counterCtl.onAdd = function() {
           const div = L.DomUtil.create('div', 'count-pill');
           div.id = 'countPill';
-          div.textContent = '0 visible • 0 / 0';
+          div.textContent = 'loading…';
           return div;
         };
         counterCtl.addTo(map);
-        function updateCounts(visible) {
+        function updateCounts(text) {
           const pill = document.getElementById('countPill');
-          if (pill) pill.textContent = `${visible} visible • ${totalEligible} / ${totalPortfolio}`;
+          if (pill) pill.textContent = text;
         }
 
-        // ---- Legend control ----
+        // ---- legend ----
         function legendHTML() {
           const items = [
             {label:'55+',   type:'55'},
@@ -214,8 +241,10 @@
             {label:'Conv.', type:'C'},
             {label:'Senior',type:'S'},
             {label:'RD-62', type:'RD-62'},
+            {label:'Hall (prospects)', sw:`<div class="sw diamond" style="background:#ec4899"></div>`}
           ];
           const rows = items.map(it => {
+            if (it.sw) return `<div class="legend-row">${it.sw}<div>${it.label}</div></div>`;
             const opt = getMarkerOptions(it.type);
             const shape = opt.shape || 'circle';
             return `<div class="legend-row">
@@ -233,9 +262,10 @@
         };
         legendCtl.addTo(map);
 
-        // ---- Data & filters ----
-        let allProps = [];
-        let allMarkers = [];
+        // ---- data + filters ----
+        let allGateway = [], gatewayMarkers = [];
+        let allHall    = [], hallMarkers    = [];
+
         function applyFilters() {
           const rvp   = document.getElementById('rvpFilter').value;
           const rpm   = document.getElementById('rpmFilter').value;
@@ -244,57 +274,79 @@
           const owner = document.getElementById('ownerFilter').value;
           const legal = document.getElementById('legalFilter').value;
 
-          markersGroup.clearLayers();
-          const rows = allMarkers.filter(({property:p}) => (
-            (rvp==='All' || p.rvp===rvp) &&
-            (rpm==='All' || p.rpm===rpm) &&
-            (st==='All' || p.state===st) &&
-            (type==='All' || p.type===type) &&
-            (owner==='All' || p.owner===owner) &&
-            (legal==='All' || p.legal_entity===legal)
-          ));
-          rows.forEach(({marker}) => markersGroup.addLayer(marker));
-          updateCounts(rows.length);
+          const showGateway = document.getElementById('toggleGateway').checked;
+          const showHall    = document.getElementById('toggleHall').checked;
 
-          if (rows.length) {
-            const grp = L.featureGroup(rows.map(r => r.marker));
+          gatewayGroup.clearLayers();
+          hallGroup.clearLayers();
+
+          const pass = p =>
+            (rvp==='All'   || (p.rvp ?? '')===rvp) &&
+            (rpm==='All'   || (p.rpm ?? '')===rpm) &&
+            (st==='All'    || (p.state ?? '')===st) &&
+            (type==='All'  || (p.type ?? '')===type) &&
+            (owner==='All' || (p.owner ?? '')===owner) &&
+            (legal==='All' || (p.legal_entity ?? '')===legal);
+
+          const gRows = showGateway ? gatewayMarkers.filter(({property:p}) => pass(p)) : [];
+          const hRows = showHall    ? hallMarkers.filter(({property:p}) => pass(p)) : [];
+
+          gRows.forEach(({marker}) => gatewayGroup.addLayer(marker));
+          hRows.forEach(({marker}) => hallGroup.addLayer(marker));
+
+          const visible = gRows.length + hRows.length;
+          const gText = `G:${gRows.length}/${allGateway.length}`;
+          const hText = `H:${hRows.length}/${allHall.length}`;
+          updateCounts(`${visible} visible • ${gText} • ${hText}`);
+
+          const allVisible = [...gRows, ...hRows];
+          if (allVisible.length) {
+            const grp = L.featureGroup(allVisible.map(r => r.marker));
             try { map.fitBounds(grp.getBounds(), { padding:[20,20] }); } catch(e){}
           }
         }
 
-        const jsonUrl = './final_properties_with_coords_and_rvp.json?v=' + Date.now();
-        fetch(jsonUrl)
-          .then(r => { if (!r.ok) throw new Error('JSON fetch failed: ' + r.status + ' ' + r.statusText); return r.json(); })
-          .then(data => {
-            allProps = Array.isArray(data) ? data : [];
-            allMarkers = allProps
-              .filter(p => typeof p.lat === 'number' && typeof p.lng === 'number' &&
-                           !Number.isNaN(p.lat) && !Number.isNaN(p.lng) &&
-                           p.lat !== 0 && p.lng !== 0)
-              .map(p => ({ property: p, marker: makeMarker(p) }));
-            totalPortfolio = allProps.length;
-            totalEligible  = allMarkers.length;
+        const gatewayUrl = './final_properties_with_coords_and_rvp.json?v=' + Date.now();
+        const hallUrl    = './data/hall_properties.json?v=' + Date.now();
 
-            addOptions('rvpFilter',   uniqueSorted(allProps.map(p => p.rvp)));
-            addOptions('rpmFilter',   uniqueSorted(allProps.map(p => p.rpm)));
-            addOptions('ownerFilter', uniqueSorted(allProps.map(p => p.owner)));
-            addOptions('legalFilter', uniqueSorted(allProps.map(p => p.legal_entity)));
+        Promise.all([
+          fetch(gatewayUrl).then(r => { if(!r.ok) throw new Error('Gateway JSON fetch failed: '+r.status); return r.json(); }),
+          fetch(hallUrl).then(r => r.ok ? r.json() : [])
+        ]).then(([gData, hData]) => {
+          allGateway = Array.isArray(gData) ? gData : [];
+          allHall    = Array.isArray(hData) ? hData : [];
 
-            applyFilters();
-            ['rvpFilter','rpmFilter','stateFilter','typeFilter','ownerFilter','legalFilter']
-              .forEach(id => document.getElementById(id).addEventListener('change', applyFilters));
-          })
-          .catch(err => {
-            const box = document.getElementById('err');
-            const pre = document.getElementById('errMsg');
-            if (box && pre){ pre.textContent = 'Data load error:\n' + (err && err.stack ? err.stack : String(err)); box.style.display='block'; }
-            console.error('Data load error:', err);
-            updateCounts(0);
-          });
+          gatewayMarkers = allGateway
+            .filter(p => typeof p.lat==='number' && typeof p.lng==='number' && !Number.isNaN(p.lat) && !Number.isNaN(p.lng))
+            .map(p => ({ property: p, marker: makeGatewayMarker(p) }));
+
+          hallMarkers = allHall
+            .filter(p => typeof p.lat==='number' && typeof p.lng==='number' && !Number.isNaN(p.lat) && !Number.isNaN(p.lng))
+            .map(p => ({ property: p, marker: makeHallMarker(p) }));
+
+          // populate filter options from Gateway dataset
+          addOptions('rvpFilter',   uniqueSorted(allGateway.map(p => p.rvp)));
+          addOptions('rpmFilter',   uniqueSorted(allGateway.map(p => p.rpm)));
+          addOptions('ownerFilter', uniqueSorted(allGateway.map(p => p.owner)));
+          addOptions('legalFilter', uniqueSorted(allGateway.map(p => p.legal_entity)));
+
+          totalPortfolio = allGateway.length + allHall.length;
+          totalEligible  = gatewayMarkers.length + hallMarkers.length;
+
+          applyFilters();
+          [
+            'rvpFilter','rpmFilter','stateFilter','typeFilter','ownerFilter','legalFilter',
+            'toggleGateway','toggleHall'
+          ].forEach(id => document.getElementById(id).addEventListener('change', applyFilters));
+        }).catch(err => {
+          const box = document.getElementById('err'); const pre = document.getElementById('errMsg');
+          if (box && pre){ pre.textContent = 'Data load error:\n' + (err && err.stack ? err.stack : String(err)); box.style.display='block'; }
+          console.error('Data load error:', err);
+          updateCounts('0 visible • G:0/0 • H:0/0');
+        });
 
       } catch (e) {
-        const box = document.getElementById('err');
-        const pre = document.getElementById('errMsg');
+        const box = document.getElementById('err'); const pre = document.getElementById('errMsg');
         if (box && pre){ pre.textContent = e && e.stack ? e.stack : String(e); box.style.display='block'; }
         console.error(e);
       }
