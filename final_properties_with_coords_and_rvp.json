@@ -48,7 +48,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Abbington Reserve Apartments",
+    "name": "Abbington Reserve",
     "type": "F",
     "units": 238.0,
     "manager": "Terrell Treadwell",
@@ -72,7 +72,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Agape - Lease up",
+    "name": "Agape ",
     "type": "F",
     "units": 222.0,
     "manager": "Aaron Lawrence",
@@ -120,7 +120,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Americus Garden Apts.",
+    "name": "Americus Garden",
     "type": "F",
     "units": 44.0,
     "manager": "TBD",
@@ -264,7 +264,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Belle Isle Apts.",
+    "name": "Belle Isle",
     "type": "55",
     "units": 28.0,
     "manager": "TBD",
@@ -360,7 +360,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Brentwood Landing Apts.",
+    "name": "Brentwood Landing",
     "type": "F",
     "units": 80.0,
     "manager": "Chequila Mchone",
@@ -384,7 +384,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Brentwood Landing II Apts.",
+    "name": "Brentwood Landing II",
     "type": "F",
     "units": 96.0,
     "manager": "Chequila Mchone",
@@ -480,7 +480,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Candler Reserve - Lease up",
+    "name": "Candler Reserve ",
     "type": "F",
     "units": 192.0,
     "manager": "Keyounia Hervey",
@@ -552,7 +552,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Capstone at Barton Chapel (Trinity Manor)",
+    "name": "Capstone at Barton Chapel ",
     "type": "F",
     "units": 100.0,
     "manager": "Beverly Bunting",
@@ -603,7 +603,7 @@
     "name": "Cedar Glades",
     "type": "F",
     "units": 64.0,
-    "manager": "Katie Solomon",
+    "manager": "TBD",
     "assistant_mgr": null,
     "compliance": "Gail",
     "address": "500 Cedar Glades Circle",
@@ -624,7 +624,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Cedar Hollow Family ",
+    "name": "Cedar Hollow ",
     "type": "F",
     "units": 29.0,
     "manager": "Pamela Minix",
@@ -672,7 +672,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Cherry Ridge Independent Living ",
+    "name": "Cherry Ridge Independent",
     "type": "55",
     "units": 56.0,
     "manager": "Rachelle McPherson",
@@ -696,7 +696,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Cherry Ridge Village Apts",
+    "name": "Cherry Ridge Village",
     "type": "55",
     "units": 56.0,
     "manager": "Felicia Wiley",
@@ -744,7 +744,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Clement Belle Farm - Lease up",
+    "name": "Clement Belle Farm ",
     "type": "F",
     "units": 64.0,
     "manager": "Stacey Torrance",
@@ -840,7 +840,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Coosa Village Apts",
+    "name": "Coosa Village",
     "type": "55",
     "units": 56.0,
     "manager": "TBD",
@@ -1176,7 +1176,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Double Creek Apts",
+    "name": "Double Creek",
     "type": "55",
     "units": 48.0,
     "manager": "Charity Wright",
@@ -1248,7 +1248,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Eagles Landing Apts",
+    "name": "Eagles Landing",
     "type": "F",
     "units": 64.0,
     "manager": "Bethany Sizemore",
@@ -1272,7 +1272,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "East Oaks Apts.",
+    "name": "East Oaks",
     "type": "F",
     "units": 40.0,
     "manager": "TBD",
@@ -1320,7 +1320,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Forest Mill Apts",
+    "name": "Forest Mill",
     "type": "F",
     "units": 80.0,
     "manager": "Gisela Toral",
@@ -1416,7 +1416,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Garden Oaks - Lease up",
+    "name": "Garden Oaks",
     "type": "F",
     "units": 288.0,
     "manager": "Ornela Marion",
@@ -1488,7 +1488,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Glencoe Trace Apts. ",
+    "name": "Glencoe Trace",
     "type": "62",
     "units": 72.0,
     "manager": "Jody Head",
@@ -1536,7 +1536,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Hamilton Place Apts",
+    "name": "Hamilton Place",
     "type": "55",
     "units": 56.0,
     "manager": "Susan Moncrief",
@@ -1560,7 +1560,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Heatherwood Apts",
+    "name": "Heatherwood",
     "type": "F",
     "units": 36.0,
     "manager": "TBD",
@@ -1608,7 +1608,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Heritage Vista Apts.",
+    "name": "Heritage Vista",
     "type": "F",
     "units": 64.0,
     "manager": "Sabrina Holsey",
@@ -1632,7 +1632,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Heron Lake Apts.",
+    "name": "Heron Lake",
     "type": "F",
     "units": 88.0,
     "manager": "Amanda Cooper",
@@ -1656,7 +1656,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Heron Lake II Apts.",
+    "name": "Heron Lake II",
     "type": "F",
     "units": 64.0,
     "manager": "Amanda Cooper",
@@ -1680,7 +1680,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Hickory Run I Apts.",
+    "name": "Hickory Run I",
     "type": "F",
     "units": 42.0,
     "manager": "Effie Parker",
@@ -1704,7 +1704,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Hickory Run II Apts.",
+    "name": "Hickory Run II",
     "type": "F",
     "units": 40.0,
     "manager": "Effie Parker",
@@ -1824,7 +1824,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Hill at Sand Mountain, The - Lease-up",
+    "name": "Hill at Sand Mountain, The",
     "type": "F",
     "units": 56.0,
     "manager": "Tracy Moualhi",
@@ -1872,7 +1872,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Howell Senior School Apts ",
+    "name": "Howell Senior School ",
     "type": "55",
     "units": 55.0,
     "manager": "Ciera Armstead",
@@ -1896,7 +1896,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Ivy Pointe Apts",
+    "name": "Ivy Pointe",
     "type": "F",
     "units": 56.0,
     "manager": "Kimberly Fulpher",
@@ -1920,7 +1920,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Ivy Pointe II Apts.",
+    "name": "Ivy Pointe II ",
     "type": "F",
     "units": 48.0,
     "manager": "Kimberly Fulpher",
@@ -2088,7 +2088,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Kirby Creek Apts.",
+    "name": "Kirby Creek ",
     "type": "F",
     "units": 56.0,
     "manager": "Belinda Willis",
@@ -2112,7 +2112,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Kirkwood Trail Apts",
+    "name": "Kirkwood Trail ",
     "type": "55",
     "units": 52.0,
     "manager": "TBD",
@@ -2208,7 +2208,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Legacy Universal -RVP Michelle Clark",
+    "name": "Legacy Universal",
     "type": "C",
     "units": 350.0,
     "manager": "Alfredo Etchegoyen",
@@ -2304,7 +2304,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Loxley Station Development",
+    "name": "Loxley Station",
     "type": "F",
     "units": 48.0,
     "manager": "TBD",
@@ -2352,7 +2352,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Mallard Lake Apts",
+    "name": "Mallard Lake",
     "type": "F",
     "units": 72.0,
     "manager": "Gisela Toral",
@@ -2616,7 +2616,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Oleander Park Apts.",
+    "name": "Oleander Park",
     "type": "55",
     "units": 56.0,
     "manager": "Chiquita Hill",
@@ -2688,7 +2688,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Palladian Apts., The",
+    "name": "Palladian, The",
     "type": "F",
     "units": 80.0,
     "manager": "Chiquita Hill",
@@ -2736,7 +2736,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Palladian II Apts.",
+    "name": "Palladian II ",
     "type": "F",
     "units": 32.0,
     "manager": "Chiquita Hill",
@@ -2832,7 +2832,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Peaks of Dahlonega - Lease-up",
+    "name": "Peaks of Dahlonega",
     "type": "F",
     "units": 60.0,
     "manager": "Juanita Cunningham",
@@ -2904,7 +2904,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Pebble Creek Apts.",
+    "name": "Pebble Creek ",
     "type": "F",
     "units": 24.0,
     "manager": "Christina Dempsey",
@@ -3024,7 +3024,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Port Royal Apts ",
+    "name": "Port Royal ",
     "type": "F",
     "units": 192.0,
     "manager": "LaQuechia Jackson-Robertson ",
@@ -3048,7 +3048,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Powell Place Apts",
+    "name": "Powell Place",
     "type": "F",
     "units": 64.0,
     "manager": "Kindell Nelson",
@@ -3072,7 +3072,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Preston Place Apts",
+    "name": "Preston Place",
     "type": "F",
     "units": 40.0,
     "manager": "Jana Fletcher",
@@ -3192,7 +3192,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Shellbrooke Pointe Apts.",
+    "name": "Shellbrooke Pointe",
     "type": "F",
     "units": 96.0,
     "manager": "Barbara Butts",
@@ -3216,7 +3216,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Sheppard Station Dev. ",
+    "name": "Sheppard Station",
     "type": "55",
     "units": 65.0,
     "manager": "Monica Anderson",
@@ -3288,7 +3288,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "SkyHouse RVP Michelle Clark",
+    "name": "SkyHouse",
     "type": "C",
     "units": 320.0,
     "manager": "William Cruz",
@@ -3336,7 +3336,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "South Pointe Development",
+    "name": "South Pointe",
     "type": "F",
     "units": 47.0,
     "manager": "Chelsea Campbell",
@@ -3360,7 +3360,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Sovereign at North Bay - Lease up",
+    "name": "Sovereign at North Bay ",
     "type": "F",
     "units": 144.0,
     "manager": "Gloria Hurley",
@@ -3432,7 +3432,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Stony Ridge Apts ",
+    "name": "Stony Ridge",
     "type": "F",
     "units": 56.0,
     "manager": "Porsche Kincaid",
@@ -3456,7 +3456,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Stony Ridge Apts II",
+    "name": "Stony Ridge II",
     "type": "F",
     "units": 44.0,
     "manager": "Porsche Kincaid",
@@ -3600,7 +3600,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "The Peaks of Tazewell ",
+    "name": "Peaks of Tazewell, The",
     "type": "F",
     "units": 56.0,
     "manager": "Maria Daniels",
@@ -3624,7 +3624,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Tranquility at Decatur - Lease up ",
+    "name": "Tranquility at Decatur ",
     "type": "F",
     "units": 160.0,
     "manager": "Dorea Chaney",
@@ -3840,7 +3840,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Valley Ridge Apts.",
+    "name": "Valley Ridge",
     "type": "F",
     "units": 80.0,
     "manager": "TBD",
@@ -3888,7 +3888,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Verandah Apts., The",
+    "name": "Verandah, The",
     "type": "55",
     "units": 40.0,
     "manager": "TBD",
@@ -4152,7 +4152,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Waring II Apts.",
+    "name": "Waring II",
     "type": "55",
     "units": 36.0,
     "manager": "Jenny Starling",
@@ -4224,7 +4224,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Windcliff Apts.",
+    "name": "Windcliff",
     "type": "62",
     "units": 56.0,
     "manager": "Stacey Watson",
@@ -4272,7 +4272,7 @@
     "geocode_fail_code": null
   },
   {
-    "name": "Woodcrest Apts",
+    "name": "Woodcrest",
     "type": "F",
     "units": 48.0,
     "manager": "Brandon Douglas",
